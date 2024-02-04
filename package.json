@@ -11,7 +11,13 @@
   "dependencies": {
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.1.0"
+    "next": "14.1.0",
+    "react-countup": "^6.5.0",
+    "antd": "^5.14.0",
+    "gray-matter": "^4.0.3",
+    "remark": "^14.0.2",
+    "remark-html": "^15.0.1",
+    "unstated-next": "^1.1.0"
   },
   "devDependencies": {
     "typescript": "^5",
