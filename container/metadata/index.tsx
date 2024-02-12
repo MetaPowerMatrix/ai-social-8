@@ -2,23 +2,8 @@ import {createContainer} from "unstated-next"
 import {api_url, NodeInfo} from "@/common";
 
 const useManage = () => {
-  const get_node_map = async () => {
-    let url = api_url.stats.node.list
-    let response = await fetch(`${url}`)
-    if (response.ok) {
-      let nodeMap = new Map<string, string>();
-      let dataJson = await response.json()
-      if (dataJson.code === 200){
-        let data = JSON.parse(dataJson.content)
-        data.forEach((node: NodeInfo)=>{
-          nodeMap.set(node.id, node.name)
-        })
-      }
-      return nodeMap
-    }
-  }
   const user_login = async (username: string, password: string) => {
-    let url = api_url.user.login
+    let url = api_url.portal.login
     let data = {username: username, password:password, userid:""}
     let response = await fetch(
       `${url}`,
@@ -39,7 +24,7 @@ const useManage = () => {
     }
     return false
   }
-  return { get_node_map, user_login }
+  return { user_login }
 }
 
 let MetaDataContainer = createContainer(useManage)

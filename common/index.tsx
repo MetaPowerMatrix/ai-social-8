@@ -1,17 +1,13 @@
 export const host = "api.metapowermatrix.ai"
-export const Web_Server = "http://"+ host +":8030"
+export const Web_Server = "http://"+ host
 export const getApiServer = (port: number) => {
   return Web_Server + port
 }
 
-export interface TiktokCmdResponse{
-  code: number;
-  content: string;
-}
-export interface PhoneInfo{
+export interface ListItemInfo{
   name: string;
   id: string;
-  port: number
+  value: string
 }
 export interface NodeInfo{
   name: string;
@@ -20,90 +16,60 @@ export interface NodeInfo{
 }
 
 export const api_url = {
-    'hooking': {
-        'get':{
-            'activity': '/tiktokGetCurrentActivityFragments',
-        },
-      'kill':{
-        'job': '/jobsKill',
-        'app': '/tiktokExecInstanceMethod',
+    'portal': {
+      'login': '/api/login',
+      'register': '/api/register',
+      'interaction': {
+        'get': '/api/connection/list',
+        'rate': '/api/connection/rate',
       },
-      'net':{
-        'trace': '/tiktokTraceRetrofit',
-        'inputstream': '/tiktokTraceNetInputstream',
-        'setproxy': '/tiktokSetProxy',
+      'character': {
+        'list': '/api/character/list',
+        'choose': '/tiktokExecInstanceMethod',
       },
-      'set':{
-        'location': '/tiktokChangeLocation',
+      'market': {
+        'list': '/api/job/list',
+        'detail': '/api/job/detail',
       },
-      'trace':{
-        'class': '/tiktokTraceClass',
-        'reflection': '/tiktokTraceReflection',
-      },
-    },
-    'heap': {
-      'execute':{
-        'instance': '/tiktokExecInstanceMethod',
-        'class': '/tiktokExecInstanceMethod',
+      'target': {
+        'list': '/api/character/objects',
+        'choose': '/api/object/choose',
       },
     },
-    'red':{
-      'got': '/tiktokRedPacketGot',
-      'find': '/tiktokRedPacketFind',
-      'search': '/tiktokRedPacketSearch',
-      'diamonds': '/tiktokSendLiveFeed',
+    'account': {
+      'wallet':{
+        'bind': '/tiktokChangeLocation',
+        'info': '/tiktokChangeLocation',
+      },
+      'assets':{
+        'list': '/tiktokTraceClass',
+        'nft': '/tiktokTraceReflection',
+      },
     },
-    'ui': {
-      'alert': '/tiktokAlert',
-      'input': '/tiktokSimInput',
-      'live': '/tiktokSendLiveFeed',
-      'logscreen': '/tiktokMonitorScreen',
-      'notify': '/tiktokNotify',
-      'screenshot': '/androidUiScreenshot',
-      'tap': '/tiktokSimTouch',
-      'move': '/tiktokSimMove'
+    'defi': {
+      'fund':{
+        'total': '/tiktokExecInstanceMethod',
+        'liquity': '/tiktokExecInstanceMethod',
+        'plan': '/tiktokExecInstanceMethod',
+      },
+      'trade':{
+        'send': '/tiktokExecInstanceMethod',
+        'recv': '/tiktokExecInstanceMethod',
+        'transactions': '/tiktokExecInstanceMethod',
+      },
     },
-    'user': {
-      'login': Web_Server + '/user/login',
-      'info': Web_Server + '/user/info',
+    'message':{
+      'send': '/tiktokRedPacketGot',
+      'recv': '/tiktokRedPacketFind',
+      'history': '/tiktokRedPacketSearch',
     },
-    'ios': {
-      'commands': Web_Server + '/ios/shell/commands',
-      'hostcommand': Web_Server + '/ios/host/commands',
-      'load': Web_Server + '/ioscript/load',
-      'upload': Web_Server + '/ioscript/upload',
-    },
-    'adb':{
-      'commands': Web_Server + '/adb/shell/commands',
-      'loadsingle': Web_Server + '/script/load/single',
-      'load': Web_Server + '/script/load',
-      'unload': Web_Server + '/script/unload',
-      'change': Web_Server + '/script/change',
-      'upload': Web_Server + '/script/upload',
-      'message': Web_Server + '/message/upload',
-      'accounts': Web_Server + '/accounts/upload',
-    },
-    'node':{
-      'restart': Web_Server + '/node/restart',
-      'test': Web_Server + '/node/test',
+    'ai':{
+      'start': '/tiktokRedPacketGot',
+      'stop': '/tiktokRedPacketFind',
+      'adjust': '/tiktokRedPacketSearch',
+      'data': '/tiktokSendLiveFeed',
     },
     'stats': {
-      'node': {
-        'list': Web_Server + '/get/nodes',
-        'start': Web_Server + '/start/objection',
-        'kill': Web_Server + '/kill/objection',
-        'tiktok': Web_Server + '/start/tiktok',
-        'hour': Web_Server + '/node/hour',
-      },
-      'iPhone': {
-        'list': Web_Server + '/get/iphones',
-        'hosts': Web_Server + '/get/iphones/hosts',
-        'hour': Web_Server + '/phone/hour',
-      },
-      'phone': {
-          'list': Web_Server + '/get/phones',
-          'hour': Web_Server + '/phone/hour',
-      },
-      'coins': Web_Server + '/stats/ios',
+      'coins': '/stats/ios',
     },
 }

@@ -2,11 +2,12 @@ import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
 import Layout, { siteTitle } from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
-import { getSortedPostsData } from '../lib/posts';
+import { getSortedPostsData } from '@/lib/posts';
 import {Avatar, Card, Flex, List, Space} from "antd";
-import {LikeOutlined, MessageOutlined, StarOutlined, TwitterOutlined} from "@ant-design/icons";
+import {LikeOutlined, MessageOutlined, StarOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
-import {PhoneInfo} from "@/common";
+import {ListItemInfo} from "@/common";
+import ListModalComponent from "@/components/list_modal";
 
 const data2 = Array.from({
   length: 23,
@@ -51,19 +52,31 @@ const IconText = ({ icon, text }:{icon: any, text: string}) => (
 
 export default function Home() {
   const command = commandDataContainer.useContainer()
-  const [phoneList, setPhoneList] = useState<PhoneInfo[]>([])
+  const [characterList, setCharacterList] = useState<ListItemInfo[]>([])
+  const [isModalVisible, setIsModalVisible] = useState(true); // Add a state variable for modal visibility
 
-  const getPhoneList = () => {
-    command.get_phones().then((infos) => {
+  const getCharacterList = () => {
+    command.get_characters().then((infos) => {
       if (infos !== undefined){
-        const phones: PhoneInfo[] = infos
-        setPhoneList(phones)
+        const characters: ListItemInfo[] = infos.map((info: String) => {
+          return {
+            name: info,
+            id: info,
+            value: info
+          }
+        })
+        setCharacterList(characters)
       }
     })
   }
 
+  const handleSelect = (item: ListItemInfo) => {
+    console.log(item);
+    setIsModalVisible(false); // Close the modal when an item is selected
+  }
+
   useEffect(()=> {
-    getPhoneList()
+    getCharacterList()
   },[])
 
   return (
@@ -78,7 +91,12 @@ export default function Home() {
             split={false}
             renderItem={(item) => (
               <List.Item>
-                <Card hoverable style={{width:260}} title={item.title}><TwitterOutlined /></Card>
+                <Card hoverable style={{width: 260}} title={item.title}>
+                  <button onClick={() => setIsModalVisible(true)}>Open Modal</button>
+                  {/* Add a button to open the modal */}
+                  {isModalVisible && <ListModalComponent items={characterList}
+                                                         onSelect={handleSelect}/>} {/* Render the modal if isModalVisible is true */}
+                </Card>
               </List.Item>
             )}
           />
