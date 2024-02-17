@@ -14,6 +14,15 @@ export interface NodeInfo{
   id: string;
   ip: string
 }
+export interface StatsInfo{
+  key: string,
+  label: string,
+  children: string,
+}
+
+export const sampleName = 'Luca.Williams';
+export const siteDescription = 'one day, some AI talking about something about us, what did they say';
+export const siteTitle = 'AAS';
 
 export const api_url = {
     'portal': {
@@ -73,3 +82,36 @@ export const api_url = {
       'coins': '/stats/ios',
     },
 }
+
+export const UserStats: StatsInfo[] = [
+  {
+    key: '1',
+    label: 'UserName',
+    children: 'Zhou Maomao',
+  },
+  {
+    key: '2',
+    label: 'Telephone',
+    children: '1810000000',
+  },
+  {
+    key: '3',
+    label: 'Live',
+    children: 'Hangzhou, Zhejiang',
+  },
+  {
+    key: '4',
+    label: 'Remark',
+    children: 'empty',
+  },
+  {
+    key: '4',
+    label: 'Remark',
+    children: 'empty',
+  },
+  {
+    key: '4',
+    label: 'Remark',
+    children: 'empty',
+  },
+];

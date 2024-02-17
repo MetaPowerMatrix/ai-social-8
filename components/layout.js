@@ -1,47 +1,25 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import CountUp from 'react-countup';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
-import {Descriptions, Divider, Flex} from "antd";
-import React from 'react';
-
-const name = 'Luca.Williams';
-const description = 'one day, some AI talking about something about us, what did they say';
-export const siteTitle = 'AAS';
-const items = [
-    {
-        key: '1',
-        label: 'UserName',
-        children: 'Zhou Maomao',
-    },
-    {
-        key: '2',
-        label: 'Telephone',
-        children: '1810000000',
-    },
-    {
-        key: '3',
-        label: 'Live',
-        children: 'Hangzhou, Zhejiang',
-    },
-    {
-        key: '4',
-        label: 'Remark',
-        children: 'empty',
-    },
-];
-
-const formatter = (value) => <CountUp end={value} separator="," />;
+import {Descriptions, Divider, Flex, FloatButton} from "antd";
+import {PhoneOutlined, MenuOutlined} from "@ant-design/icons";
+import React, {useState} from 'react';
+import {siteTitle, UserStats, siteDescription, sampleName} from "@/common";
 
 export default function Layout({ children, home }) {
+    const [open, setOpen] = useState(true);
+    const onChange = () => {
+        setOpen(!open);
+    };
+
   return (
     <div className={styles.container}>
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="description"
-          content={description}
+          content={siteDescription}
         />
         <meta name="og:title" content={siteTitle} />
         <meta name="twitter:card" content="summary_large_image" />
@@ -55,15 +33,23 @@ export default function Layout({ children, home }) {
                       className={utilStyles.borderCircle}
                       height={144}
                       width={144}
-                      alt={name}
+                      alt={sampleName}
                   />
-                  <h1 className={utilStyles.heading2Xl}>{name}</h1>
+                  <h1 className={utilStyles.heading2Xl}>{sampleName}</h1>
               </Flex>
-              <Descriptions bordered={true} title="User Info" column={2} layout="vertical" items={items} />
-              <Descriptions bordered={true} title="World Info" column={2} layout="vertical" items={items} />
-
+              <Descriptions bordered={true} column={6} layout="vertical" items={UserStats} />
           </Flex>
       </header>
+        <FloatButton.Group
+            open={open}
+            trigger="click"
+            style={{ right: 24 }}
+            onClick={onChange}
+            icon={<MenuOutlined />}
+        >
+            <FloatButton href="/controller" icon={<PhoneOutlined />} />
+            {/*<FloatButton href="/controller" icon={<CommentOutlined />} />*/}
+        </FloatButton.Group>
         <Divider/>
       <main>{children}</main>
     </div>

@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
-import Layout from '../components/layout';
+import Layout, { siteTitle } from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
 import { getSortedPostsData } from '@/lib/posts';
 import {Avatar, Card, Flex, List, Space} from "antd";
 import {LikeOutlined, MessageOutlined, StarOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
-import {ListItemInfo, siteTitle} from "@/common";
+import {ListItemInfo} from "@/common";
 import ListModalComponent from "@/components/list_modal";
 
 const data2 = Array.from({
@@ -50,7 +50,7 @@ const IconText = ({ icon, text }:{icon: any, text: string}) => (
 );
 
 
-export default function Home() {
+export default function Controller() {
   const command = commandDataContainer.useContainer()
   const [characterList, setCharacterList] = useState<ListItemInfo[]>([])
   const [isModalVisible, setIsModalVisible] = useState(true); // Add a state variable for modal visibility
@@ -102,7 +102,7 @@ export default function Home() {
           />
           <List
             itemLayout="vertical"
-            header={<p>任务消息</p>}
+            header={<p>世界消息</p>}
             size="small"
             pagination={{
               onChange: (page) => {
