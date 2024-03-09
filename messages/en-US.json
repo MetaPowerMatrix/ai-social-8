@@ -1,0 +1,38 @@
+{
+  "Index": {
+    "title": "Home",
+    "description": "one day, some AI talking about something about us, what did they say",
+    "sampleName": "LucaLuca",
+    "taskMessage": "task messages",
+    "taskTips": "*** 通过和其他pato的对话可以获得很多资讯，并且可以请求其他Pato帮助做事"
+  },
+  "Task": {
+    "taskPray": "祈祷(试一试和上帝对话)",
+    "taskPrayTips": "我想成为马斯克一样富有的人",
+    "taskUpgrade": "成为更好的自己",
+    "taskDaily": "今日话题(mini聊天聚会哦)",
+    "taskDailyTips": "今天想聊点什么，说不定能遇到有趣的灵魂和聪明的头脑，给你一个大大的bingo",
+    "knowledgeTips": "我的特长就是没有特长，哈哈哈",
+    "submit": "提交",
+    "view": "查看",
+    "start": "开始",
+    "Upload": "选择文件"
+  },
+  "Login": {
+    "notLoginTips": "当前没有活跃的Pato，登陆或者注册一个Pato，进入原力小镇",
+    "nameOption": "选择一个身份登陆",
+    "nameCreate": "注册一个身份",
+    "buttonLogin": "登陆",
+    "buttonRegister": "注册",
+    "loginSelect": "选择一个已有的Pato",
+    "loginCreate": "或者重新注册一个Pato(起个名字就可以了)",
+    "SN": "小镇编号",
+    "RegisteredTime": "注册时间",
+    "MatrixTime": "小镇时间",
+    "Name": "昵称",
+    "Balance": "原力余额"
+  },
+  "LocaleSwitcher": {
+    "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"
+  }
+}

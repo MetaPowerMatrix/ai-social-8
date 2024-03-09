@@ -1,9 +1,16 @@
 export const host = "api.metapowermatrix.ai"
 export const Web_Server = "http://"+ host
 export const getApiServer = (port: number) => {
-  return Web_Server + port
+  return Web_Server + ':' + port
 }
 
+export interface PatoInfo {
+  sn: number,
+  id: string,
+  name: string,
+  matrix_datetime: string,
+  registered_datetime: string
+}
 export interface ListItemInfo{
   name: string;
   id: string;
@@ -20,14 +27,15 @@ export interface StatsInfo{
   children: string,
 }
 
-export const sampleName = 'Luca.Williams';
-export const siteDescription = 'one day, some AI talking about something about us, what did they say';
-export const siteTitle = 'AAS';
-
 export const api_url = {
     'portal': {
       'login': '/api/login',
       'register': '/api/register',
+      'pato': '/api/pato/info',
+      'task': {
+        'pray': '/api/pray',
+        'upgrade': '/api/pro',
+      },
       'interaction': {
         'get': '/api/connection/list',
         'rate': '/api/connection/rate',
@@ -82,36 +90,3 @@ export const api_url = {
       'coins': '/stats/ios',
     },
 }
-
-export const UserStats: StatsInfo[] = [
-  {
-    key: '1',
-    label: 'UserName',
-    children: 'Zhou Maomao',
-  },
-  {
-    key: '2',
-    label: 'Telephone',
-    children: '1810000000',
-  },
-  {
-    key: '3',
-    label: 'Live',
-    children: 'Hangzhou, Zhejiang',
-  },
-  {
-    key: '4',
-    label: 'Remark',
-    children: 'empty',
-  },
-  {
-    key: '4',
-    label: 'Remark',
-    children: 'empty',
-  },
-  {
-    key: '4',
-    label: 'Remark',
-    children: 'empty',
-  },
-];

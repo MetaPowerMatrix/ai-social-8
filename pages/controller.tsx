@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
-import Layout, { siteTitle } from '../components/layout';
+import Layout from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
 import { getSortedPostsData } from '@/lib/posts';
 import {Avatar, Card, Flex, List, Space} from "antd";
 import {LikeOutlined, MessageOutlined, StarOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
-import {ListItemInfo} from "@/common";
+import {ListItemInfo, siteTitle} from "@/common";
 import ListModalComponent from "@/components/list_modal";
 
 const data2 = Array.from({

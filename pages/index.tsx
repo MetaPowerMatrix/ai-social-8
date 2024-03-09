@@ -2,17 +2,19 @@ import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
 import Layout from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
-import { getSortedPostsData } from '@/lib/posts';
 import {Avatar, Card, Flex, List, Space} from "antd";
 import {LikeOutlined, MessageOutlined, StarOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
-import {ListItemInfo, siteTitle} from "@/common";
-import ListModalComponent from "@/components/list_modal";
+import {ListItemInfo} from "@/common";
+import { useRouter } from "next/router";
+import {useTranslations} from 'next-intl';
+import TaskPanel from "@/components/taskPanel";
+import {getCookie} from "@/lib/utils";
 
 const data2 = Array.from({
-  length: 23,
+  length: 1,
 }).map((_, i) => ({
-  href: 'https://ant.design',
+  href: 'https://www.metapowermatrix.com',
   title: `ant design part ${i}`,
   avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`,
   description:
@@ -21,27 +23,6 @@ const data2 = Array.from({
     'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
 }));
 
-const data = [
-  {
-    title: '任务 1',
-  },
-  {
-    title: '任务 2',
-  },
-  {
-    title: '任务 3',
-  },
-  {
-    title: '任务 4',
-  },
-  {
-    title: '任务 5',
-  },
-  {
-    title: '任务 6',
-  },
-];
-
 const IconText = ({ icon, text }:{icon: any, text: string}) => (
   <Space>
     {React.createElement(icon)}
@@ -49,60 +30,31 @@ const IconText = ({ icon, text }:{icon: any, text: string}) => (
   </Space>
 );
 
-
 export default function Home() {
+  const [activeId, setActiveId] = useState("");
   const command = commandDataContainer.useContainer()
   const [characterList, setCharacterList] = useState<ListItemInfo[]>([])
-  const [isModalVisible, setIsModalVisible] = useState(true); // Add a state variable for modal visibility
-
-  const getCharacterList = () => {
-    command.get_characters().then((infos) => {
-      if (infos !== undefined){
-        const characters: ListItemInfo[] = infos.map((info: String) => {
-          return {
-            name: info,
-            id: info,
-            value: info
-          }
-        })
-        setCharacterList(characters)
-      }
-    })
-  }
-
-  const handleSelect = (item: ListItemInfo) => {
-    console.log(item);
-    setIsModalVisible(false); // Close the modal when an item is selected
-  }
+  const t = useTranslations('Index');
 
   useEffect(()=> {
-    getCharacterList()
+    const cookie1 = getCookie('active-id');
+    if (cookie1 !== "") {
+      setActiveId(cookie1);
+    }
+    // getCharacterList()
   },[])
 
   return (
-    <Layout home>
+    <Layout title={t('title')} description={t('description')}>
       <Head>
-        <title>{siteTitle}</title>
+        <title>{t('title')}</title>
       </Head>
       <section className={utilStyles.headingMd}>
         <Flex vertical={false} justify="space-around" align="flex-start" gap={80}>
-          <List
-            dataSource={data}
-            split={false}
-            renderItem={(item) => (
-              <List.Item>
-                <Card hoverable style={{width: 260}} title={item.title}>
-                  <button onClick={() => setIsModalVisible(true)}>Open Modal</button>
-                  {/* Add a button to open the modal */}
-                  {isModalVisible && <ListModalComponent items={characterList}
-                                                         onSelect={handleSelect}/>} {/* Render the modal if isModalVisible is true */}
-                </Card>
-              </List.Item>
-            )}
-          />
+          <TaskPanel id={activeId}/>
           <List
             itemLayout="vertical"
-            header={<p>任务消息</p>}
+            header={<p>{t('taskMessage')}</p>}
             size="small"
             pagination={{
               onChange: (page) => {
@@ -112,8 +64,8 @@ export default function Home() {
             }}
             dataSource={data2}
             footer={
-              <div>
-                <b>task list</b>
+              <div style={{color: "yellowgreen"}}>
+                {t('taskTips')}
               </div>
             }
             renderItem={(item) => (
@@ -147,11 +99,12 @@ export default function Home() {
   );
 }
 
-export async function getStaticProps() {
-  const allPostsData = getSortedPostsData();
+export async function getStaticProps({locale}: {locale: string}) {
   return {
     props: {
-      allPostsData,
+      messages:{
+        ...require(`../messages/${locale}.json`),
+      }
     },
   };
 }
