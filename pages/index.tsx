@@ -79,7 +79,7 @@ export default function Home() {
                 key={item.subject}
                 title={item.subject}
                 actions={[
-                  <IconText icon={MessageOutlined} text="2" key="list-vertical-message"/>,
+                  <IconText icon={MessageOutlined} text="99+" key="list-vertical-message"/>,
                 ]}
               >
                 <List.Item.Meta title={item.subject}/>
