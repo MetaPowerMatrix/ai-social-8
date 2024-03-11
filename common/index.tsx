@@ -26,15 +26,29 @@ export interface StatsInfo{
   label: string,
   children: string,
 }
+export interface ChatMessage{
+  created_at: number,
+  session: string,
+  place: string,
+  sender: string,
+  receiver: string,
+  question: string,
+  answer: string,
+  subject: string
+}
 
 export const api_url = {
     'portal': {
       'login': '/api/login',
       'register': '/api/register',
       'pato': '/api/pato/info',
+      'message':{
+        'history': '/api/pato/messages',
+      },
       'task': {
         'pray': '/api/pray',
         'upgrade': '/api/pro',
+        "event": "/api/event"
       },
       'interaction': {
         'get': '/api/connection/list',
@@ -74,11 +88,6 @@ export const api_url = {
         'recv': '/tiktokExecInstanceMethod',
         'transactions': '/tiktokExecInstanceMethod',
       },
-    },
-    'message':{
-      'send': '/tiktokRedPacketGot',
-      'recv': '/tiktokRedPacketFind',
-      'history': '/tiktokRedPacketSearch',
     },
     'ai':{
       'start': '/tiktokRedPacketGot',

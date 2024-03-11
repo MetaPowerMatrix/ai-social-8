@@ -5,23 +5,11 @@ import utilStyles from '../styles/utils.module.css';
 import {Avatar, Card, Flex, List, Space} from "antd";
 import {LikeOutlined, MessageOutlined, StarOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
-import {ListItemInfo} from "@/common";
+import {ChatMessage, ListItemInfo} from "@/common";
 import { useRouter } from "next/router";
 import {useTranslations} from 'next-intl';
 import TaskPanel from "@/components/taskPanel";
 import {getCookie} from "@/lib/utils";
-
-const data2 = Array.from({
-  length: 1,
-}).map((_, i) => ({
-  href: 'https://www.metapowermatrix.com',
-  title: `ant design part ${i}`,
-  avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`,
-  description:
-    'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-  content:
-    'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-}));
 
 const IconText = ({ icon, text }:{icon: any, text: string}) => (
   <Space>
@@ -33,7 +21,7 @@ const IconText = ({ icon, text }:{icon: any, text: string}) => (
 export default function Home() {
   const [activeId, setActiveId] = useState("");
   const command = commandDataContainer.useContainer()
-  const [characterList, setCharacterList] = useState<ListItemInfo[]>([])
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const t = useTranslations('Index');
 
   useEffect(()=> {
@@ -43,6 +31,24 @@ export default function Home() {
     }
     // getCharacterList()
   },[])
+
+  useEffect(()=> {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+// Format the date as YYYY-MM-DD
+    const formattedDate = yesterday.getFullYear() + '-' +
+      String(yesterday.getMonth() + 1).padStart(2, '0') + '-' +
+      String(yesterday.getDate()).padStart(2, '0');
+
+    console.log(formattedDate, activeId)
+    command.getPatoHistoryMessages(activeId, formattedDate).then((response) => {
+      if (response !== null) {
+        setChatMessages(response)
+      }
+    })
+  },[activeId])
 
   return (
     <Layout title={t('title')} description={t('description')}>
@@ -62,7 +68,7 @@ export default function Home() {
               },
               pageSize: 6,
             }}
-            dataSource={data2}
+            dataSource={chatMessages}
             footer={
               <div style={{color: "yellowgreen"}}>
                 {t('taskTips')}
@@ -70,26 +76,16 @@ export default function Home() {
             }
             renderItem={(item) => (
               <List.Item
-                key={item.title}
+                key={item.subject}
+                title={item.subject}
                 actions={[
-                  <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-                  <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-                  <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
+                  <IconText icon={MessageOutlined} text="2" key="list-vertical-message"/>,
                 ]}
-                extra={
-                  <img
-                    width={272}
-                    alt="logo"
-                    src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-                  />
-                }
               >
-                <List.Item.Meta
-                  avatar={<Avatar src={item.avatar} />}
-                  title={<a href={item.href}>{item.title}</a>}
-                  description={item.description}
-                />
-                {item.content}
+                <List.Item.Meta title={item.subject}/>
+                <h5>{item.sender}: {item.question}</h5>
+                <h5>{item.receiver}: {item.answer}</h5>
+                <h5>#{item.session}#{item.place}</h5>
               </List.Item>
             )}
           />

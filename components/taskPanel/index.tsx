@@ -11,7 +11,7 @@ const TaskPanel = ({id}:{id: string}) => {
 	const t = useTranslations('Task');
 	const command = commandDataContainer.useContainer()
 	const [userPray, setUserPray] = useState('');
-	const [dailySpecial, setDailySpecial] = useState('');
+	const [dailyEvent, setDailyEvent] = useState('');
 	const [knowledge, setKnowledge] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -23,13 +23,19 @@ const TaskPanel = ({id}:{id: string}) => {
 			alert('God received')
 		})
 	};
+	const handleTodayEvent = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		event.preventDefault();
+		command.create_today_event(id, dailyEvent).then((response) => {
+			alert('waiting some one to talk')
+		})
+	};
 	const prayInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		event.preventDefault();
 		setUserPray(event.target.value)
 	}
 	const dailyInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		event.preventDefault();
-		setDailySpecial(event.target.value)
+		setDailyEvent(event.target.value)
 	}
 	const knowledgeInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		event.preventDefault();
@@ -76,7 +82,7 @@ const TaskPanel = ({id}:{id: string}) => {
 			<Flex vertical justify="space-around" align="flex-start" gap={80}>
 				<Card hoverable style={{width: 260, backgroundColor: "#e9f5f9"}} title={t('taskDaily')}>
 					<TextArea placeholder={t('taskDailyTips')} rows={4} onChange={(e) => dailyInput(e)}/>
-					<button className={styles.task} onClick={(e) => handlePray(e)}>{t('view')}</button>
+					<button className={styles.task} onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
 				</Card>
 				<Card hoverable style={{width: 260, backgroundColor: "#e9f5f9"}} title={t('taskPray')}>
 					<TextArea placeholder={t('taskPrayTips')} rows={4} onChange={(e) => prayInput(e)}/>
