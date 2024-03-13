@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import {useTranslations} from 'next-intl';
 import TaskPanel from "@/components/taskPanel";
 import {getCookie} from "@/lib/utils";
+import ProgressBarComponent from "@/components/ProgressBar";
 
 const IconText = ({ icon, text }:{icon: any, text: string}) => (
   <Space>
@@ -35,7 +36,7 @@ export default function Home() {
   useEffect(()=> {
     const today = new Date();
     const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
+    yesterday.setDate(today.getDate() - 2);
 
 // Format the date as YYYY-MM-DD
     const formattedDate = yesterday.getFullYear() + '-' +
@@ -55,9 +56,6 @@ export default function Home() {
       <Head>
         <title>{t('title')}</title>
       </Head>
-      <section className={utilStyles.headingMd}>
-        <Flex vertical={false} justify="space-around" align="flex-start" gap={80}>
-          <TaskPanel id={activeId}/>
           <List
             itemLayout="vertical"
             header={<p>{t('taskMessage')}</p>}
@@ -89,8 +87,6 @@ export default function Home() {
               </List.Item>
             )}
           />
-        </Flex>
-      </section>
     </Layout>
   );
 }

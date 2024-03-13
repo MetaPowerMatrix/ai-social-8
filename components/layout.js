@@ -9,6 +9,8 @@ import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
 import {getCookie} from "@/lib/utils";
 import commandDataContainer from "@/container/command"
+import TaskPanel from "@/components/taskPanel";
+import ProgressBarComponent from "@/components/ProgressBar";
 
 Number.prototype.pad = function(size) {
     var s = String(this);
@@ -24,6 +26,11 @@ export default function Layout({ children, title, description }) {
     const [activeId, setActiveId] = useState("");
     const [activeName, setActiveName] = useState("");
     const command = commandDataContainer.useContainer()
+    const [loading, setLoading] = useState(false);
+
+    const showProgressBar = (show) => {
+        setLoading(show)
+    }
 
     const onChange = () => {
         setOpen(!open);
@@ -36,6 +43,7 @@ export default function Layout({ children, title, description }) {
             setIsLogin(false);
         }else {
             setActiveId(cookie1);
+            setIsLogin(true)
         }
         const cookie2 = getCookie('available-ids');
         if (cookie2 !== "" || cookie2 !== null) {
@@ -126,21 +134,28 @@ export default function Layout({ children, title, description }) {
                         </Flex>
                     </header>
                     <Divider/>
-                    <main>{children}</main>
+                    <main>
+                        <section className={utilStyles.headingMd}>
+                            <Flex vertical={false} justify="space-around" align="flex-start" gap={80}>
+                                <TaskPanel id={activeId} onShowProgress={showProgressBar}/>
+                                {children}
+                            </Flex>
+                        </section>
+                    </main>
                 </>
                 :
                 <Image
-                    priority
-                    src="/images/ai-town.jpg"
-                    fill
-                    style={{
-                        objectFit: 'cover',
+                priority
+                src="/images/ai-town.jpg"
+                fill
+                style={{
+                objectFit: 'cover',
                     }}
                     alt={"map"}
                 />
             }
-
-            {isLogin ??
+            <ProgressBarComponent visible={loading} />
+            {/*{isLogin ??*/}
                 <FloatButton.Group
                     open={open}
                     trigger="click"
@@ -151,7 +166,7 @@ export default function Layout({ children, title, description }) {
                     <FloatButton href="/controller" icon={<PhoneOutlined/>}/>
                     {/*<FloatButton href="/controller" icon={<CommentOutlined />} />*/}
                 </FloatButton.Group>
-            }
+            {/*}*/}
             <ModalLogin isOpen={!isLogin}
                         onClose={(id) => {
                             setIsLogin(true)

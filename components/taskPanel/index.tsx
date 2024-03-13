@@ -5,9 +5,10 @@ import TextArea from "antd/es/input/TextArea";
 import commandDataContainer from "@/container/command";
 import styles from "./TaskPanel.module.css"
 import {UploadOutlined} from "@ant-design/icons";
-import {api_url} from "@/common";
+import {api_url, getApiServer} from "@/common";
+import ProgressBarComponent from "@/components/ProgressBar";
 
-const TaskPanel = ({id}:{id: string}) => {
+const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean)=>void}) => {
 	const t = useTranslations('Task');
 	const command = commandDataContainer.useContainer()
 	const [userPray, setUserPray] = useState('');
@@ -18,15 +19,19 @@ const TaskPanel = ({id}:{id: string}) => {
 
 	const handlePray = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		// document.cookie = "username=John Doe; path=/; max-age=3600; secure";
+		onShowProgress(true);
 		event.preventDefault();
 		command.pray(id, userPray).then((response) => {
 			alert('God received')
+			onShowProgress(false);
 		})
 	};
 	const handleTodayEvent = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		onShowProgress(true);
 		event.preventDefault();
 		command.create_today_event(id, dailyEvent).then((response) => {
 			alert('waiting some one to talk')
+			onShowProgress(false);
 		})
 	};
 	const prayInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -57,36 +62,40 @@ const TaskPanel = ({id}:{id: string}) => {
 		fileList,
 	};
 	const handleKnowledge= (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		onShowProgress(true);
 		event.preventDefault(); // Prevent the default form submission
 		const formData = new FormData();
 		formData.append('file', fileList[0] as FileType);
 		formData.append('message', JSON.stringify({ id: id, message: knowledge}));
 
-		let url = api_url.portal.task.upgrade
+		let url = getApiServer(80) + api_url.portal.task.upgrade
 		fetch(url, {
 			method: 'POST',
 			body: formData,
 		})
 			.then(response => response.json())
 			.then(data => {
-				console.log('Success:', data);
-				alert('Upload successful!');
+				// console.log('Success:', data);
+				if (data.code === "200") {
+					alert('Upload successful!');
+				}else{
+					alert('Upload failed.');
+				}
+				onShowProgress(false);
 			})
 			.catch((error) => {
 				console.error('Error:', error);
 				alert('Upload failed.');
+				onShowProgress(false);
 			});
 	};
 
 	return(
+		<>
 			<Flex vertical justify="space-around" align="flex-start" gap={80}>
 				<Card hoverable style={{width: 260, backgroundColor: "#e9f5f9"}} title={t('taskDaily')}>
 					<TextArea placeholder={t('taskDailyTips')} rows={4} onChange={(e) => dailyInput(e)}/>
 					<button className={styles.task} onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
-				</Card>
-				<Card hoverable style={{width: 260, backgroundColor: "#e9f5f9"}} title={t('taskPray')}>
-					<TextArea placeholder={t('taskPrayTips')} rows={4} onChange={(e) => prayInput(e)}/>
-					<button className={styles.task} onClick={(e) => handlePray(e)}>{t('submit')}</button>
 				</Card>
 				<Card hoverable style={{width: 260, backgroundColor: "#e9f5f9"}} title={t('taskUpgrade')}>
 					<TextArea style={{marginBottom: 10}} placeholder={t('knowledgeTips')} rows={2} onChange={(e) => knowledgeInput(e)}/>
@@ -95,7 +104,12 @@ const TaskPanel = ({id}:{id: string}) => {
 					</Upload>
 					<button className={styles.task} onClick={(e) => handleKnowledge(e)}>{t('start')}</button>
 				</Card>
+				<Card hoverable style={{width: 260, backgroundColor: "#e9f5f9"}} title={t('taskPray')}>
+					<TextArea placeholder={t('taskPrayTips')} rows={4} onChange={(e) => prayInput(e)}/>
+					<button className={styles.task} onClick={(e) => handlePray(e)}>{t('submit')}</button>
+				</Card>
 			</Flex>
+		</>
 	)
 }
 
