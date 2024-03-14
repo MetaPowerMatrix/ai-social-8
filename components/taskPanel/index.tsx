@@ -6,7 +6,6 @@ import commandDataContainer from "@/container/command";
 import styles from "./TaskPanel.module.css"
 import {UploadOutlined} from "@ant-design/icons";
 import {api_url, getApiServer} from "@/common";
-import ProgressBarComponent from "@/components/ProgressBar";
 
 const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean)=>void}) => {
 	const t = useTranslations('Task');
@@ -15,10 +14,10 @@ const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean
 	const [dailyEvent, setDailyEvent] = useState('');
 	const [knowledge, setKnowledge] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
+	const [panelWidth, setPanelWidth] = useState(300);
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 	const handlePray = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		// document.cookie = "username=John Doe; path=/; max-age=3600; secure";
 		onShowProgress(true);
 		event.preventDefault();
 		command.pray(id, userPray).then((response) => {
@@ -92,20 +91,20 @@ const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean
 
 	return(
 		<>
-			<Flex vertical justify="space-around" align="flex-start" gap={80}>
-				<Card hoverable style={{width: 260, backgroundColor: "#e9f5f9"}} title={t('taskDaily')}>
-					<TextArea placeholder={t('taskDailyTips')} rows={4} onChange={(e) => dailyInput(e)}/>
+			<Flex vertical justify="space-around" align="flex-start" gap={40}>
+				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9"}} title={t('taskDaily')}>
+					<TextArea placeholder={t('taskDailyTips')} rows={3} onChange={(e) => dailyInput(e)}/>
 					<button className={styles.task} onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
 				</Card>
-				<Card hoverable style={{width: 260, backgroundColor: "#e9f5f9"}} title={t('taskUpgrade')}>
+				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9"}} title={t('taskUpgrade')}>
 					<TextArea style={{marginBottom: 10}} placeholder={t('knowledgeTips')} rows={2} onChange={(e) => knowledgeInput(e)}/>
 					<Upload {...props}>
 						<Button icon={<UploadOutlined />}>{t('Upload')}</Button>
 					</Upload>
 					<button className={styles.task} onClick={(e) => handleKnowledge(e)}>{t('start')}</button>
 				</Card>
-				<Card hoverable style={{width: 260, backgroundColor: "#e9f5f9"}} title={t('taskPray')}>
-					<TextArea placeholder={t('taskPrayTips')} rows={4} onChange={(e) => prayInput(e)}/>
+				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9"}} title={t('taskPray')}>
+					<TextArea placeholder={t('taskPrayTips')} rows={2} onChange={(e) => prayInput(e)}/>
 					<button className={styles.task} onClick={(e) => handlePray(e)}>{t('submit')}</button>
 				</Card>
 			</Flex>

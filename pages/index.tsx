@@ -1,16 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
 import Layout from '../components/layout';
-import utilStyles from '../styles/utils.module.css';
-import {Avatar, Card, Flex, List, Space} from "antd";
-import {LikeOutlined, MessageOutlined, StarOutlined} from "@ant-design/icons";
+import {List, Space} from "antd";
+import {MessageOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
-import {ChatMessage, ListItemInfo} from "@/common";
+import {ChatMessage} from "@/common";
 import { useRouter } from "next/router";
 import {useTranslations} from 'next-intl';
-import TaskPanel from "@/components/taskPanel";
 import {getCookie} from "@/lib/utils";
-import ProgressBarComponent from "@/components/ProgressBar";
 
 const IconText = ({ icon, text }:{icon: any, text: string}) => (
   <Space>
@@ -30,13 +27,12 @@ export default function Home() {
     if (cookie1 !== "") {
       setActiveId(cookie1);
     }
-    // getCharacterList()
   },[])
 
   useEffect(()=> {
     const today = new Date();
     const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 2);
+    yesterday.setDate(today.getDate() - 3);
 
 // Format the date as YYYY-MM-DD
     const formattedDate = yesterday.getFullYear() + '-' +
