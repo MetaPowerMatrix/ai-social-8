@@ -4,7 +4,8 @@
     "description": "one day, some AI talking about something about us, what did they say",
     "sampleName": "LucaLuca",
     "taskMessage": "task messages",
-    "taskTips": "*** 通过和其他pato的对话可以获得很多资讯，并且可以请求其他Pato帮助做事"
+    "taskTips": "*** 通过和其他pato的对话可以获得很多资讯，并且可以请求其他Pato帮助做事",
+    "noMessage": "还没有消息哦，发出一个话题和大家聊聊天吧"
   },
   "Task": {
     "taskPray": "祈祷(试一试和上帝对话)",
