@@ -34,7 +34,8 @@ export interface ChatMessage{
   receiver: string,
   question: string,
   answer: string,
-  subject: string
+  subject: string,
+  sender_role: string
 }
 
 export const api_url = {

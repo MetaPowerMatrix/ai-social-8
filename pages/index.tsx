@@ -1,8 +1,8 @@
-import React, {ReactNode, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
 import Layout from '../components/layout';
-import {Col, DatePicker, DatePickerProps, Divider, Flex, List, Rate, Row, Space, Tag} from "antd";
-import {MessageOutlined, RedoOutlined} from "@ant-design/icons";
+import {Col, DatePicker, DatePickerProps, Divider, List, Rate, Row, Space, Tag} from "antd";
+import {RedoOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage} from "@/common";
 import {useTranslations} from 'next-intl';
@@ -43,7 +43,7 @@ export default function Home() {
   const [activeId, setActiveId] = useState("");
   const command = commandDataContainer.useContainer()
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [queryDate, setQueryDate] = useState("2024-03-14");
+  const [queryDate, setQueryDate] = useState("2024-03-18");
   const [reloadTimes, setReloadTimes] = useState(0);
   const t = useTranslations('Index');
 
@@ -53,6 +53,14 @@ export default function Home() {
 
   const increaseReloadTimes = () => {
     setReloadTimes(reloadTimes + 1);
+  }
+
+  const formatDateTimeString = (timestamp: number) : string => {
+    const dayjsObject = dayjs(timestamp);
+    const datetimeString = dayjsObject.format('YYYY-MM-DD HH:mm:ss');
+    // console.log(datetimeString); // Output: 2023-03-08 00:00:00
+
+    return datetimeString
   }
 
   useEffect(()=> {
@@ -101,15 +109,14 @@ export default function Home() {
           renderItem={(item) => (
             <List.Item
               key={item.subject}
-              title={item.subject}
               actions={[
-                <Rate defaultValue={3} allowClear={false}/>
+                <Rate key={item.created_at} defaultValue={3} allowClear={false}/>
               ]}
             >
-              <List.Item.Meta title={item.subject}/>
+              <List.Item.Meta/>
               <h5>{item.sender}: {item.question}</h5>
-              <h5>{item.receiver}: {item.answer}</h5>
-              <h5><Tag color="green">{item.place}</Tag>#{item.session}#</h5>
+              <h5>{item.receiver === item.sender ? item.receiver+"#2":item.receiver}: {item.answer}</h5>
+              <h5><Tag color="green">{item.place}</Tag>#{item.session}#{item.subject}#{formatDateTimeString(item.created_at*1000)}</h5>
             </List.Item>
           )}
         />

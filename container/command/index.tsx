@@ -30,13 +30,17 @@ const useCommand = () => {
   const getPatoInfo = async (id: string) => {
     if (id === "") return null
     let url = getApiServer(80) + api_url.portal.pato + "/" + id
-    let response = await fetch(`${url}`,)
-    if (response.ok) {
-      console.log(response)
-      let dataJson = await response.json()
-      console.log(dataJson)
-      let patoinfo: PatoInfo = JSON.parse(dataJson.content)
-      return patoinfo
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        console.log(response)
+        let dataJson = await response.json()
+        console.log(dataJson)
+        let patoinfo: PatoInfo = JSON.parse(dataJson.content)
+        return patoinfo
+      }
+    }catch (e) {
+      console.log(e)
     }
     return null
   }
@@ -93,12 +97,17 @@ const useCommand = () => {
   const getPatoHistoryMessages = async (id: string, date: string) => {
     if (id === "" || date === "") return null
     let url = getApiServer(80) + api_url.portal.message.history + "/" + id + "/" + date
-    let response = await fetch(`${url}`,)
-    if (response.ok) {
-      let dataJson = await response.json()
-      console.log(dataJson)
-      let patoMessages: ChatMessage[] = JSON.parse(dataJson.content)
-      return patoMessages
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        console.log(dataJson)
+        let patoMessages: ChatMessage[] = JSON.parse(dataJson.content)
+        patoMessages.sort((a, b) => a.created_at - b.created_at)
+        return patoMessages
+      }
+    } catch (e) {
+      console.log(e)
     }
     return null
   }

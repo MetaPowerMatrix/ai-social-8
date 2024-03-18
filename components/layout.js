@@ -11,6 +11,7 @@ import {getCookie} from "@/lib/utils";
 import TaskPanel from "@/components/taskPanel";
 import ProgressBarComponent from "@/components/ProgressBar";
 import HeaderPanel from "@/components/header";
+import MaskedHighlight from "@/components/MaskedHighlight";
 
 export default function Layout({ children, title, description }) {
     const [isLogin, setIsLogin] = useState(true);
@@ -19,7 +20,17 @@ export default function Layout({ children, title, description }) {
     const [activeId, setActiveId] = useState("");
     const [activeName, setActiveName] = useState("");
     const [loading, setLoading] = useState(false);
+    const [guide, setGuide] = useState(false)
     const t = useTranslations('Login');
+
+    const zones = [
+        { id: 'zone1', top: 260, left: 110, height:220, width:320,
+            tips: '每天在这里设置一个话题，可以增加和别人交谈的机会哦'},
+        { id: 'zone2', top: 480, left: 110, height:220, width:320,
+            tips: '如果你有一些专业的知识，在这里上传，别人会很愿意和你聊天哦'},
+        { id: 'zone3', top: 270, left: 450, height:140, width:860,
+            tips: '这里显示你的pato的聊天记录，可以按时间查询' },
+    ];
 
     const showProgressBar = (show) => {
         setLoading(show)
@@ -45,7 +56,7 @@ export default function Layout({ children, title, description }) {
             const idsMap = ids.map((id) => {
                 return {label: id.split(":")[1], value: id.split(":")[0]};
             });
-            console.log(idsMap)
+            // console.log(idsMap)
             idsMap.forEach((item) => {
                 if (item.value !== '' && item.value === activeId) {
                     console.log(item.label)
@@ -53,6 +64,11 @@ export default function Layout({ children, title, description }) {
                 }
             });
             setAvailableIds(idsMap);
+        }
+        const cookie3 = getCookie('guide-completed');
+        if ((cookie3 === null || cookie3 === "" ) && isLogin){
+            setGuide(true)
+            console.log("guide", guide)
         }
     },[activeId]);
 
@@ -79,6 +95,7 @@ export default function Layout({ children, title, description }) {
                 :
                 <Image priority src="/images/ai-town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
             }
+            <MaskedHighlight zones={zones} visible={guide} />
             <ProgressBarComponent visible={loading} />
             <FloatButton.Group open={open} trigger="click" style={{right: 24}} onClick={onChange} icon={<MenuOutlined/>}>
                 <FloatButton href="/controller" icon={<PhoneOutlined/>}/>

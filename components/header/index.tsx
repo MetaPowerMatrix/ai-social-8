@@ -1,4 +1,4 @@
-import {Descriptions, Flex} from "antd";
+import {Col, Descriptions, Flex, Row} from "antd";
 import Image from "next/image";
 import utilStyles from "@/styles/utils.module.css";
 import {EditOutlined} from "@ant-design/icons";
@@ -59,25 +59,29 @@ const HeaderPanel = ({activeName, activeId, onChangeId}:{activeName: string, act
 
 	return (
 		<header>
-			<Flex vertical={false} justify="space-around" align="center">
-				<Flex gap="middle" vertical align="center">
-					<Image
-						priority
-						src="/images/notlogin.png"
-						className={utilStyles.borderCircle}
-						height={72}
-						width={72}
-						alt={activeName}
-					/>
-					<Flex gap="middle" vertical={false} align="center">
-						<h5 className={utilStyles.headingLg}>
-							{activeName.length > 14 ? activeName.substring(0, 8) + '...' : activeName}
-						</h5>
-						<EditOutlined onClick={() => onChangeId(false)}/>
+			<Row justify="space-around">
+				<Col span={8}>
+					<Flex gap="middle" vertical align="center">
+						<Image
+							priority
+							src="/images/notlogin.png"
+							className={utilStyles.borderCircle}
+							height={72}
+							width={72}
+							alt={activeName}
+						/>
+						<Flex gap="middle" vertical={false} align="center">
+							<h5 className={utilStyles.headingLg}>
+								{activeName.length > 14 ? activeName.substring(0, 8) + '...' : activeName}
+							</h5>
+							<EditOutlined onClick={() => onChangeId(false)}/>
+						</Flex>
 					</Flex>
-				</Flex>
-				<Descriptions bordered={true} column={6} layout="vertical" items={userInfo}/>
-			</Flex>
+				</Col>
+				<Col span={16}>
+					<Descriptions bordered={true} column={6} layout="vertical" items={userInfo}/>
+				</Col>
+			</Row>
 		</header>
 	)
 }
