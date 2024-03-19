@@ -14,7 +14,7 @@ import HeaderPanel from "@/components/header";
 import MaskedHighlight from "@/components/MaskedHighlight";
 
 export default function Layout({ children, title, description }) {
-    const [isLogin, setIsLogin] = useState(true);
+    const [isLogin, setIsLogin] = useState(false);
     const [open, setOpen] = useState(true);
     const [availableIds, setAvailableIds] = useState([]);
     const [activeId, setActiveId] = useState("");
