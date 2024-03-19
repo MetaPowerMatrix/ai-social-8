@@ -1,5 +1,5 @@
 import {createContainer} from "unstated-next"
-import {api_url, ChatMessage, getApiServer, PatoInfo, StatsInfo} from "@/common";
+import {api_url, ChatMessage, getApiServer, PatoInfo, sessionMessages, StatsInfo} from "@/common";
 
 const useCommand = () => {
   const create_pato = async (name: string): Promise<string> => {
@@ -102,8 +102,10 @@ const useCommand = () => {
       if (response.ok) {
         let dataJson = await response.json()
         console.log(dataJson)
-        let patoMessages: ChatMessage[] = JSON.parse(dataJson.content)
-        patoMessages.sort((a, b) => a.created_at - b.created_at)
+        let patoMessages: sessionMessages[] = JSON.parse(dataJson.content)
+        patoMessages.forEach((item) => {
+          item.messages.sort((a, b) => a.created_at - b.created_at)
+        })
         return patoMessages
       }
     } catch (e) {

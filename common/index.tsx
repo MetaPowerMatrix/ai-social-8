@@ -37,6 +37,11 @@ export interface ChatMessage{
   subject: string,
   sender_role: string
 }
+export interface sessionMessages{
+  session: string,
+  summary: string,
+  messages: ChatMessage[]
+}
 
 export const api_url = {
     'portal': {
