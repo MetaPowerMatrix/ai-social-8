@@ -1,5 +1,5 @@
 export const host = "api.metapowermatrix.ai"
-export const Web_Server = "http://"+ host
+export const Web_Server = "https://"+ host
 export const getApiServer = (port: number) => {
   return Web_Server + ':' + port
 }
