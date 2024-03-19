@@ -6,6 +6,7 @@ const useCommand = () => {
     let id = ""
     let data = {name: name, gender: 0, personality: ''}
     let url = getApiServer(80) + api_url.portal.register
+    console.log("register url: ",url)
     let response = await fetch(
       `${url}`,
       {
