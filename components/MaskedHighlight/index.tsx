@@ -31,14 +31,19 @@ const MaskedHighlightComponent: React.FC<Props> = ({ zones, visible }) => {
 		// setActiveZone(null);
 	};
 
+	console.log("init visible", visible)
+
 	useEffect(() => {
 		if (visible){
 			console.log(activeZone)
-			console.log("show guide")
+			console.log("show guide", visible)
 		}
 	}, [visible])
 
-	if (!visible) return null;
+	if (!visible){
+		console.log("don't show guide", visible)
+		return null;
+	}
 
 	return (
 		<div>
