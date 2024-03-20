@@ -3,24 +3,25 @@ import Image from 'next/image';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
 import {Divider, Flex, FloatButton} from "antd";
-import {PhoneOutlined, MenuOutlined, EditOutlined} from "@ant-design/icons";
+import {PhoneOutlined, MenuOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
-import {getCookie} from "@/lib/utils";
+import {getCookie, subscribe_topic} from "@/lib/utils";
 import TaskPanel from "@/components/taskPanel";
 import ProgressBarComponent from "@/components/ProgressBar";
 import HeaderPanel from "@/components/header";
 import MaskedHighlight from "@/components/MaskedHighlight";
 
-export default function Layout({ children, title, description }) {
-    const [isLogin, setIsLogin] = useState(false);
+export default function Layout({ children, title, description, onChangeId }) {
     const [open, setOpen] = useState(true);
+    const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
     const [activeId, setActiveId] = useState("");
     const [activeName, setActiveName] = useState("");
-    const [loading, setLoading] = useState(false);
     const [guide, setGuide] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [userFeed, setUserFeed] = useState([{children:"新的一天开始了"}]);
     const t = useTranslations('Login');
 
     const zones = [
@@ -29,18 +30,18 @@ export default function Layout({ children, title, description }) {
         { id: 'zone2', top: 480, left: 110, height:220, width:320,
             tips: '如果你有一些专业的知识，在这里上传，别人会很愿意和你聊天哦'},
         { id: 'zone3', top: 270, left: 450, height:140, width:860,
-            tips: '这里显示你的pato的聊天记录，可以按时间查询' },
+            tips: '这里显示你的Pato的聊天记录，可以按时间查询' },
     ];
 
     const showProgressBar = (show) => {
         setLoading(show)
     }
-    const onChange = () => {
-        setOpen(!open);
-    };
     const changeLoginState = (status) =>{
         setIsLogin(status);
     }
+    const onChange = () => {
+        setOpen(!open);
+    };
 
     useEffect(() => {
         const cookie1 = getCookie('active-id');
@@ -48,7 +49,8 @@ export default function Layout({ children, title, description }) {
             setIsLogin(false);
         }else {
             setActiveId(cookie1);
-            setIsLogin(true)
+            onChangeId(cookie1);
+            setIsLogin(true);
         }
         const cookie2 = getCookie('available-ids');
         if (cookie2 !== "" || cookie2 !== null) {
@@ -72,6 +74,26 @@ export default function Layout({ children, title, description }) {
         }
     },[activeId]);
 
+    useEffect(() => {
+        console.log("sub: ", activeId)
+        if (activeId !== ""){
+            subscribe_topic(activeId, (message) => {
+                // const byteArray = new Uint8Array(message);
+                // const decoder = new TextDecoder("utf-8");
+                // const decode_msg = decoder.decode(byteArray);
+                let item = {children: message.toString()}
+                setUserFeed((prevFeed)=>{
+                    const newFeed = [...prevFeed]
+                    if (newFeed.length >= 10){
+                        newFeed.shift()
+                    }
+                    newFeed.push(item)
+                    return newFeed
+                })
+            })
+        }
+    }, [activeId]);
+
     return (
         <div className={styles.container}>
           <Head>
@@ -81,7 +103,7 @@ export default function Layout({ children, title, description }) {
           </Head>
             {isLogin ?
                 <>
-                    <HeaderPanel activeName={activeName} activeId={activeId} onChangeId={changeLoginState}/>
+                    <HeaderPanel activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}/>
                     <Divider/>
                     <main>
                         <section className={utilStyles.headingMd}>

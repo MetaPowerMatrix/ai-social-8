@@ -22,7 +22,7 @@ const MessageHeader = ({onChangeDate, onClickReload, queryDate, summary}:{
 }) => {
   const t = useTranslations('Index');
 
-  const onChange: DatePickerProps['onChange'] = (date, dateString) => {
+  const onChange: DatePickerProps['onChange'] = (_, dateString) => {
     onChangeDate(dateString as string)
     // console.log(date, dateString);
   };
@@ -74,15 +74,13 @@ export default function Home() {
 
   const formatDateTimeString = (timestamp: number) : string => {
     const dayjsObject = dayjs(timestamp);
-    const datetimeString = dayjsObject.format('YYYY-MM-DD HH:mm:ss');
-    // console.log(datetimeString); // Output: 2023-03-08 00:00:00
-
-    return datetimeString
+    return dayjsObject.format('YYYY-MM-DD HH:mm:ss')
   }
+
 
   useEffect(()=> {
     const cookie1 = getCookie('active-id');
-    if (cookie1 !== "") {
+    if (cookie1 !== "" && cookie1 !== null) {
       setActiveId(cookie1);
     }
   },[])
@@ -90,6 +88,9 @@ export default function Home() {
   useEffect(()=> {
     console.log(queryDate, activeId)
     command.getPatoHistoryMessages(activeId, queryDate).then((response) => {
+      setSessionList([])
+      setSessionMessages([])
+      setChatMessages([])
       if (response !== null) {
         let session_messages = response
         let sessions = session_messages.map((item) => {
@@ -104,10 +105,10 @@ export default function Home() {
         }
       }
     })
-  },[activeId, queryDate])
+  },[activeId, queryDate, reloadTimes])
 
   return (
-    <Layout title={t('title')} description={t('description')}>
+    <Layout onChangeId={(newId:string)=>setActiveId(newId)} title={t('title')} description={t('description')}>
       <Head>
         <title>{t('title')}</title>
       </Head>

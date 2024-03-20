@@ -4,7 +4,13 @@ export const getApiServer = (port: number) => {
   // return Web_Server + ':' + port
   return Web_Server
 }
+export const getMQTTBroker = () => {
+  return "ws://api.metapowermatrix.ai:8881/mqtt"
+}
 
+export interface TimeLineItem {
+  children: string
+}
 export interface PatoInfo {
   sn: number,
   id: string,

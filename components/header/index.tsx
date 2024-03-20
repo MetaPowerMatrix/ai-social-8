@@ -1,14 +1,16 @@
-import {Col, Descriptions, Flex, Row} from "antd";
+import {Col, Descriptions, Divider, Flex, Row, Timeline} from "antd";
 import Image from "next/image";
 import utilStyles from "@/styles/utils.module.css";
 import {EditOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
 import commandDataContainer from "@/container/command";
 import {useTranslations} from "next-intl";
-import {StatsInfo} from "@/common";
+import {StatsInfo, TimeLineItem} from "@/common";
+import {subscribe_topic} from "@/lib/utils";
 
-const HeaderPanel = ({activeName, activeId, onChangeId}:{activeName: string, activeId:string, onChangeId: (s: boolean)=>void}) => {
+const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: string, activeId:string, userFeed: TimeLineItem[], onChangeId: (s: boolean)=>void}) => {
 	const [userInfo, setUserInfo] = useState<StatsInfo[]>([]);
+	// const [userFeed, setUserFeed] = useState<TimeLineItem[]>([{children:"新的一天开始了"}]);
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('Login');
 
@@ -59,8 +61,8 @@ const HeaderPanel = ({activeName, activeId, onChangeId}:{activeName: string, act
 
 	return (
 		<header>
-			<Row justify="space-around">
-				<Col span={8}>
+			<Row justify="space-between">
+				<Col span={4}>
 					<Flex gap="middle" vertical align="center">
 						<Image
 							priority
@@ -78,12 +80,20 @@ const HeaderPanel = ({activeName, activeId, onChangeId}:{activeName: string, act
 						</Flex>
 					</Flex>
 				</Col>
-				<Col span={16}>
-					<Descriptions bordered={true} column={6} layout="vertical" items={userInfo}/>
+				<Col span={12}>
+					<Descriptions style={{marginLeft:10}} size={"small"} bordered={true} column={3} layout="vertical" items={userInfo}/>
+				</Col>
+				<Col span={6}>
+					<div style={{height: "150px", overflowY: "auto", paddingTop:10}}>
+						<Timeline
+							mode={"alternate"}
+							items={userFeed}
+						/>
+					</div>
 				</Col>
 			</Row>
 		</header>
-	)
+)
 }
 
 export default HeaderPanel

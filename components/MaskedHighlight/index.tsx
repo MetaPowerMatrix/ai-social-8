@@ -19,7 +19,6 @@ const MaskedHighlightComponent: React.FC<Props> = ({ zones, visible }) => {
 	const handleZoneClick = (index: number) => {
 		let next_index = index + 1
 		if (next_index > zones.length - 1) {
-			next_index = zones.length - 1
 			document.cookie = `guide-completed=1`;
 			setActiveZone(null)
 			return
@@ -31,17 +30,8 @@ const MaskedHighlightComponent: React.FC<Props> = ({ zones, visible }) => {
 		// setActiveZone(null);
 	};
 
-	console.log("init visible", visible)
-
-	useEffect(() => {
-		if (visible){
-			console.log(activeZone)
-			console.log("show guide", visible)
-		}
-	}, [visible])
-
 	if (!visible){
-		console.log("don't show guide", visible)
+		// console.log("don't show guide", visible)
 		return null;
 	}
 
