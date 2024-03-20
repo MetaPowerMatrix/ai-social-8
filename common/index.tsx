@@ -16,7 +16,8 @@ export interface PatoInfo {
   id: string,
   name: string,
   matrix_datetime: string,
-  registered_datetime: string
+  registered_datetime: string,
+  professionals: string[]
 }
 export interface ListItemInfo{
   name: string;

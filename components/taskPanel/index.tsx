@@ -1,4 +1,4 @@
-import {Button, Card, Flex, Form, GetProp, List, Select, Upload, UploadFile, UploadProps} from "antd";
+import {Button, Card, Flex, GetProp, Upload, UploadFile, UploadProps} from "antd";
 import React, {useState} from "react";
 import {useTranslations} from 'next-intl';
 import TextArea from "antd/es/input/TextArea";
@@ -18,18 +18,26 @@ const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 	const handlePray = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		onShowProgress(true);
 		event.preventDefault();
+		if (userPray === ""){
+			alert('祈祷是要说话的')
+			return
+		}
+		onShowProgress(true);
 		command.pray(id, userPray).then((response) => {
 			alert('God received')
 			onShowProgress(false);
 		})
 	};
 	const handleTodayEvent = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		onShowProgress(true);
 		event.preventDefault();
+		if (dailyEvent === ""){
+			alert('说说你想聊的话题吧')
+			return
+		}
+		onShowProgress(true);
 		command.create_today_event(id, dailyEvent).then((response) => {
-			alert('waiting some one to talk')
+			alert('等一等，马上会有人来和你聊天了')
 			onShowProgress(false);
 		})
 	};
@@ -61,12 +69,16 @@ const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean
 		fileList,
 	};
 	const handleKnowledge= (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		onShowProgress(true);
 		event.preventDefault(); // Prevent the default form submission
+		if (fileList.length <= 0){
+			alert("书籍是人类智慧的结晶，上传你的结晶吧")
+			return
+		}
 		const formData = new FormData();
 		formData.append('file', fileList[0] as FileType);
 		formData.append('message', JSON.stringify({ id: id, message: knowledge}));
 
+		onShowProgress(true);
 		let url = getApiServer(80) + api_url.portal.task.upgrade
 		fetch(url, {
 			method: 'POST',
@@ -97,7 +109,7 @@ const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean
 					<button className={styles.task} onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
 				</Card>
 				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9"}} title={t('taskUpgrade')}>
-					<TextArea style={{marginBottom: 10}} placeholder={t('knowledgeTips')} rows={2} onChange={(e) => knowledgeInput(e)}/>
+					<TextArea style={{marginBottom: 10, display: "none"}} placeholder={t('knowledgeTips')} rows={2} onChange={(e) => knowledgeInput(e)}/>
 					<Upload {...props}>
 						<Button icon={<UploadOutlined />}>{t('Upload')}</Button>
 					</Upload>

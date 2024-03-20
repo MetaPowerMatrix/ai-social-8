@@ -31,7 +31,8 @@
     "RegisteredTime": "注册时间",
     "MatrixTime": "小镇时间",
     "Name": "昵称",
-    "Balance": "原力余额"
+    "Balance": "原力余额",
+    "pro": "专业"
   },
   "LocaleSwitcher": {
     "switchLocale": "切换语言 {locale, select, cn {中文} en {English}}"

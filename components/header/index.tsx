@@ -21,18 +21,13 @@ const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: s
 	};
 
 	useEffect(() => {
-		command.getPatoInfo(activeId).then((res) => {
+		command.getPatoInfo(activeId).then((res): void => {
 			if ( res !== null){
 				let userStats: StatsInfo[] = []
 				userStats.push({
 					key: '1',
 					label: "ID",
 					children: res.id.substring(0, 8) + '...' + res.id.substring(34, 35)
-				})
-				userStats.push({
-					key: '2',
-					label: t("Name"),
-					children: res.name,
 				})
 				userStats.push({
 					key: '3',
@@ -53,6 +48,11 @@ const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: s
 					key: '6',
 					label: t("Balance"),
 					children: '10',
+				})
+				userStats.push({
+					key: '7',
+					label: t("pro"),
+					children: res.professionals.join(','),
 				})
 				setUserInfo(userStats);
 			}
@@ -83,8 +83,8 @@ const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: s
 				<Col span={12}>
 					<Descriptions style={{marginLeft:10}} size={"small"} bordered={true} column={3} layout="vertical" items={userInfo}/>
 				</Col>
-				<Col span={6}>
-					<div style={{height: "150px", overflowY: "auto", paddingTop:10}}>
+				<Col span={7}>
+					<div style={{height: "155px", overflowY: "auto", padding:20, border:"1px dotted blue"}}>
 						<Timeline
 							mode={"alternate"}
 							items={userFeed}

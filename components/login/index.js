@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './ModalLogin.module.css';
 import {Flex, Select} from "antd";
-import commandDataContainer from "../../container/command"; // 假设你已经有相应的CSS样式
+import commandDataContainer from "../../container/command";
 import {getCookie} from "@/lib/utils";
 
 function ModalLogin({ isOpen, onClose, tips, options }) {
@@ -17,6 +17,10 @@ function ModalLogin({ isOpen, onClose, tips, options }) {
 	const handleRegister = async (event) => {
 		// document.cookie = "username=John Doe; path=/; max-age=3600; secure";
 		event.preventDefault();
+		if (username === "") {
+			alert("给你的Pato起一个响亮的名字吧！")
+			return
+		}
 		let userid = await command.create_pato(username)
 		if (userid !== "" || userid !== null) {
 			// alert("创建成功")

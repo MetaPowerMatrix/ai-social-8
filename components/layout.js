@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
-import {Divider, Flex, FloatButton} from "antd";
+import {Col, Divider, Flex, FloatButton, Row} from "antd";
 import {PhoneOutlined, MenuOutlined, RedoOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
@@ -103,16 +103,20 @@ export default function Layout({ children, title, description, onChangeId, onRef
           </Head>
             {isLogin ?
                 <>
-                    <HeaderPanel activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}/>
+                    <Row justify="space-between">
+                        <Col span={24}>
+                            <HeaderPanel activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}/>
+                        </Col>
+                    </Row>
                     <Divider/>
-                    <main>
-                        <section className={utilStyles.headingMd}>
-                            <Flex vertical={false} justify="space-around" align="flex-start" gap={40}>
-                                <TaskPanel id={activeId} onShowProgress={showProgressBar}/>
-                                {children}
-                            </Flex>
-                        </section>
-                    </main>
+                    <Row justify="space-between">
+                        <Col span={6}>
+                            <TaskPanel id={activeId} onShowProgress={showProgressBar}/>
+                        </Col>
+                        <Col span={17}>
+                            {children}
+                        </Col>
+                    </Row>
                 </>
                 :
                 <Image priority src="/images/ai-town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
