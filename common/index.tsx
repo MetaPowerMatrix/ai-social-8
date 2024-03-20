@@ -5,7 +5,7 @@ export const getApiServer = (port: number) => {
   return Web_Server
 }
 export const getMQTTBroker = () => {
-  return "wss://api.metapowermatrix.ai:8881/mqtt"
+  return "ws://api.metapowermatrix.ai:8881/mqtt"
 }
 
 export interface TimeLineItem {
