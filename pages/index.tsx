@@ -108,7 +108,7 @@ export default function Home() {
   },[activeId, queryDate, reloadTimes])
 
   return (
-    <Layout onChangeId={(newId:string)=>setActiveId(newId)} title={t('title')} description={t('description')}>
+    <Layout onRefresh={increaseReloadTimes} onChangeId={(newId:string)=>setActiveId(newId)} title={t('title')} description={t('description')}>
       <Head>
         <title>{t('title')}</title>
       </Head>

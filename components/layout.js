@@ -3,7 +3,7 @@ import Image from 'next/image';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
 import {Divider, Flex, FloatButton} from "antd";
-import {PhoneOutlined, MenuOutlined} from "@ant-design/icons";
+import {PhoneOutlined, MenuOutlined, RedoOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
@@ -13,7 +13,7 @@ import ProgressBarComponent from "@/components/ProgressBar";
 import HeaderPanel from "@/components/header";
 import MaskedHighlight from "@/components/MaskedHighlight";
 
-export default function Layout({ children, title, description, onChangeId }) {
+export default function Layout({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(true);
     const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
@@ -121,6 +121,7 @@ export default function Layout({ children, title, description, onChangeId }) {
             <ProgressBarComponent visible={loading} />
             <FloatButton.Group open={open} trigger="click" style={{right: 24}} onClick={onChange} icon={<MenuOutlined/>}>
                 <FloatButton href="/controller" icon={<PhoneOutlined/>}/>
+                <FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>
             </FloatButton.Group>
             <ModalLogin isOpen={!isLogin} tips={t} options={availableIds}
                         onClose={(id) => {
