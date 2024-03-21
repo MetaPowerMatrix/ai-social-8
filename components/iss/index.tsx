@@ -50,6 +50,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS}) => {
 	return (
 		<div hidden={!visible} className={styles.iss_form_container}>
 			<div className={styles.iss_form_content}>
+				<div><h5>{t("tips")}</h5></div>
 				<Form form={form} variant="filled" onFinish={handleSubmit}>
 					<Form.Item  label={t("name")} name="name" rules={[{required: true, message: 'do not change here'}]}>
 						<Input disabled={true}/>

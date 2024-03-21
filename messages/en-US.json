@@ -47,7 +47,9 @@
     "Submit": "提交",
     "Success": "提交成功",
     "Call": "发送请求",
-    "requireId": "需要输入对方ID"
+    "requireId": "需要输入对方ID",
+    "tips": "修改属性可以匹配更好的聊伴，但是需要消耗1个原力值哦",
+    "tips2": "*这里输入想要聊天的人的ID，启动传送门速配聊天哦，但是需要消耗5个原力值哦"
   },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"

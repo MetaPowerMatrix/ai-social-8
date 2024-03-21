@@ -5,7 +5,6 @@ import {
 	Input,
 } from 'antd';
 import {useTranslations} from "next-intl";
-import {api_url, getApiServer} from "@/common";
 import styles from "./CallPato.module.css"
 import commandDataContainer from "@/container/command";
 
@@ -37,8 +36,9 @@ const CallPato: React.FC<CallPatoProps> = ({visible, id, onClose}) => {
 	return (
 		<div hidden={!visible} className={styles.call_form_container}>
 			<div className={styles.call_form_content}>
+				<div><h5>{t("tips2")}</h5></div>
 				<Form form={form} variant="filled" onFinish={handleSubmit}>
-					<Form.Item  label={t("id")} name="id" rules={[{required: true, message: '必填项'}]}>
+					<Form.Item label={t("id")} name="id" rules={[{required: true, message: '必填项'}]}>
 						<Input/>
 					</Form.Item>
 					<Form.Item wrapperCol={{offset: 6, span: 16}}>
