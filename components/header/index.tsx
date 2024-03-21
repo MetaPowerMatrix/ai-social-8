@@ -47,7 +47,7 @@ const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: s
 				userStats.push({
 					key: '6',
 					label: t("Balance"),
-					children: '10',
+					children: res.balance.toString(),
 				})
 				userStats.push({
 					key: '7',

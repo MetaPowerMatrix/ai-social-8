@@ -19,7 +19,8 @@ export interface PatoInfo {
   name: string,
   matrix_datetime: string,
   registered_datetime: string,
-  professionals: string[]
+  professionals: string[],
+  balance: number
 }
 export interface ListItemInfo{
   name: string;
