@@ -6,7 +6,7 @@ import {RedoOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, sessionMessages} from "@/common";
 import {useTranslations} from 'next-intl';
-import {getCookie} from "@/lib/utils";
+import {getCookie, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 
 const IconText = ({ icon, text }:{icon: any, text: string}) => (
@@ -48,7 +48,7 @@ export default function Home() {
   const command = commandDataContainer.useContainer()
   const [sessionMessages, setSessionMessages] = useState<sessionMessages[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [queryDate, setQueryDate] = useState("2024-03-18");
+  const [queryDate, setQueryDate] = useState(getTodayDateString());
   const [reloadTimes, setReloadTimes] = useState(0);
   const [sessionTabKey, setSessionTabKey] = useState<string>('');
   const [sessionList, setSessionList] = useState<{key: string, label: string}[]>([])
