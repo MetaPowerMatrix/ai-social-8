@@ -64,6 +64,11 @@ export default function Home() {
     }
   };
 
+  const onChange: DatePickerProps['onChange'] = (_, dateString) => {
+    changeQueryDate(dateString as string)
+    // console.log(date, dateString);
+  };
+
   const changeQueryDate = (datestring: string) => {
     setQueryDate(datestring);
   }
@@ -124,6 +129,7 @@ export default function Home() {
         chatMessages.length === 0 ?
           <div style={{textAlign: "center", width: 1000}}>
             <h3>{t('noMessage')}</h3>
+            <label>查看历史消息 <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}} onChange={onChange} /></label>
           </div>
           :
           <>
