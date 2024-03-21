@@ -1,5 +1,5 @@
 import {createContainer} from "unstated-next"
-import {api_url, ChatMessage, getApiServer, PatoInfo, sessionMessages, StatsInfo} from "@/common";
+import {api_url, ChatMessage, getApiServer, PatoInfo, Persona, sessionMessages, StatsInfo} from "@/common";
 
 const useCommand = () => {
   const create_pato = async (name: string): Promise<string> => {
@@ -18,9 +18,8 @@ const useCommand = () => {
       }
     )
     if (response.ok) {
-      console.log(response)
       let dataJson = await response.json()
-      console.log(dataJson)
+      // console.log(dataJson)
       if (dataJson.code === '200'){
         id = dataJson.content
       }
@@ -28,15 +27,27 @@ const useCommand = () => {
     }
     return id
   }
+  const callPato = async (id: string, callid: string) => {
+    if (id === "" || callid === "") return null
+    let url = getApiServer(80) + api_url.portal.interaction.call + "/" + id + "/" + callid
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        console.log(dataJson)
+      }
+    }catch (e) {
+      console.log(e)
+    }
+  }
   const getPatoInfo = async (id: string) => {
     if (id === "") return null
     let url = getApiServer(80) + api_url.portal.pato + "/" + id
     try {
       let response = await fetch(`${url}`,)
       if (response.ok) {
-        console.log(response)
         let dataJson = await response.json()
-        console.log(dataJson)
+        // console.log(dataJson)
         let patoinfo: PatoInfo = JSON.parse(dataJson.content)
         return patoinfo
       }
@@ -45,11 +56,26 @@ const useCommand = () => {
     }
     return null
   }
+  const getPatoISS = async (id: string) => {
+    if (id === "") return undefined
+    let url = getApiServer(80) + api_url.portal.character.iss + "/" + id
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        // console.log(dataJson)
+        let iss: Persona = JSON.parse(dataJson.content)
+        return iss
+      }
+    }catch (e) {
+      console.log(e)
+    }
+    return undefined
+  }
   const login = (id: string) => {
     let url = getApiServer(80) + api_url.portal.login + "/" + id
     fetch(`${url}`,).then(async (response)=> {
       if (response.ok) {
-        console.log(response)
         let dataJson = await response.json()
         console.log(dataJson)
       }
@@ -69,7 +95,6 @@ const useCommand = () => {
       }
     )
     if (response.ok) {
-      console.log(response)
       let dataJson = await response.json()
       console.log(dataJson)
       // let data = JSON.parse(dataJson.content)
@@ -89,7 +114,6 @@ const useCommand = () => {
       }
     )
     if (response.ok) {
-      console.log(response)
       let dataJson = await response.json()
       console.log(dataJson)
       // let data = JSON.parse(dataJson.content)
@@ -102,7 +126,6 @@ const useCommand = () => {
       let response = await fetch(`${url}`,)
       if (response.ok) {
         let dataJson = await response.json()
-        console.log(dataJson)
         let patoMessages: sessionMessages[] = JSON.parse(dataJson.content)
         patoMessages.forEach((item) => {
           item.messages.sort((a, b) => a.created_at - b.created_at)
@@ -114,16 +137,7 @@ const useCommand = () => {
     }
     return null
   }
-  const get_characters = async () => {
-    let url = getApiServer(80) + api_url.portal.character.list
-    let response = await fetch(url)
-    if (response.ok) {
-      console.log(response)
-      let dataJson = await response.json()
-      console.log(dataJson)
-    }
-  }
-  return { get_characters, login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages }
+  return { login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages, getPatoISS, callPato }
 }
 
 let CommandDataContainer = createContainer(useCommand)

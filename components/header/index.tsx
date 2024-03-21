@@ -27,7 +27,7 @@ const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: s
 				userStats.push({
 					key: '1',
 					label: "ID",
-					children: res.id.substring(0, 8) + '...' + res.id.substring(34, 35)
+					children: <a onClick={()=>alert(res.id)}>{res.id.substring(0, 8) + '...' + res.id.substring(32, 36)}</a>
 				})
 				userStats.push({
 					key: '3',
@@ -84,7 +84,7 @@ const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: s
 					<Descriptions style={{marginLeft:10}} size={"small"} bordered={true} column={3} layout="vertical" items={userInfo}/>
 				</Col>
 				<Col span={7}>
-					<div style={{height: "155px", overflowY: "auto", padding:20, border:"1px dotted blue"}}>
+					<div style={{height: "155px", overflowY: "auto", padding:15, border:"1px dotted blue"}}>
 						<Timeline
 							mode={"alternate"}
 							items={userFeed}

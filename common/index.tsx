@@ -1,3 +1,5 @@
+import {ReactNode} from "react";
+
 export const host = "api.metapowermatrix.ai"
 export const Web_Server = "https://"+ host
 export const getApiServer = (port: number) => {
@@ -32,7 +34,7 @@ export interface NodeInfo{
 export interface StatsInfo{
   key: string,
   label: string,
-  children: string,
+  children: string | ReactNode,
 }
 export interface ChatMessage{
   created_at: number,
@@ -50,6 +52,15 @@ export interface sessionMessages{
   summary: string,
   messages: ChatMessage[]
 }
+export interface Persona {
+  name: string,
+  age: number,
+  innate: string,
+  learned: string,
+  currently: string,
+  lifestyle: string,
+  daily_plan_req: string,
+}
 
 export const api_url = {
     'portal': {
@@ -65,21 +76,16 @@ export const api_url = {
         "event": "/api/event"
       },
       'interaction': {
-        'get': '/api/connection/list',
-        'rate': '/api/connection/rate',
+        'call': '/api/call',
       },
       'character': {
-        'list': '/api/character/list',
-        'choose': '/tiktokExecInstanceMethod',
+        'iss': '/api/pato/iss',
+        'edit': '/api/pato/iss/edit',
       },
       'market': {
         'list': '/api/job/list',
         'detail': '/api/job/detail',
-      },
-      'target': {
-        'list': '/api/character/objects',
-        'choose': '/api/object/choose',
-      },
+      }
     },
     'account': {
       'wallet':{
@@ -102,14 +108,5 @@ export const api_url = {
         'recv': '/tiktokExecInstanceMethod',
         'transactions': '/tiktokExecInstanceMethod',
       },
-    },
-    'ai':{
-      'start': '/tiktokRedPacketGot',
-      'stop': '/tiktokRedPacketFind',
-      'adjust': '/tiktokRedPacketSearch',
-      'data': '/tiktokSendLiveFeed',
-    },
-    'stats': {
-      'coins': '/stats/ios',
     },
 }

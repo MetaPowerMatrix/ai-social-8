@@ -34,6 +34,21 @@
     "Balance": "原力余额",
     "pro": "专业"
   },
+  "ISSForm": {
+    "id": "ID",
+    "name": "名字",
+    "age": "年龄",
+    "innate":"内质",
+    "learned":"外质",
+    "currently": "当前",
+    "lifestyle": "生活方式",
+    "daily_plan_req": "日常计划",
+    "close": "关闭",
+    "Submit": "提交",
+    "Success": "提交成功",
+    "Call": "发送请求",
+    "requireId": "需要输入对方ID"
+  },
   "LocaleSwitcher": {
     "switchLocale": "切换语言 {locale, select, cn {中文} en {English}}"
   }

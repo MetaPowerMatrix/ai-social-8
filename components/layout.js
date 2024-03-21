@@ -3,7 +3,7 @@ import Image from 'next/image';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
 import {Col, Divider, Flex, FloatButton, Row} from "antd";
-import {PhoneOutlined, MenuOutlined, RedoOutlined} from "@ant-design/icons";
+import {PhoneOutlined, MenuOutlined, RedoOutlined, SettingOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
@@ -12,9 +12,14 @@ import TaskPanel from "@/components/taskPanel";
 import ProgressBarComponent from "@/components/ProgressBar";
 import HeaderPanel from "@/components/header";
 import MaskedHighlight from "@/components/MaskedHighlight";
+import ISSForm from "@/components/iss";
+import commandDataContainer from "@/container/command";
+import CallPato from "@/components/call";
 
 export default function Layout({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(true);
+    const [editISS, setEditISS] = useState(false);
+    const [openCall, setOpenCall] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
     const [activeId, setActiveId] = useState("");
@@ -22,6 +27,8 @@ export default function Layout({ children, title, description, onChangeId, onRef
     const [guide, setGuide] = useState(false)
     const [loading, setLoading] = useState(false);
     const [userFeed, setUserFeed] = useState([{children:"新的一天开始了"}]);
+    const command = commandDataContainer.useContainer()
+    const [userISS, setUserISS] = useState();
     const t = useTranslations('Login');
 
     const zones = [
@@ -42,7 +49,6 @@ export default function Layout({ children, title, description, onChangeId, onRef
     const onChange = () => {
         setOpen(!open);
     };
-
     useEffect(() => {
         const cookie1 = getCookie('active-id');
         if (cookie1 === "" || cookie1 === null) {
@@ -61,7 +67,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
             // console.log(idsMap)
             idsMap.forEach((item) => {
                 if (item.value !== '' && item.value === activeId) {
-                    console.log(item.label)
+                    // console.log(item.label)
                     setActiveName(item.label);
                 }
             });
@@ -70,12 +76,12 @@ export default function Layout({ children, title, description, onChangeId, onRef
         const cookie3 = getCookie('guide-completed');
         if ((cookie3 === null || cookie3 === "" ) && isLogin){
             setGuide(true)
-            console.log("guide", guide)
+            // console.log("guide", guide)
         }
     },[activeId]);
 
     useEffect(() => {
-        console.log("sub: ", activeId)
+        // console.log("sub: ", activeId)
         if (activeId !== ""){
             subscribe_topic(activeId, (message) => {
                 // const byteArray = new Uint8Array(message);
@@ -93,6 +99,12 @@ export default function Layout({ children, title, description, onChangeId, onRef
             })
         }
     }, [activeId]);
+
+    useEffect(() => {
+        command.getPatoISS(activeId).then((res) => {
+            setUserISS(res)
+        })
+    }, [activeId])
 
     return (
         <div className={styles.container}>
@@ -123,9 +135,10 @@ export default function Layout({ children, title, description, onChangeId, onRef
             }
             <MaskedHighlight zones={zones} visible={guide} />
             <ProgressBarComponent visible={loading} />
-            <FloatButton.Group open={open} trigger="click" style={{right: 24}} onClick={onChange} icon={<MenuOutlined/>}>
-                <FloatButton href="/controller" icon={<PhoneOutlined/>}/>
+            <FloatButton.Group open={open} trigger="click" style={{right: 64}} onClick={onChange} icon={<MenuOutlined/>}>
+                <FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>
                 <FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>
+                <FloatButton onClick={()=>{setEditISS(true)}} icon={<SettingOutlined />}/>
             </FloatButton.Group>
             <ModalLogin isOpen={!isLogin} tips={t} options={availableIds}
                         onClose={(id) => {
@@ -136,6 +149,8 @@ export default function Layout({ children, title, description, onChangeId, onRef
                             }
                         }}
             />
+            <ISSForm userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
+            <CallPato id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>
         </div>
     );
 }

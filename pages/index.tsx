@@ -86,7 +86,6 @@ export default function Home() {
   },[])
 
   useEffect(()=> {
-    console.log(queryDate, activeId)
     command.getPatoHistoryMessages(activeId, queryDate).then((response) => {
       setSessionList([])
       setSessionMessages([])
