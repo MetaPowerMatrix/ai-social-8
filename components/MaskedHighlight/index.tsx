@@ -39,7 +39,7 @@ const MaskedHighlightComponent: React.FC<Props> = ({ zones, visible }) => {
 		<div>
 			<div
 				id="mask"
-				style={{ display: activeZone ? 'block' : 'none', height: "100%", width: "100%", position: "fixed", top: 0, left: 0, backgroundColor: "rgba(0, 0, 0, 0.9)", }}
+				style={{ display: activeZone ? 'block' : 'none', height: "100%", width: "100%", position: "fixed", top: 0, left: 0, backgroundColor: "rgba(0, 0, 0, 0.4)", }}
 				onClick={handleMaskClick}
 			/>
 			{zones.map((zone, index) => (
