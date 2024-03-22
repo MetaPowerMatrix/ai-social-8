@@ -26,53 +26,56 @@ declare global {
 const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 	const t = useTranslations('ISSForm');
 	const [form] = Form.useForm();
-	const [web3, setWeb3] = useState(new Web3(window.ethereum));
-
+	const [formDonation] = Form.useForm();
+	const [formDao] = Form.useForm();
 	const command = commandDataContainer.useContainer()
 
 	async function invokeSmartContractMethod() {
-		const contractABI: any[] = [
-			// Your contract ABI goes here
-		];
-		const contractAddress = '0xYourContractAddressHere';
-		const contract = new web3.eth.Contract(contractABI, contractAddress);
-		const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-		const account = accounts[0]; // Using the first account
+		const web3 = new Web3(window.ethereum)
+			const contractABI: any[] = [
+				// Your contract ABI goes here
+			];
+			const contractAddress = '0xYourContractAddressHere';
+			const contract = new web3.eth.Contract(contractABI, contractAddress);
+			const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+			const account = accounts[0]; // Using the first account
 
-		// contract.methods.methodName('arg1', 'arg2', ...).send({ from: account })
-		// 	.on('transactionHash', (hash) => {
-		// 		console.log('Transaction hash:', hash);
-		// 	})
-		// 	.on('receipt', (receipt) => {
-		// 		console.log('Transaction confirmed:', receipt);
-		// 	})
-		// 	.on('error', console.error); // If a out of gas error, the second parameter is the receipt.
+			// contract.methods.methodName('arg1', 'arg2', ...).send({ from: account })
+			// 	.on('transactionHash', (hash) => {
+			// 		console.log('Transaction hash:', hash);
+			// 	})
+			// 	.on('receipt', (receipt) => {
+			// 		console.log('Transaction confirmed:', receipt);
+			// 	})
+			// 	.on('error', console.error); // If a out of gas error, the second parameter is the receipt.
 	}
 
-	async function sendBNB(recipient: string, amount: string) {
-		const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-		const sender = accounts[0]; // The first account is usually the current account
-		const amountInWei = web3.utils.toWei(amount, 'ether');
+	async function sendBNB(recipient: string, amount: string, is_donation: boolean) {
+		const web3 = new Web3(window.ethereum)
+			const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+			const sender = accounts[0]; // The first account is usually the current account
+			const amountInWei = web3.utils.toWei(amount, 'ether');
 
-		// Send transaction
-		web3.eth.sendTransaction({
-			from: sender,
-			to: recipient,
-			value: amountInWei
-		})
-			.on('transactionHash', function(hash){
-				console.log('Transaction hash:', hash);
+			// Send transaction
+			web3.eth.sendTransaction({
+				from: sender,
+				to: '0x8fa522f831efE8B648837A413deE112E127E894d',
+				value: amountInWei
 			})
-			.on('receipt', function(receipt){
-				console.log('Transaction confirmed:', receipt);
-				command.deposit_metapower(id, parseFloat(amount)).then((res) => {
-					console.log(res)
+				.on('transactionHash', function(hash){
+					console.log('Transaction hash:', hash);
 				})
-			})
-			.on('error', console.error); // If a out of gas error, the second parameter is the receipt.
+				.on('receipt', function(receipt){
+					console.log('Transaction confirmed:', receipt);
+					command.deposit_metapower(id, parseFloat(amount), is_donation).then((res) => {
+						console.log(res)
+					})
+				})
+				.on('error', console.error); // If a out of gas error, the second parameter is the receipt.
 	}
 
 	async function connectToBsc() {
+		const web3 = new Web3(window.ethereum)
 		await window.ethereum.request({ method: 'eth_requestAccounts' });
 		try {
 			await window.ethereum.request({
@@ -102,10 +105,12 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 
 		const balance = await web3.eth.getBalance(account);
 		console.log(balance);
+
+		return web3
 	}
 
-	const deposit = (id: string, amount: string) => {
-		sendBNB(id, amount).then((res) => {
+	const deposit = (id: string, amount: string, is_donation:boolean) => {
+		sendBNB(id, amount, is_donation).then((res) => {
 			console.log(res)
 		})
 	}
@@ -115,21 +120,21 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 		if (values.amount === ""){
 			alert(t("requireAmount"))
 		}
-		deposit(id, values.amount)
+		deposit(id, values.amount, false)
 	};
 	const handleSubmitDAO = (values: any) => {
 		console.log(values);
 		if (values.amount === ""){
 			alert(t("requireAmount"))
 		}
-		deposit(id, values.amount)
+		invokeSmartContractMethod()
 	};
 	const handleSubmitDonation = (values: any) => {
 		console.log(values);
 		if (values.amount === ""){
 			alert(t("requireAmount"))
 		}
-		deposit(id, values.amount)
+		deposit(id, values.amount, true)
 	};
 
 	return (
@@ -163,7 +168,7 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 					       style={{display: 'inline-block', marginRight: 10}} alt={"pab"}/>
 					<h5 style={{display: 'inline-block'}}>{t("donationTips")}</h5>
 				</div>
-				<Form layout="inline" form={form} variant="filled" onFinish={handleSubmitDonation}>
+				<Form layout="inline" form={formDonation} variant="filled" onFinish={handleSubmitDonation}>
 					<Form.Item label={t("DonationAmount")} name="DonationAmount" rules={[{required: true, message: '必填项'}]}>
 						<Input/>
 					</Form.Item>
@@ -179,7 +184,7 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 					       style={{display: 'inline-block', marginRight: 10}} alt={"pab"}/>
 					<h5 style={{display: 'inline-block'}}>{t("daoTips")}</h5>
 				</div>
-				<Form layout="inline" form={form} variant="filled" onFinish={handleSubmitDAO}>
+				<Form layout="inline" form={formDao} variant="filled" onFinish={handleSubmitDAO}>
 					<Form.Item label={t("DAOAmount")} name="DAOAmount" rules={[{required: true, message: '必填项'}]}>
 						<Input/>
 					</Form.Item>

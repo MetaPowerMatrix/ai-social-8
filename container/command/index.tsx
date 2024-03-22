@@ -100,8 +100,8 @@ const useCommand = () => {
       // let data = JSON.parse(dataJson.content)
     }
   }
-  const deposit_metapower = async (id: string, amount: number) => {
-    let data = {id: id, amount: amount}
+  const deposit_metapower = async (id: string, amount: number, is_donation: boolean) => {
+    let data = {id: id, amount: amount, is_donation}
     let url = getApiServer(80) + api_url.account.wallet.deposit
     let response = await fetch(
       `${url}`,
