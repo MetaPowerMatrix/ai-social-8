@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
 	Button, Divider,
 	Form,
@@ -26,10 +26,11 @@ declare global {
 const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 	const t = useTranslations('ISSForm');
 	const [form] = Form.useForm();
+	const [web3, setWeb3] = useState(new Web3(window.ethereum));
+
 	const command = commandDataContainer.useContainer()
 
 	async function invokeSmartContractMethod() {
-		const web3 = new Web3(window.ethereum);
 		const contractABI: any[] = [
 			// Your contract ABI goes here
 		];
@@ -49,12 +50,8 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 	}
 
 	async function sendBNB(recipient: string, amount: string) {
-		const web3 = new Web3(window.ethereum);
-		// Request account access if needed
 		const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
 		const sender = accounts[0]; // The first account is usually the current account
-
-		// Convert amount to Wei
 		const amountInWei = web3.utils.toWei(amount, 'ether');
 
 		// Send transaction
@@ -76,10 +73,7 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 	}
 
 	async function connectToBsc() {
-		const web3 = new Web3(window.ethereum);
-
 		await window.ethereum.request({ method: 'eth_requestAccounts' });
-
 		try {
 			await window.ethereum.request({
 				method: 'wallet_switchEthereumChain',
