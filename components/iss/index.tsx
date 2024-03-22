@@ -37,7 +37,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS}) => {
 			.then(response => response.json())
 			.then(data => {
 				console.log(data);
-				alert(t("success"))
+				alert(t("Success"))
 				onClose()
 				// handle server response
 			})

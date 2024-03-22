@@ -90,12 +90,7 @@ export const api_url = {
     },
     'account': {
       'wallet':{
-        'bind': '/tiktokChangeLocation',
-        'info': '/tiktokChangeLocation',
-      },
-      'assets':{
-        'list': '/tiktokTraceClass',
-        'nft': '/tiktokTraceReflection',
+        'deposit': '/api/deposit',
       },
     },
     'defi': {

@@ -100,6 +100,25 @@ const useCommand = () => {
       // let data = JSON.parse(dataJson.content)
     }
   }
+  const deposit_metapower = async (id: string, amount: number) => {
+    let data = {id: id, amount: amount}
+    let url = getApiServer(80) + api_url.account.wallet.deposit
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+      // let data = JSON.parse(dataJson.content)
+    }
+  }
   const pray = async (id: string, wish: string) => {
     let data = {sender: id, receiver: '', message: wish}
     let url = getApiServer(80) + api_url.portal.task.pray
@@ -137,7 +156,9 @@ const useCommand = () => {
     }
     return null
   }
-  return { login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages, getPatoISS, callPato }
+  return { login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages, getPatoISS, callPato,
+    deposit_metapower
+  }
 }
 
 let CommandDataContainer = createContainer(useCommand)

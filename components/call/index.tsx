@@ -21,7 +21,7 @@ const CallPato: React.FC<CallPatoProps> = ({visible, id, onClose}) => {
 
 	const callPato = (id: string, callid: string) => {
 		command.callPato(id, callid).then((res) => {
-			alert("waiting for call answer")
+			alert(t("waitingCall"))
 		})
 	}
 

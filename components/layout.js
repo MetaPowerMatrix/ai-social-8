@@ -3,7 +3,7 @@ import Image from 'next/image';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
 import {Col, Divider, Flex, FloatButton, Row} from "antd";
-import {PhoneOutlined, MenuOutlined, RedoOutlined, SettingOutlined} from "@ant-design/icons";
+import {PhoneOutlined, MenuOutlined, RedoOutlined, SettingOutlined, EuroOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
@@ -15,11 +15,13 @@ import MaskedHighlight from "@/components/MaskedHighlight";
 import ISSForm from "@/components/iss";
 import commandDataContainer from "@/container/command";
 import CallPato from "@/components/call";
+import Deposit from "@/components/deposit";
 
 export default function Layout({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(true);
     const [editISS, setEditISS] = useState(false);
     const [openCall, setOpenCall] = useState(false);
+    const [openDeposit, setOpenDeposit] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
     const [activeId, setActiveId] = useState("");
@@ -137,8 +139,9 @@ export default function Layout({ children, title, description, onChangeId, onRef
             <ProgressBarComponent visible={loading} />
             <FloatButton.Group open={open} trigger="click" style={{right: 64}} onClick={onChange} icon={<MenuOutlined/>}>
                 <FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>
-                <FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>
+                <FloatButton onClick={()=>{setOpenDeposit(true)}} icon={<EuroOutlined />}/>
                 <FloatButton onClick={()=>{setEditISS(true)}} icon={<SettingOutlined />}/>
+                <FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>
             </FloatButton.Group>
             <ModalLogin isOpen={!isLogin} tips={t} options={availableIds}
                         onClose={(id) => {
@@ -151,6 +154,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
             />
             <ISSForm userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
             <CallPato id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>
+            <Deposit id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
         </div>
     );
 }

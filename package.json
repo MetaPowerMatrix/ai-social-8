@@ -21,7 +21,8 @@
     "react-dom": "^18",
     "remark": "^14.0.2",
     "remark-html": "^15.0.1",
-    "unstated-next": "^1.1.0"
+    "unstated-next": "^1.1.0",
+    "web3": "^4.6.0"
   },
   "devDependencies": {
     "@types/node": "^20",
