@@ -54,10 +54,13 @@
     "tips3": "这里输入想要充值的PAD数量，系统自动兑换成原力值，兑换比例1:10",
     "donationTips": "支持原力小镇，捐赠给小镇，小镇给你带来更多惊喜",
     "daoTips": "加入原力小镇治理，Stake to PAB DAO",
+    "stakeTips": "共建原力小镇",
     "amount": "充值数量",
     "DAOAmount": "stake数量",
     "DonationAmount": "捐赠数量",
     "deposit": "充值",
+    "donation": "捐赠",
+    "dao": "Stake",
     "requireAmount": "充值数量要大于0， 可以是小数",
     "connectMM": "连接metamask"
   },
