@@ -70,6 +70,7 @@ export const api_url = {
       'pato': '/api/pato/info',
       'message':{
         'history': '/api/pato/messages',
+        'archive': '/api/pato/archive'
       },
       'task': {
         'pray': '/api/pray',
@@ -78,6 +79,7 @@ export const api_url = {
       },
       'interaction': {
         'call': '/api/call',
+        'live': '/api/live'
       },
       'character': {
         'iss': '/api/pato/iss',
@@ -85,24 +87,18 @@ export const api_url = {
       },
       'market': {
         'list': '/api/job/list',
-        'detail': '/api/job/detail',
       }
     },
     'account': {
       'wallet':{
         'deposit': '/api/deposit',
+        'stake': '/api/stake',
       },
     },
     'defi': {
-      'fund':{
-        'total': '/tiktokExecInstanceMethod',
-        'liquity': '/tiktokExecInstanceMethod',
-        'plan': '/tiktokExecInstanceMethod',
-      },
       'trade':{
         'send': '/tiktokExecInstanceMethod',
         'recv': '/tiktokExecInstanceMethod',
-        'transactions': '/tiktokExecInstanceMethod',
       },
     },
 }

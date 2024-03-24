@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
 import Layout from '../components/layout';
 import {Card, Col, DatePicker, DatePickerProps, Divider, List, Rate, Row, Space, Tag} from "antd";
-import {RedoOutlined} from "@ant-design/icons";
+import {CloseOutlined, RedoOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, sessionMessages} from "@/common";
 import {useTranslations} from 'next-intl';
@@ -16,9 +16,11 @@ const IconText = ({ icon, text }:{icon: any, text: string}) => (
   </Space>
 );
 
-const MessageHeader = ({onChangeDate, onClickReload, queryDate, summary}:{
+const MessageHeader = ({onChangeDate, onClickReload, onClickArchive, queryDate, summary}:{
   onChangeDate: (datestring: string)=>void,
-  onClickReload: ()=>void, queryDate: string, summary: string
+  onClickReload: ()=>void,
+  onClickArchive: ()=>void,
+  queryDate: string, summary: string
 }) => {
   const t = useTranslations('Index');
 
@@ -30,7 +32,12 @@ const MessageHeader = ({onChangeDate, onClickReload, queryDate, summary}:{
   return (
     <>
       <Row justify="space-between">
-        <Col span={8}><span>{t('taskMessage')}</span> <Divider type={"vertical"}/> <RedoOutlined onClick={onClickReload}/></Col>
+        <Col span={8}><span>{t('taskMessage')}</span>
+          <Divider type={"vertical"}/>
+          <RedoOutlined onClick={onClickReload}/>
+          <Divider type={"vertical"}/>
+          <CloseOutlined onClick={onClickArchive}/>
+        </Col>
         <Col span={16} style={{ textAlign: 'right' }}>
           <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}} onChange={onChange} />
         </Col>
@@ -75,6 +82,13 @@ export default function Home() {
 
   const increaseReloadTimes = () => {
     setReloadTimes(reloadTimes + 1);
+  }
+  const archiveSession = () =>{
+    command.archive_session(activeId, sessionTabKey, queryDate).then((res) => {
+      if (res){
+        alert("删除成功！")
+      }
+    })
   }
 
   const formatDateTimeString = (timestamp: number) : string => {
@@ -135,7 +149,7 @@ export default function Home() {
           <>
           <List
             itemLayout="vertical"
-            header={<MessageHeader summary={summary} queryDate={queryDate} onChangeDate={changeQueryDate} onClickReload={increaseReloadTimes}/>}
+            header={<MessageHeader onClickArchive={archiveSession} summary={summary} queryDate={queryDate} onChangeDate={changeQueryDate} onClickReload={increaseReloadTimes}/>}
             size="small"
             pagination={{
               onChange: (page) => {

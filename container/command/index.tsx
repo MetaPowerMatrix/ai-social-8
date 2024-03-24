@@ -100,9 +100,51 @@ const useCommand = () => {
       // let data = JSON.parse(dataJson.content)
     }
   }
+  const archive_session = async (id: string, session: string, date: string) => {
+    let data = {id: id, session: session, date: date}
+    let url = getApiServer(80) + api_url.portal.message.archive
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+      if (dataJson.code === '200'){
+        return true
+      }
+      // let data = JSON.parse(dataJson.content)
+    }
+    return false
+  }
   const deposit_metapower = async (id: string, amount: number, is_donation: boolean) => {
-    let data = {id: id, amount: amount, is_donation}
+    let data = {id: id, amount: amount, is_donation: is_donation}
     let url = getApiServer(80) + api_url.account.wallet.deposit
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+      // let data = JSON.parse(dataJson.content)
+    }
+  }
+  const stake_metapower = async (id: string, amount: number, is_donation: boolean) => {
+    let data = {id: id, amount: amount, is_donation: is_donation}
+    let url = getApiServer(80) + api_url.account.wallet.stake
     let response = await fetch(
       `${url}`,
       {
@@ -157,7 +199,7 @@ const useCommand = () => {
     return null
   }
   return { login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages, getPatoISS, callPato,
-    deposit_metapower
+    deposit_metapower, archive_session, stake_metapower
   }
 }
 
