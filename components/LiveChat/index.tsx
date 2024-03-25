@@ -35,6 +35,7 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 			console.error('Error accessing the microphone:', error);
 		}
 	};
+
 	const handleAudioStream = (stream: MediaStream) => {
 		const mediaRecorder = new MediaRecorder(stream);
 		const socket = new WebSocket(serverUrl);
@@ -45,40 +46,39 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 			}
 		};
 
-		mediaRecorder.start(100); // Start recording, and emit data every 100ms
+		mediaRecorder.start(1000); // Start recording, and emit data every 100ms
 
 		socket.onopen = () => {
 			console.log('WebSocket connection established. Streaming can start.');
 		};
-
-		useEffect(() => {
-			// Call the function to start the process
-			initAudioStream();
-		}, []);
-		// Remember to handle WebSocket closure and errors appropriately
-		useEffect(() => {
-			// Create a new WebSocket connection to the Rust server
-			const ws = new WebSocket(serverUrl);
-
-			ws.onmessage = (event) => {
-				// Received an audio frame from the server
-				const audioFrame = event.data;
-				console.log('Received audio frame:', audioFrame);
-
-				// Here you would process and play the audio data
-				// Actual implementation depends on the audio data format and application requirements
-			};
-
-			ws.onerror = (error) => {
-				console.error('WebSocket Error:', error);
-			};
-
-			// Clean up the WebSocket connection when the component unmounts
-			return () => {
-				ws.close();
-			};
-		}, [serverUrl]);
 	};
+
+	useEffect(() => {
+		// Call the function to start the process
+		initAudioStream().then(r => {});
+	}, []);
+
+	// useEffect(() => {
+	// 	// Create a new WebSocket connection to the Rust server
+	// 	const ws = new WebSocket(serverUrl);
+	// 	ws.onmessage = (event) => {
+	// 		// Received an audio frame from the server
+	// 		const audioFrame = event.data;
+	// 		console.log('Received audio frame:', audioFrame);
+	//
+	// 		// Here you would process and play the audio data
+	// 		// Actual implementation depends on the audio data format and application requirements
+	// 	};
+	//
+	// 	ws.onerror = (error) => {
+	// 		console.error('WebSocket Error:', error);
+	// 	};
+	//
+	// 	// Clean up the WebSocket connection when the component unmounts
+	// 	return () => {
+	// 		ws.close();
+	// 	};
+	// }, [serverUrl]);
 
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 	const handleSubmit = (values: any) => {
