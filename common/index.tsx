@@ -2,6 +2,7 @@ import {ReactNode} from "react";
 
 export const host = "api.metapowermatrix.ai"
 export const Web_Server = "https://"+ host
+export const Streaming_Server = "ws://"+ host + ":8040"
 export const getApiServer = (port: number) => {
   // return Web_Server + ':' + port
   return Web_Server

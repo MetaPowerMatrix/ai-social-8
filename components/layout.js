@@ -3,7 +3,14 @@ import Image from 'next/image';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
 import {Col, Divider, Flex, FloatButton, Row} from "antd";
-import {PhoneOutlined, MenuOutlined, RedoOutlined, SettingOutlined, EuroOutlined} from "@ant-design/icons";
+import {
+    PhoneOutlined,
+    MenuOutlined,
+    RedoOutlined,
+    SettingOutlined,
+    EuroOutlined,
+    TikTokOutlined
+} from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
@@ -16,10 +23,13 @@ import ISSForm from "@/components/iss";
 import commandDataContainer from "@/container/command";
 import CallPato from "@/components/call";
 import Deposit from "@/components/deposit";
+import LiveChat from "@/components/LiveChat";
+import {Streaming_Server} from "@/common";
 
 export default function Layout({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(true);
     const [editISS, setEditISS] = useState(false);
+    const [openLive, setOpenLive] = useState(false);
     const [openCall, setOpenCall] = useState(false);
     const [openDeposit, setOpenDeposit] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
@@ -138,6 +148,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
             <MaskedHighlight zones={zones} visible={guide} />
             <ProgressBarComponent visible={loading} />
             <FloatButton.Group open={open} trigger="click" style={{right: 64}} onClick={onChange} icon={<MenuOutlined/>}>
+                <FloatButton onClick={()=>{setOpenLive(true)}} icon={<TikTokOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenDeposit(true)}} icon={<EuroOutlined />}/>
                 <FloatButton onClick={()=>{setEditISS(true)}} icon={<SettingOutlined />}/>
@@ -155,6 +166,8 @@ export default function Layout({ children, title, description, onChangeId, onRef
             <ISSForm userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
             <CallPato id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>
             <Deposit id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
+            <LiveChat id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
+                      visible={openLive} onShowProgress={showProgressBar}/>
         </div>
     );
 }

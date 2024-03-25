@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
 import Layout from '../components/layout';
 import {Card, Col, DatePicker, DatePickerProps, Divider, List, Rate, Row, Space, Tag} from "antd";
-import {CloseOutlined, RedoOutlined} from "@ant-design/icons";
+import {CloseOutlined, DeleteOutlined, RedoOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, sessionMessages} from "@/common";
 import {useTranslations} from 'next-intl';
@@ -36,7 +36,7 @@ const MessageHeader = ({onChangeDate, onClickReload, onClickArchive, queryDate, 
           <Divider type={"vertical"}/>
           <RedoOutlined onClick={onClickReload}/>
           <Divider type={"vertical"}/>
-          <CloseOutlined onClick={onClickArchive}/>
+          <DeleteOutlined onClick={onClickArchive}/>
         </Col>
         <Col span={16} style={{ textAlign: 'right' }}>
           <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}} onChange={onChange} />

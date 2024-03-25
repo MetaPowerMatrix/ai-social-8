@@ -1,14 +1,31 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from "@/components/LiveChat/LiveChatComponent.module.css";
+import {Button, Col, Divider, Form, GetProp, Input, Row, Upload, UploadFile, UploadProps} from "antd";
+import {useTranslations} from "next-intl";
+import {
+	AudioOutlined,
+	CloseOutlined,
+	DownOutlined,
+	UploadOutlined,
+	UpOutlined
+} from "@ant-design/icons";
+import {api_url, getApiServer} from "@/common";
+import Image from "next/image";
 
 interface LiveChatPros {
 	id: string,
 	serverUrl: string;
 	onClose: ()=>void;
 	visible: boolean;
+	onShowProgress: (s: boolean)=>void;
 }
 
-const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onClose}) => {
+const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onClose, onShowProgress}) => {
+	const [form] = Form.useForm();
+	const t = useTranslations('LiveChat');
+	const [fileList, setFileList] = useState<UploadFile[]>([]);
+	const [hideSettings, setHideSettings] = useState<string>("");
+
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
 		try {
@@ -63,11 +80,101 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 		}, [serverUrl]);
 	};
 
+	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+	const handleSubmit = (values: any) => {
+		console.log(values);
+		if (values.amount === ""){
+			alert(t("requireAmount"))
+		}
+		onShowProgress(true);
+		const formData = new FormData();
+		formData.append('file', fileList[0] as FileType);
+		formData.append('message', JSON.stringify({
+			id: id, role1: values.role1,
+			role2: values.role2,
+		}));
+		let url = getApiServer(80) + api_url.portal.interaction.live
+		fetch(url, {
+			method: 'POST',
+			body: formData,
+		})
+			.then(response => response.json())
+			.then(data => {
+				// console.log('Success:', data);
+				if (data.code === "200") {
+					alert('Upload successful!');
+				}else{
+					alert('Upload failed.');
+				}
+				onShowProgress(false);
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+				alert('Upload failed.');
+				onShowProgress(false);
+			});
+	};
+
+	const props: UploadProps = {
+		onRemove: (file) => {
+			const index = fileList.indexOf(file);
+			const newFileList = fileList.slice();
+			newFileList.splice(index, 1);
+			setFileList(newFileList);
+		},
+		beforeUpload: (file) => {
+			setFileList([...fileList, file]);
+
+			return false;
+		},
+		fileList,
+	};
+
 	return (
 		<div hidden={!visible} className={styles.live_chat_container}>
 			<div className={styles.live_chat_content}>
-				<h2>Audio Recorder</h2>
-			{/* UI elements can go here */}
+				<Row><CloseOutlined onClick={onClose}/>
+					<Col span={8}>
+						<Divider type={"vertical"}/>
+						<UpOutlined onClick={()=>setHideSettings("none")} />
+						<Divider type={"vertical"}/>
+						<DownOutlined onClick={()=>setHideSettings("")} />
+					</Col>
+				</Row>
+				<Row style={{display: hideSettings, padding: 20}}>
+					<Col span={20}>
+						<Form form={form} variant="filled" onFinish={handleSubmit}>
+							<Form.Item label={t("role1")} name="amount" rules={[{required: true, message: '必填项'}]}>
+								<Input/>
+							</Form.Item>
+							<Form.Item label={t("role2")} name="amount" rules={[{required: true, message: '必填项'}]}>
+								<Input/>
+							</Form.Item>
+							<Form.Item label={t("context")}>
+								<Upload {...props}>
+									<Button icon={<UploadOutlined/>}>{t('Upload')}</Button>
+								</Upload>
+							</Form.Item>
+						</Form>
+						<Form.Item>
+							<Button type="primary" htmlType="submit">
+								{t("confirm")}
+							</Button>
+						</Form.Item>
+					</Col>
+				</Row>
+				<Divider type={"horizontal"}/>
+				<Row align={"middle"} justify={"space-between"}>
+					<Col span={8} style={{textAlign:"center", height: 300}}>
+						<Image src={"/images/two-boy.png"} fill={true}  alt={"role1"}/>
+					</Col>
+					<Col span={8} style={{textAlign:"center"}}>
+						<AudioOutlined />
+					</Col>
+					<Col span={8} style={{textAlign:"center", height: 300}}>
+						<Image fill={true} src={"/images/two-boy.png"} alt={"role1"}/>
+					</Col>
+				</Row>
 			</div>
 		</div>
 	);

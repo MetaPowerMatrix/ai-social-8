@@ -64,6 +64,14 @@
     "requireAmount": "充值数量要大于0， 可以是小数",
     "connectMM": "连接metamask"
   },
+  "LiveChat": {
+    "role1": "角色#1",
+    "role2": "角色#2",
+    "Upload": "选文件",
+    "confirm": "提交",
+    "scene": "直播描述",
+    "context": "直播内容上传"
+  },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"
   }
