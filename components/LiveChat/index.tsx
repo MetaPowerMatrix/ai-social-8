@@ -24,13 +24,16 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	const [form] = Form.useForm();
 	const t = useTranslations('LiveChat');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [hideSettings, setHideSettings] = useState<string>("");
+	const [hideSettings, setHideSettings] = useState<boolean>(true);
 
+	const close_clean = () => {
+
+	}
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
 		try {
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-			handleAudioStream(stream);
+			return handleAudioStream(stream);
 		} catch (error) {
 			console.error('Error accessing the microphone:', error);
 		}
@@ -38,7 +41,7 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 
 	const handleAudioStream = (stream: MediaStream) => {
 		const mediaRecorder = new MediaRecorder(stream);
-		const socket = new WebSocket(serverUrl);
+		const socket = new WebSocket(serverUrl+"/up");
 
 		mediaRecorder.ondataavailable = (event) => {
 			if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
@@ -51,12 +54,21 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 		socket.onopen = () => {
 			console.log('WebSocket connection established. Streaming can start.');
 		};
+
+		return socket
 	};
 
 	useEffect(() => {
-		// Call the function to start the process
-		initAudioStream().then(r => {});
-	}, []);
+		if (visible){
+			initAudioStream().then((socket) => {
+				return () => {
+					if (socket !== undefined){
+						socket.close();
+					}
+				}
+			});
+		}
+	}, [visible]);
 
 	// useEffect(() => {
 	// 	// Create a new WebSocket connection to the Rust server
@@ -131,52 +143,61 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	};
 
 	return (
-		<div hidden={!visible} className={styles.live_chat_container}>
-			<div className={styles.live_chat_content}>
-				<Row><CloseOutlined onClick={onClose}/>
-					<Col span={8}>
-						<Divider type={"vertical"}/>
-						<UpOutlined onClick={()=>setHideSettings("none")} />
-						<Divider type={"vertical"}/>
-						<DownOutlined onClick={()=>setHideSettings("")} />
-					</Col>
-				</Row>
-				<Row style={{display: hideSettings, padding: 20}}>
-					<Col span={20}>
-						<Form form={form} variant="filled" onFinish={handleSubmit}>
-							<Form.Item label={t("role1")} name="amount" rules={[{required: true, message: '必填项'}]}>
-								<Input/>
-							</Form.Item>
-							<Form.Item label={t("role2")} name="amount" rules={[{required: true, message: '必填项'}]}>
-								<Input/>
-							</Form.Item>
-							<Form.Item label={t("context")}>
-								<Upload {...props}>
-									<Button icon={<UploadOutlined/>}>{t('Upload')}</Button>
-								</Upload>
-							</Form.Item>
-						</Form>
-						<Form.Item>
-							<Button type="primary" htmlType="submit">
-								{t("confirm")}
-							</Button>
-						</Form.Item>
-					</Col>
-				</Row>
-				<Divider type={"horizontal"}/>
-				<Row align={"middle"} justify={"space-between"}>
-					<Col span={8} style={{textAlign:"center", height: 300}}>
-						<Image src={"/images/two-boy.png"} fill={true}  alt={"role1"}/>
-					</Col>
-					<Col span={8} style={{textAlign:"center"}}>
-						<AudioOutlined />
-					</Col>
-					<Col span={8} style={{textAlign:"center", height: 300}}>
-						<Image fill={true} src={"/images/two-boy.png"} alt={"role1"}/>
-					</Col>
-				</Row>
+		<div hidden={!visible}>
+			<div className={styles.live_chat_container}>
+				<div className={styles.live_chat_content}>
+					<Row>
+						<Col span={8}>
+							<CloseOutlined onClick={onClose}/>
+							<Divider type={"vertical"}/>
+							{hideSettings?
+								<DownOutlined onClick={() => setHideSettings(false)}/>
+								:
+								<UpOutlined onClick={() => setHideSettings(true)}/>
+							}
+						</Col>
+					</Row>
+					{
+						!hideSettings &&
+              <Row>
+                  <Col span={20}>
+                      <Form form={form} variant="filled" onFinish={handleSubmit}>
+                          <Form.Item label={t("role1")} name="amount" rules={[{required: true, message: '必填项'}]}>
+                              <Input/>
+                          </Form.Item>
+                          <Form.Item label={t("role2")} name="amount" rules={[{required: true, message: '必填项'}]}>
+                              <Input/>
+                          </Form.Item>
+                          <Form.Item label={t("context")}>
+                              <Upload {...props}>
+                                  <Button icon={<UploadOutlined/>}>{t('Upload')}</Button>
+                              </Upload>
+                          </Form.Item>
+                      </Form>
+                      <Form.Item>
+                          <Button type="primary" htmlType="submit">
+														{t("confirm")}
+                          </Button>
+                      </Form.Item>
+                  </Col>
+              </Row>
+					}
+					<Divider type={"horizontal"}/>
+					<Row align={"middle"} justify={"space-between"}>
+						<Col span={8} style={{textAlign: "center", height: 300}}>
+							<Image src={"/images/two-boy.png"} fill={true} alt={"role1"}/>
+						</Col>
+						<Col span={8} style={{textAlign: "center"}}>
+							<AudioOutlined/>
+						</Col>
+						<Col span={8} style={{textAlign: "center", height: 300}}>
+							<Image fill={true} src={"/images/two-boy.png"} alt={"role1"}/>
+						</Col>
+					</Row>
+				</div>
 			</div>
 		</div>
+
 	);
 };
 
