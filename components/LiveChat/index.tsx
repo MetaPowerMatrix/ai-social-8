@@ -3,9 +3,9 @@ import styles from "@/components/LiveChat/LiveChatComponent.module.css";
 import {Button, Col, Divider, Form, GetProp, Input, Row, Upload, UploadFile, UploadProps} from "antd";
 import {useTranslations} from "next-intl";
 import {
-	AudioOutlined,
+	AudioOutlined, CaretRightOutlined,
 	CloseOutlined,
-	DownOutlined,
+	DownOutlined, PauseOutlined,
 	UploadOutlined,
 	UpOutlined
 } from "@ant-design/icons";
@@ -23,50 +23,73 @@ interface LiveChatPros {
 const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onClose, onShowProgress}) => {
 	const [form] = Form.useForm();
 	const t = useTranslations('LiveChat');
+	const [recorder, setRecorder] = useState<MediaRecorder>();
+	const [wsSocket, setWsSocket] = useState<WebSocket>();
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [hideSettings, setHideSettings] = useState<boolean>(true);
+	const [stopped, setStopped] = useState<boolean>(true);
 
 	const close_clean = () => {
-
+		if (wsSocket !== undefined){
+			wsSocket.close();
+		}
+		if (recorder !== undefined){
+			recorder.stop()
+		}
+		onClose()
 	}
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
 		try {
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-			return handleAudioStream(stream);
+			handleAudioStream(stream);
 		} catch (error) {
 			console.error('Error accessing the microphone:', error);
 		}
 	};
 
+	let chunks: BlobPart[] = [];
 	const handleAudioStream = (stream: MediaStream) => {
-		const mediaRecorder = new MediaRecorder(stream);
+		const options = {mimeType: 'audio/ogg;codecs=opus'};
+		const mediaRecorder = new MediaRecorder(stream, options);
 		const socket = new WebSocket(serverUrl+"/up");
 
+		setWsSocket(socket);
+		setRecorder(mediaRecorder)
+
 		mediaRecorder.ondataavailable = (event) => {
+			console.log(event)
 			if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
-				socket.send(event.data);
+				chunks.push(event.data);
+				// socket.send(event.data);
 			}
 		};
+		mediaRecorder.onstop = () => {
+			socket.send(new Blob(chunks, { 'type' : 'audio/mp3' }));
+			console.log("send")
+			chunks = [];
+		};
 
-		mediaRecorder.start(1000); // Start recording, and emit data every 100ms
+		// mediaRecorder.start(2000); // Start recording, and emit data every 5s
 
 		socket.onopen = () => {
 			console.log('WebSocket connection established. Streaming can start.');
 		};
-
-		return socket
 	};
+
+	const stop_record = () => {
+		if (stopped){
+			recorder?.start()
+			setStopped(false)
+		}else{
+			recorder?.stop()
+			setStopped(true)
+		}
+	}
 
 	useEffect(() => {
 		if (visible){
-			initAudioStream().then((socket) => {
-				return () => {
-					if (socket !== undefined){
-						socket.close();
-					}
-				}
-			});
+			initAudioStream().then(() => {});
 		}
 	}, [visible]);
 
@@ -148,12 +171,19 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 				<div className={styles.live_chat_content}>
 					<Row>
 						<Col span={8}>
-							<CloseOutlined onClick={onClose}/>
+							<CloseOutlined onClick={() => close_clean()}/>
 							<Divider type={"vertical"}/>
 							{hideSettings?
 								<DownOutlined onClick={() => setHideSettings(false)}/>
 								:
 								<UpOutlined onClick={() => setHideSettings(true)}/>
+							}
+							<Divider type={"vertical"}/>
+							{
+								stopped?
+									<CaretRightOutlined  onClick={() => stop_record()}/>
+									:
+									<PauseOutlined onClick={() => stop_record()}/>
 							}
 						</Col>
 					</Row>
@@ -184,13 +214,13 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 					}
 					<Divider type={"horizontal"}/>
 					<Row align={"middle"} justify={"space-between"}>
-						<Col span={8} style={{textAlign: "center", height: 300}}>
+						<Col span={8} style={{textAlign: "center", height: 400}}>
 							<Image src={"/images/two-boy.png"} fill={true} alt={"role1"}/>
 						</Col>
 						<Col span={8} style={{textAlign: "center"}}>
 							<AudioOutlined/>
 						</Col>
-						<Col span={8} style={{textAlign: "center", height: 300}}>
+						<Col span={8} style={{textAlign: "center", height: 400}}>
 							<Image fill={true} src={"/images/two-boy.png"} alt={"role1"}/>
 						</Col>
 					</Row>
