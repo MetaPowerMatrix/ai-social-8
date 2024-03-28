@@ -101,7 +101,7 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 	};
 
 	const handleSubCommand = (amount: number, type: string) => {
-		const data = {id: id, amount: amount, type: type };
+		const data = {id: id, amount: amount, sub_type: type };
 		let url = getApiServer(80) + api_url.account.wallet.subscription
 		fetch(url, {
 			method: 'POST',
