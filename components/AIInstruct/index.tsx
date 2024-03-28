@@ -1,17 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import styles from "@/components/AIInstruct/AIInstructComponent.module.css";
-import {Col, Divider, Form, GetProp, Row, Upload, UploadFile, UploadProps} from "antd";
+import {Card, Col, Divider, Form, GetProp, Row, Upload, UploadFile, UploadProps} from "antd";
 import {useTranslations} from "next-intl";
 import {
 	AudioOutlined, CloseOutlined,
 	PauseOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, LiveOpenResponse} from "@/common";
+import {api_url, getApiServer, getMQTTBroker, LiveOpenResponse} from "@/common";
 import Image from "next/image";
-import {subscribe_topic} from "@/lib/utils";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import TextArea from "antd/es/input/TextArea";
+import mqtt from "mqtt";
+import SubscriptionsComponent from "@/components/Subscriptions";
 
 interface AIInstructPros {
 	id: string,
@@ -37,13 +38,74 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/two-boy.png");
 	const [answer, setAnswer] = useState<string>("");
 	const [question, setQuestion] = useState<string>("");
+	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
+	const [activeAgentKey, setActiveAgentKey] = useState<string>("qa");
+	const [openSub, setOpenSub] = useState<boolean>(false);
 	const command = commandDataContainer.useContainer()
+
+	const agents = [
+		{key: "qa", label: "问答"},
+		{key: "X", label: "发X"},
+		{key: "gmail", label: "收发邮件"},
+		{key: "telegram", label: "电报消息同步"},
+		{key: "solana", label: "solana交易"},
+		{key: "search", label: "搜索"},
+		{key: "tiktok", label: "tiktok"},
+	]
+	useEffect(() => {
+		// Initialize MQTT client and connect
+		const mqttClient = mqtt.connect(getMQTTBroker());
+		mqttClient.on("connect", () => {
+			console.log("Instruct Connected to MQTT broker");
+		});
+		mqttClient.on("error", (err) => {
+			console.error("Error connecting to MQTT broker:", err);
+		});
+		setClient(mqttClient);
+
+		return () => {
+			mqttClient.end(); // Clean up the connection on component unmount
+		};
+	}, []);
+
+	useEffect(() => {
+		if (client) {
+			const topic_instruct_voice = id+"/instruct/voice";
+			const topic_instruct = id+"/instruct";
+
+			// Handler for incoming messages
+			const onMessage = (topic: string, message: Buffer) => {
+				if (topic === topic_instruct){
+					console.log("receive answer: ", message.toString())
+					setAnswer(message.toString())
+				}else{
+					console.log("receive audio: ", message.toString())
+					playAudioWithWebAudioApi(message.toString())
+				}
+			};
+
+			// Subscribe to the topic
+			client.subscribe([topic_instruct,topic_instruct_voice], (err) => {
+				if (!err) {
+					console.log("Subscribed to topic: ", [topic_instruct,topic_instruct_voice]);
+					client.on('message', onMessage);
+				}
+			});
+			// Return a cleanup function to unsubscribe and remove the message handler
+			return () => {
+				if (client) {
+					client.unsubscribe([topic_instruct,topic_instruct_voice]);
+					client.removeListener('message', onMessage);
+				}
+			};
+		}
+	}, [client]); // Re-run this effect if the `client` state changes
 
 	useEffect(() => {
 		if (visible){
-			initAudioStream().then(() => {});
+			initAudioStream()
 		}
-	}, [visible]);
+	}, [visible])
 
 	const close_clean = () => {
 		if (wsSocket !== undefined){
@@ -66,8 +128,9 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 	};
 
 	const process_ws_message = (event: any) => {
-		setQuestion(event.data.toString)
-		handleVoiceCommand({topic: event.data.toString})
+		console.log(event)
+		setQuestion(event.data.toString())
+		handleVoiceCommand({topic: event.data.toString()})
 	}
 
 	let chunks: BlobPart[] = [];
@@ -119,15 +182,10 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 			.then(response => response.json())
 			.then(data => {
 				if (data.code === "200") {
-					let answer = data.content
+					// let answer = data.content
+					// setAnswer(answer)
 					// setRoleOnePortrait(openInfo.role_1_portarit)
-					subscribe_topic(id+"/instruct", (message: string) => {
-						setAnswer(message)
-					})
-					subscribe_topic(id+"/instruct/voice", async (message: string) => {
-						playAudioWithWebAudioApi(message)
-					})
-					alert('等待助手执行任务');
+					// alert('等待助手执行任务');
 				}else{
 					alert('任务失败');
 				}
@@ -166,10 +224,13 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 		},
 		beforeUpload: (file) => {
 			setFileList([...fileList, file]);
-
 			return false;
 		},
 		fileList,
+	};
+
+	const onTabChange = (key: string) => {
+			setActiveAgentKey(key)
 	};
 
 	return (
@@ -179,28 +240,53 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 					<Row>
 						<Col span={8}>
 							<CloseOutlined style={{color: "black", fontSize: 20}} onClick={() => close_clean()}/>
-							<Divider type={"vertical"}/>
-							{
-								stopped?
-									<AudioOutlined  style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
-									:
-									<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
-							}
 						</Col>
 					</Row>
-					<Row align={"middle"} justify={"space-between"}  style={{marginTop:20}}>
-						<Col span={24}>
-							<TextArea placeholder={"你的指令"}  value={question} rows={1}/>
-						</Col>
-					</Row>
-					<Row align={"middle"} justify={"space-between"} style={{marginTop:20}}>
-						<Col span={8} style={{textAlign: "center", height: 400}}>
-							<Image src={roleOnePortrait} fill={true} alt={"role1"}/>
-						</Col>
-						<Col span={14} style={{textAlign: "center", height: 400}}>
-							<TextArea placeholder={"任务结果"}  value={answer} rows={17}/>
-						</Col>
-					</Row>
+					<Card
+						style={{ width: '100%', marginTop:20 }}
+						tabList={agents}
+						activeTabKey={activeAgentKey}
+						onTabChange={onTabChange}
+						tabProps={{
+							size: 'small',
+						}}
+					>
+						{ activeAgentKey === "qa" &&
+								<>
+                    <Row align={"middle"} justify={"space-between"}>
+                        <Col span={22}>
+                            <TextArea placeholder={"你的指令"}  value={question} rows={1}/>
+                        </Col>
+                        <Col span={1}>
+													{
+														stopped?
+															<AudioOutlined  style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+															:
+															<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+													}
+                        </Col>
+                    </Row>
+                    <Row align={"middle"} justify={"space-between"} style={{marginTop:20}}>
+                        <Col span={8} style={{textAlign: "center", height: 400}}>
+                            <Image src={roleOnePortrait} fill={true} alt={"role1"}/>
+                        </Col>
+                        <Col span={14} style={{textAlign: "center", height: 400}}>
+                            <TextArea placeholder={"任务结果"}  value={answer} rows={17}/>
+                        </Col>
+                    </Row>
+								</>
+						}
+						{ activeAgentKey !== "qa" &&
+                <Row align={"middle"} justify={"space-between"} style={{marginTop:20}}>
+		                <Col span={7}/>
+                    <Col span={10} style={{textAlign: "center", height: 400}}>
+                        <Image onClick={()=>setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
+                    </Col>
+                    <Col span={7}/>
+                </Row>
+						}
+					</Card>
+					<SubscriptionsComponent id={id} onClose={() => setOpenSub(false)} visible={openSub} onShowProgress={onShowProgress}/>
 				</div>
 			</div>
 		</div>

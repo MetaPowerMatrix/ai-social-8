@@ -7,13 +7,13 @@ import {
 	FormOutlined, LoginOutlined, LogoutOutlined, PauseOutlined,
 	UploadOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, LiveOpenResponse} from "@/common";
+import {api_url, getApiServer, getMQTTBroker, LiveOpenResponse} from "@/common";
 import Image from "next/image";
-import {subscribe_topic} from "@/lib/utils";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import { v4 as uuidv4 } from 'uuid';
 import {SequentialAudioPlayer} from "@/lib/SequentialAudioPlayer";
+import mqtt from "mqtt";
 
 interface LiveChatPros {
 	id: string,
@@ -46,20 +46,83 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	const [session, setSession] = useState<string>(uuidv4());
 	const [voiceUrls, setVoiceUrls] = useState<string[]>([]);
 	const [startPlay, setStartPlay] = useState<boolean>(false);
-
-	let player: SequentialAudioPlayer | undefined = undefined;
-	useEffect(() => {
-		console.log("init player")
-		player = new SequentialAudioPlayer(voiceUrls, window);
-	})
-
+	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
+	const [player, setPlayer] = useState<SequentialAudioPlayer | undefined>(undefined);
 	const command = commandDataContainer.useContainer()
 
-	// useEffect(() => {
-	// 	if (visible){
-	// 		initAudioStream().then(() => {});
-	// 	}
-	// }, [visible]);
+	useEffect(() => {
+		setPlayer(new SequentialAudioPlayer(voiceUrls, window));
+		// Initialize MQTT client and connect
+		const mqttClient = mqtt.connect(getMQTTBroker());
+		mqttClient.on("connect", () => {
+			console.log("Instruct Connected to MQTT broker");
+		});
+		mqttClient.on("error", (err) => {
+			console.error("Error connecting to MQTT broker:", err);
+		});
+		setClient(mqttClient);
+
+		return () => {
+			mqttClient.end(); // Clean up the connection on component unmount
+		};
+	}, []);
+
+	useEffect(() => {
+		console.log("init player: ", player)
+		if (client) {
+			const topic_voice = session+"/voice";
+			const topic_text = session+"/text";
+
+			// Handler for incoming messages
+			const onMessage = async (topic: string, message: Buffer) => {
+				console.log("receive ", topic, " ", message.toString())
+				if (topic === topic_text){
+					setLyrics((prev)=>{
+						const newLyrics = [...prev]
+						newLyrics.shift()
+						newLyrics.push(message.toString())
+						return newLyrics
+					})
+				}else{
+					await player?.addUrl(message.toString())
+					setVoiceUrls((prevUrl) =>{
+						const newUrls = [...prevUrl]
+						newUrls.push(message.toString())
+						return newUrls
+					})
+				}
+			};
+
+			// Subscribe to the topic
+			client.subscribe([topic_text, topic_voice], (err) => {
+				if (!err) {
+					console.log("Subscribed to topic: ", [topic_text, topic_voice]);
+					client.on('message', onMessage);
+				}
+			});
+
+			// Return a cleanup function to unsubscribe and remove the message handler
+			return () => {
+				if (client) {
+					client.unsubscribe([topic_text, topic_voice]);
+					client.removeListener('message', onMessage);
+				}
+			};
+		}
+	}, [client]); // Re-run this effect if the `client` state changes
+
+	useEffect(() => {
+		if (voiceUrls.length > 0 && !startPlay) {
+			setTimeout(() => {
+				console.log(player)
+				let isStart = player?.play()
+				console.log(voiceUrls)
+				console.log("started: ", isStart)
+				setStartPlay( isStart === undefined ? false : isStart)
+			}, 1000);
+			// setStartPlay(true)
+		}
+	},[voiceUrls])
 
 	const close_clean = () => {
 		if (wsSocket !== undefined){
@@ -195,28 +258,12 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 			.then(data => {
 				if (data.code === "200") {
 					let openInfo: LiveOpenResponse = JSON.parse(data.content)
-					setSession(openInfo.session)
-					form.setFieldsValue({session: openInfo.session})
+					// setSession(openInfo.session)
+					// form.setFieldsValue({session: openInfo.session})
 					setRoleOne(values.role_1_id)
 					setRoleTwo(values.role_2_id)
 					setRoleOnePortrait(openInfo.role_1_portarit)
 					setRoleTwoPortrait(openInfo.role_2_portrait)
-					subscribe_topic(openInfo.session+"/text", (message: string) => {
-						setLyrics((prev)=>{
-							const newLyrics = [...prev]
-							newLyrics.shift()
-							newLyrics.push(message.toString())
-							return newLyrics
-						})
-					})
-					subscribe_topic(openInfo.session+"/voice", async (message: string) => {
-						await player?.addUrl(message)
-						setVoiceUrls((prevUrl) =>{
-							const newUrls = [...prevUrl]
-							newUrls.push(message)
-							return newUrls
-						})
-					})
 					initAudioStream().then(() => {});
 					alert('进入直播成功');
 					setHideSettings(true)
@@ -232,23 +279,6 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 			});
 	};
 
-	// async function playAudioWithWebAudioApi(url: string): Promise<void> {
-	// 	try {
-	// 		const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-	// 		const response = await fetch(url);
-	// 		const arrayBuffer = await response.arrayBuffer();
-	// 		const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-	//
-	// 		const source = audioContext.createBufferSource();
-	// 		source.buffer = audioBuffer;
-	// 		source.connect(audioContext.destination);
-	// 		source.start();
-	//
-	// 	} catch (error) {
-	// 		console.error('Error playing audio with Web Audio API:', error);
-	// 	}
-	// }
-
 	const props: UploadProps = {
 		onRemove: (file) => {
 			const index = fileList.indexOf(file);
@@ -263,19 +293,6 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 		},
 		fileList,
 	};
-
-	useEffect(() => {
-		if (voiceUrls.length > 0 && !startPlay) {
-			setTimeout(() => {
-				console.log(player)
-				let isStart = player?.play()
-				console.log(voiceUrls)
-				console.log("started: ", isStart)
-				setStartPlay( isStart === undefined ? false : isStart)
-			}, 1000);
-			// setStartPlay(true)
-		}
-	},[voiceUrls])
 
 	return (
 		<div hidden={!visible}>
@@ -347,12 +364,6 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 								</Form.Item>
 								<Form.Item label={t("role2_portrait")} name="role_2_dec" rules={[{required: true, message: '必填项'}]}>
 									<Input/>
-								</Form.Item>
-								<Form.Item hidden={true} name="session">
-									<Input onChange={(event)=>{
-										let value = event.target.value
-										setSession(value)
-									}}/>
 								</Form.Item>
 								<Form.Item label={t("context")} required>
 									<Upload {...props}>
