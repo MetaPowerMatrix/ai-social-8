@@ -65,8 +65,11 @@
     "connectMM": "连接metamask"
   },
   "LiveChat": {
-    "role1": "角色#1",
-    "role2": "角色#2",
+    "role1": "角色1-ID",
+    "role1_portrait": "角色1-描述",
+    "role2": "角色2-ID",
+    "role2_portrait": "角色2-描述",
+    "topic": "主题",
     "Upload": "选文件",
     "confirm": "提交",
     "scene": "直播描述",

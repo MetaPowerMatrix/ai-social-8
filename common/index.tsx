@@ -10,7 +10,11 @@ export const getApiServer = (port: number) => {
 export const getMQTTBroker = () => {
   return "ws://api.metapowermatrix.ai:8881/mqtt"
 }
-
+export interface LiveOpenResponse {
+  session: string,
+  role_1_portarit: string,
+  role_2_portrait: string,
+}
 export interface TimeLineItem {
   children: string
 }
@@ -80,7 +84,12 @@ export const api_url = {
       },
       'interaction': {
         'call': '/api/call',
-        'live': '/api/live'
+        'live': {
+          'open': '/api/live/open',
+          'continue': '/api/live/continue',
+          'end': '/api/live/end',
+          'reload': '/api/live/reload',
+        }
       },
       'character': {
         'iss': '/api/pato/iss',

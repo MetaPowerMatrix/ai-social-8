@@ -123,6 +123,63 @@ const useCommand = () => {
     }
     return false
   }
+  const continue_live_chat = async (id: string, roles: string[], message: string, session: string) => {
+    let data = {id: id, roles: roles, message: message, session: session}
+    let url = getApiServer(80) + api_url.portal.interaction.live.continue
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+      // let data = JSON.parse(dataJson.content)
+    }
+  }
+  const end_live_chat = async (roles: string[]) => {
+    let data = roles
+    let url = getApiServer(80) + api_url.portal.interaction.live.end
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+      // let data = JSON.parse(dataJson.content)
+    }
+  }
+  const restore_live_chat = async (roles: string[], session: string) => {
+    let data = roles
+    let url = getApiServer(80) + api_url.portal.interaction.live.reload + "/" + session
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+      // let data = JSON.parse(dataJson.content)
+    }
+  }
   const deposit_metapower = async (id: string, amount: number, is_donation: boolean) => {
     let data = {id: id, amount: amount, is_donation: is_donation}
     let url = getApiServer(80) + api_url.account.wallet.deposit
@@ -199,7 +256,7 @@ const useCommand = () => {
     return null
   }
   return { login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages, getPatoISS, callPato,
-    deposit_metapower, archive_session, stake_metapower
+    deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat
   }
 }
 
