@@ -13,6 +13,7 @@ import {subscribe_topic} from "@/lib/utils";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import { v4 as uuidv4 } from 'uuid';
+import {SequentialAudioPlayer} from "@/lib/SequentialAudioPlayer";
 
 interface LiveChatPros {
 	id: string,
@@ -25,6 +26,7 @@ interface LiveChatPros {
 declare global {
 	interface Window {
 		webkitAudioContext: any;
+		AudioContext: any;
 	}
 }
 
@@ -42,6 +44,15 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	const [roleOne, setRoleOne] = useState<string>("");
 	const [roleTwo, setRoleTwo] = useState<string>("");
 	const [session, setSession] = useState<string>(uuidv4());
+	const [voiceUrls, setVoiceUrls] = useState<string[]>([]);
+	const [startPlay, setStartPlay] = useState<boolean>(false);
+
+	let player: SequentialAudioPlayer | undefined = undefined;
+	useEffect(() => {
+		console.log("init player")
+		player = new SequentialAudioPlayer(voiceUrls, window);
+	})
+
 	const command = commandDataContainer.useContainer()
 
 	// useEffect(() => {
@@ -198,8 +209,13 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 							return newLyrics
 						})
 					})
-					subscribe_topic(openInfo.session+"/voice", (message: string) => {
-						playAudioWithWebAudioApi(message)
+					subscribe_topic(openInfo.session+"/voice", async (message: string) => {
+						await player?.addUrl(message)
+						setVoiceUrls((prevUrl) =>{
+							const newUrls = [...prevUrl]
+							newUrls.push(message)
+							return newUrls
+						})
 					})
 					initAudioStream().then(() => {});
 					alert('进入直播成功');
@@ -216,22 +232,22 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 			});
 	};
 
-	async function playAudioWithWebAudioApi(url: string): Promise<void> {
-		try {
-			const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-			const response = await fetch(url);
-			const arrayBuffer = await response.arrayBuffer();
-			const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-			const source = audioContext.createBufferSource();
-			source.buffer = audioBuffer;
-			source.connect(audioContext.destination);
-			source.start();
-
-		} catch (error) {
-			console.error('Error playing audio with Web Audio API:', error);
-		}
-	}
+	// async function playAudioWithWebAudioApi(url: string): Promise<void> {
+	// 	try {
+	// 		const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+	// 		const response = await fetch(url);
+	// 		const arrayBuffer = await response.arrayBuffer();
+	// 		const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+	//
+	// 		const source = audioContext.createBufferSource();
+	// 		source.buffer = audioBuffer;
+	// 		source.connect(audioContext.destination);
+	// 		source.start();
+	//
+	// 	} catch (error) {
+	// 		console.error('Error playing audio with Web Audio API:', error);
+	// 	}
+	// }
 
 	const props: UploadProps = {
 		onRemove: (file) => {
@@ -247,6 +263,19 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 		},
 		fileList,
 	};
+
+	useEffect(() => {
+		if (voiceUrls.length > 0 && !startPlay) {
+			setTimeout(() => {
+				console.log(player)
+				let isStart = player?.play()
+				console.log(voiceUrls)
+				console.log("started: ", isStart)
+				setStartPlay( isStart === undefined ? false : isStart)
+			}, 1000);
+			// setStartPlay(true)
+		}
+	},[voiceUrls])
 
 	return (
 		<div hidden={!visible}>

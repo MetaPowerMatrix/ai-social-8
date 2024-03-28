@@ -84,6 +84,7 @@ export const api_url = {
       },
       'interaction': {
         'call': '/api/call',
+        'instruct': '/api/pato/instruct',
         'live': {
           'open': '/api/live/open',
           'continue': '/api/live/continue',

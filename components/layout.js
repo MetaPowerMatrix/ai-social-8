@@ -9,7 +9,7 @@ import {
     RedoOutlined,
     SettingOutlined,
     EuroOutlined,
-    TikTokOutlined
+    TikTokOutlined, UserOutlined
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
@@ -25,11 +25,13 @@ import CallPato from "@/components/call";
 import Deposit from "@/components/deposit";
 import LiveChat from "@/components/LiveChat";
 import {Streaming_Server} from "@/common";
+import AIInstructComponent from "@/components/AIInstruct";
 
 export default function Layout({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(true);
     const [editISS, setEditISS] = useState(false);
     const [openLive, setOpenLive] = useState(false);
+    const [openInstruct, setOpenInstruct] = useState(false);
     const [openCall, setOpenCall] = useState(false);
     const [openDeposit, setOpenDeposit] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
@@ -148,6 +150,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
             <MaskedHighlight zones={zones} visible={guide} />
             <ProgressBarComponent visible={loading} />
             <FloatButton.Group open={open} trigger="click" style={{right: 64}} onClick={onChange} icon={<MenuOutlined/>}>
+                <FloatButton onClick={()=>{setOpenInstruct(true)}} icon={<UserOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenLive(true)}} icon={<TikTokOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenDeposit(true)}} icon={<EuroOutlined />}/>
@@ -168,6 +171,8 @@ export default function Layout({ children, title, description, onChangeId, onRef
             <Deposit id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
             <LiveChat id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
                       visible={openLive} onShowProgress={showProgressBar}/>
+            <AIInstructComponent id={activeId} serverUrl={Streaming_Server} visible={openInstruct} onShowProgress={showProgressBar}
+                onClose={()=>setOpenInstruct(false)}/>
         </div>
     );
 }
