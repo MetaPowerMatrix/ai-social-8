@@ -51,9 +51,12 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
-		setPlayer(new SequentialAudioPlayer(voiceUrls, window));
-	}, [player]);
-	useEffect(() => {
+		// if (stopped){
+			console.log("init player")
+			setPlayer(new SequentialAudioPlayer(voiceUrls, window));
+	// 	}
+	// }, [stopped]);
+	// useEffect(() => {
 		// Initialize MQTT client and connect
 		const mqttClient = mqtt.connect(getMQTTBroker());
 		mqttClient.on("connect", () => {
@@ -117,7 +120,7 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 		if (voiceUrls.length > 0 && !startPlay) {
 			setTimeout(() => {
 				console.log(player)
-				let isStart = player?.play()
+				let isStart = player?.play((empty: boolean)=>setStartPlay(!empty))
 				console.log(voiceUrls)
 				console.log("started: ", isStart)
 				setStartPlay( isStart === undefined ? false : isStart)

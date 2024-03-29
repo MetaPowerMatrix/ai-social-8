@@ -35,9 +35,10 @@ export class SequentialAudioPlayer {
 		}
 	}
 
-	private playBuffer(index: number): boolean {
+	private playBuffer(index: number, callback: (empty: boolean)=>void): boolean {
 		if (index >= this.buffers.length) {
 			console.log('Finished playing all audio sources.');
+			callback(true)
 			return false;
 		}
 
@@ -47,16 +48,16 @@ export class SequentialAudioPlayer {
 		source.start();
 
 		source.onended = () => {
-			this.playBuffer(index + 1);
+			this.playBuffer(index + 1, callback);
 		};
 		return true
 	}
 
-	public play(): boolean {
+	public play(callback: (empty: boolean)=>void): boolean {
 		if (this.currentBuffers === 0) {
 			console.log('Audio buffers are still loading.');
 			return false;
 		}
-		return this.playBuffer(this.currentIndex);
+		return this.playBuffer(this.currentIndex, callback);
 	}
 }
