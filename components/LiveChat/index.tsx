@@ -39,8 +39,8 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	const [hideSettings, setHideSettings] = useState<boolean>(true);
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [lyrics, setLyrics] = useState<string[]>(["字幕一","字幕二"]);
-	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/two-boy.png");
-	const [roleTwoPortrait, setRoleTwoPortrait] = useState<string>("/images/two-boy.png");
+	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/placeholder2.png");
+	const [roleTwoPortrait, setRoleTwoPortrait] = useState<string>("/images/placeholder2.png");
 	const [roleOne, setRoleOne] = useState<string>("");
 	const [roleTwo, setRoleTwo] = useState<string>("");
 	const [session, setSession] = useState<string>(uuidv4());
@@ -318,22 +318,16 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 					</Row>
 					<Divider type={"horizontal"}/>
 					<Row align={"middle"} justify={"space-between"}>
-						<Col span={8} style={{textAlign: "center", height: 400}}>
+						<Col span={8} style={{textAlign: "center", height: 500}}>
 							<Image src={roleOnePortrait} fill={true} alt={"role1"}/>
 						</Col>
-						<Col span={8} style={{textAlign: "center"}}>
-							<AudioOutlined style={{color: "white", fontSize: 40}} spin={!stopped} />
-						</Col>
-						<Col span={8} style={{textAlign: "center", height: 400}}>
-							<Image fill={true} src={roleTwoPortrait} alt={"role1"}/>
-						</Col>
-					</Row>
-					<Divider type={"horizontal"}/>
-					<Row>
-						<Col span={24}
-						     style={{color: "white", backgroundColor: "rgba(106, 120, 121,0.8)", textAlign: "center", height: 80}}>
+						<Col span={8} style={{textAlign: "center", height: 400, color:"white"}}>
+							<AudioOutlined style={{fontSize: 40, marginBottom: 30}} spin={!stopped}/>
 							<h4>{lyrics[0]}</h4>
 							<h4>{lyrics[1]}</h4>
+						</Col>
+						<Col span={8} style={{textAlign: "center", height: 500}}>
+							<Image fill={true} src={roleTwoPortrait} alt={"role1"}/>
 						</Col>
 					</Row>
 				</div>
