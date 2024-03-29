@@ -5,7 +5,8 @@ export const tokenContractAddress = "0xD6311f9A6bd3a802263F4cd92e2729bC2C31Ed23"
 export const recipientAddress = '0xd951AA2182A55aEeE6D32b1be11ebAEe61Cb2623'
 export const host = "api.metapowermatrix.ai"
 export const Web_Server = "https://"+ host
-export const Streaming_Server = "ws://34.70.87.231:8040"
+// export const Streaming_Server = "ws://34.70.87.231:8040"
+export const Streaming_Server = "wss://ws.metapowermatrix.ai"
 export const getApiServer = (port: number) => {
   // return Web_Server + ':' + port
   return Web_Server
