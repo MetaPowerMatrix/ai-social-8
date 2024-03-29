@@ -73,7 +73,8 @@
     "Upload": "选文件",
     "confirm": "提交",
     "scene": "直播描述",
-    "context": "直播内容上传"
+    "context": "直播内容上传",
+    "close": "关闭"
   },
   "LocaleSwitcher": {
     "switchLocale": "切换语言 {locale, select, cn {中文} en {English}}"

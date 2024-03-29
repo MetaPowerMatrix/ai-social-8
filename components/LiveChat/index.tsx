@@ -38,7 +38,7 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [hideSettings, setHideSettings] = useState<boolean>(true);
 	const [stopped, setStopped] = useState<boolean>(true);
-	const [lyrics, setLyrics] = useState<string[]>(["字幕一","字幕二"]);
+	const [lyrics, setLyrics] = useState<string[]>([".","."]);
 	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/placeholder2.png");
 	const [roleTwoPortrait, setRoleTwoPortrait] = useState<string>("/images/placeholder2.png");
 	const [roleOne, setRoleOne] = useState<string>("");
@@ -52,6 +52,8 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 
 	useEffect(() => {
 		setPlayer(new SequentialAudioPlayer(voiceUrls, window));
+	}, [player]);
+	useEffect(() => {
 		// Initialize MQTT client and connect
 		const mqttClient = mqtt.connect(getMQTTBroker());
 		mqttClient.on("connect", () => {
@@ -368,6 +370,8 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 									<Button type="primary" htmlType="submit">
 										{t("confirm")}
 									</Button>
+									<Divider type={"vertical"}/>
+									<Button onClick={()=>setHideSettings(true)}>{t("close")}</Button>
 								</Form.Item>
 							</Form>
 						</Col>
