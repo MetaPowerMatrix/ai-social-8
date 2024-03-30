@@ -2,7 +2,6 @@ import React from 'react';
 import {useTranslations} from "next-intl";
 import styles from "./AuthorizeComponent.module.css"
 import commandDataContainer from "@/container/command";
-import Image from "next/image";
 import {getCookie} from "@/lib/utils";
 import {Button, Col, Row} from "antd";
 
@@ -27,7 +26,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 				<Row>
 					<Col span={24} style={{textAlign: "center"}}>
 						<div><h5>{t("tipsAuthorize")}</h5></div>
-						<Button>接受</Button>
+						<Button onClick={handleAccept}>接受</Button>
 					</Col>
 				</Row>
 			</div>
