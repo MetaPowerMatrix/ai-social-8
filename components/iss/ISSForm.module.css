@@ -12,6 +12,7 @@
 .iss_form_content {
     position: absolute;
     background-color: white;
+    overflow: scroll;
     padding: 30px;
     width: 50%;
     top: 50%;
@@ -23,7 +24,6 @@
     background-color: white;
     padding: 30px;
     width: 90%;
-    height: 90%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
