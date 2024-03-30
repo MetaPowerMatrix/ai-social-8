@@ -18,6 +18,14 @@
     width: 35%;
 }
 
+.modal_content_mobile {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+}
+
 .close_button {
     color: #aaa;
     float: right;

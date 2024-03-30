@@ -4,7 +4,7 @@ import {Flex, Select} from "antd";
 import commandDataContainer from "../../container/command";
 import {getCookie} from "@/lib/utils";
 
-function ModalLogin({ isOpen, onClose, tips, options }) {
+function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
 	const [username, setUsername] = useState('');
 	const [userid, setUserid] = useState('');
 	const command = commandDataContainer.useContainer()
@@ -43,7 +43,7 @@ function ModalLogin({ isOpen, onClose, tips, options }) {
 
 	return (
 		<div className={styles.modal}>
-			<div className={styles.modal_content}>
+			<div className={mobile ? styles.modal_content_mobile : styles.modal_content}>
 				<span className={styles.close_button} onClick={() => onClose('')}>&times;</span>
 				<h5>{tips('notLoginTips')}</h5>
 				<div className={styles.form_group}>

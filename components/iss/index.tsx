@@ -14,9 +14,10 @@ interface ISSFormProps {
 	id: string;
 	onClose: ()=>void;
 	userISS: Persona;
+	mobile: boolean;
 }
 
-const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS}) => {
+const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}) => {
 	const t = useTranslations('ISSForm');
 	const [form] = Form.useForm();
 
@@ -49,7 +50,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS}) => {
 
 	return (
 		<div hidden={!visible} className={styles.iss_form_container}>
-			<div className={styles.iss_form_content}>
+			<div className={ mobile ? styles.iss_form_content_mobile : styles.iss_form_content}>
 				<div><h5>{t("tips")}</h5></div>
 				<Form form={form} variant="filled" onFinish={handleSubmit}>
 					<Form.Item  label={t("name")} name="name" rules={[{required: true, message: 'do not change here'}]}>

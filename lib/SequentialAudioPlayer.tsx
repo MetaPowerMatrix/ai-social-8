@@ -39,7 +39,6 @@ export class SequentialAudioPlayer {
 		if (index >= this.buffers.length) {
 			console.log('Finished playing all audio sources.');
 			callback(true)
-			return false;
 		}
 
 		const source = this.audioContext.createBufferSource();

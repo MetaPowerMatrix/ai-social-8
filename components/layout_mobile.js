@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import styles from './layout.module.css';
-import utilStyles from '../styles/utils.module.css';
+import styles from './layout_mobile.module.css';
 import {Col, Divider, Flex, FloatButton, Row} from "antd";
 import {
     PhoneOutlined,
@@ -17,7 +16,6 @@ import {useTranslations} from 'next-intl';
 import {getCookie, subscribe_topic} from "@/lib/utils";
 import TaskPanel from "@/components/taskPanel";
 import ProgressBarComponent from "@/components/ProgressBar";
-import HeaderPanel from "@/components/header";
 import MaskedHighlight from "@/components/MaskedHighlight";
 import ISSForm from "@/components/iss";
 import commandDataContainer from "@/container/command";
@@ -26,9 +24,12 @@ import Deposit from "@/components/deposit";
 import LiveChat from "@/components/LiveChat";
 import {Streaming_Server} from "@/common";
 import AIInstructComponent from "@/components/AIInstruct";
+import HeaderPanelMobile from "./header_mobile";
+import LiveChatMobile from "@/components/LiveChatMobile";
+import AIInstructMobileComponent from "@/components/AIInstructMobile";
 
-export default function Layout({ children, title, description, onChangeId, onRefresh }) {
-    const [open, setOpen] = useState(true);
+export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
+    const [open, setOpen] = useState(false);
     const [editISS, setEditISS] = useState(false);
     const [openLive, setOpenLive] = useState(false);
     const [openInstruct, setOpenInstruct] = useState(false);
@@ -122,34 +123,26 @@ export default function Layout({ children, title, description, onChangeId, onRef
 
     return (
         <div className={styles.container}>
-          <Head>
-            <link rel="icon" href="/favicon.ico" />
-            <meta name="description" content={description}/>
-            <meta name="og:title" content={title} />
-          </Head>
+            <Head>
+                <link rel="icon" href="/favicon.ico"/>
+                <meta name="description" content={description}/>
+                <meta name="og:title" content={title}/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            </Head>
             {isLogin ?
                 <>
-                    <Row justify="space-between">
-                        <Col span={24}>
-                            <HeaderPanel activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}/>
-                        </Col>
-                    </Row>
+                    <HeaderPanelMobile activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}/>
                     <Divider/>
-                    <Row justify="space-between">
-                        <Col span={6}>
-                            <TaskPanel id={activeId} onShowProgress={showProgressBar} panelWidth={300}/>
-                        </Col>
-                        <Col span={17}>
-                            {children}
-                        </Col>
-                    </Row>
+                    <TaskPanel id={activeId} onShowProgress={showProgressBar} panelWidth={400}/>
+                    <Divider/>
+                    {children}
                 </>
                 :
                 <Image priority src="/images/ai-town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
             }
             <MaskedHighlight zones={zones} visible={guide} />
             <ProgressBarComponent visible={loading} />
-            <FloatButton.Group open={open} trigger="click" style={{right: 64}} onClick={onChange} icon={<MenuOutlined/>}>
+            <FloatButton.Group  open={open} trigger="click" style={{right: 34}} onClick={onChange} icon={<MenuOutlined/>}>
                 <FloatButton onClick={()=>{setOpenInstruct(true)}} icon={<UserOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenLive(true)}} icon={<TikTokOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>
@@ -157,7 +150,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
                 <FloatButton onClick={()=>{setEditISS(true)}} icon={<SettingOutlined />}/>
                 <FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>
             </FloatButton.Group>
-            <ModalLogin isOpen={!isLogin} tips={t} options={availableIds}
+            <ModalLogin mobile={true} isOpen={!isLogin} tips={t} options={availableIds}
                         onClose={(id) => {
                             setIsLogin(true)
                             if (id !== '') {
@@ -166,12 +159,12 @@ export default function Layout({ children, title, description, onChangeId, onRef
                             }
                         }}
             />
-            <ISSForm mobile={false} userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
+            <ISSForm mobile={true} userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
             <CallPato mobile={true} id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>
-            <Deposit mobile={false} id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
-            <LiveChat id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
+            <Deposit mobile={true} id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
+            <LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
                       visible={openLive} onShowProgress={showProgressBar}/>
-            <AIInstructComponent id={activeId} serverUrl={Streaming_Server} visible={openInstruct} onShowProgress={showProgressBar}
+            <AIInstructMobileComponent id={activeId} serverUrl={Streaming_Server} visible={openInstruct} onShowProgress={showProgressBar}
                 onClose={()=>setOpenInstruct(false)}/>
         </div>
     );

@@ -7,9 +7,8 @@ import commandDataContainer from "@/container/command";
 import {useTranslations} from "next-intl";
 import {StatsInfo, TimeLineItem} from "@/common";
 
-const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: string, activeId:string, userFeed: TimeLineItem[], onChangeId: (s: boolean)=>void}) => {
+const HeaderPanelMobile = ({activeName, activeId, userFeed, onChangeId}:{activeName: string, activeId:string, userFeed: TimeLineItem[], onChangeId: (s: boolean)=>void}) => {
 	const [userInfo, setUserInfo] = useState<StatsInfo[]>([]);
-	// const [userFeed, setUserFeed] = useState<TimeLineItem[]>([{children:"新的一天开始了"}]);
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('Login');
 
@@ -61,8 +60,7 @@ const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: s
 	return (
 		<header>
 			<Row justify="space-between">
-				<Col span={4}>
-					<Flex gap="middle" vertical align="center">
+				<Col span={8} style={{textAlign:"center"}}>
 						<Image
 							priority
 							src="/images/notlogin.png"
@@ -71,19 +69,22 @@ const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: s
 							width={72}
 							alt={activeName}
 						/>
-						<Flex gap="middle" vertical={false} align="center">
+				</Col>
+				<Col span={16} style={{textAlign:"center"}}>
 							<h5 className={utilStyles.headingLg}>
 								{activeName.length > 14 ? activeName.substring(0, 8) + '...' : activeName}
+								<EditOutlined onClick={() => onChangeId(false)}/>
 							</h5>
-							<EditOutlined onClick={() => onChangeId(false)}/>
-						</Flex>
-					</Flex>
 				</Col>
-				<Col span={12}>
-					<Descriptions style={{marginLeft:10}} size={"small"} bordered={true} column={3} layout="vertical" items={userInfo}/>
+			</Row>
+			<Row>
+				<Col span={24}>
+					<Descriptions size={"small"} bordered={true} column={3} layout="vertical" items={userInfo}/>
 				</Col>
-				<Col span={7}>
-					<div style={{height: "155px", overflowY: "auto", padding:15, border:"1px dotted blue"}}>
+			</Row>
+			<Row>
+				<Col span={24}>
+					<div style={{marginTop:20, height: "155px", overflowY: "auto", padding:15, border:"1px dotted blue"}}>
 						<Timeline
 							mode={"alternate"}
 							items={userFeed}
@@ -95,4 +96,4 @@ const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: s
 )
 }
 
-export default HeaderPanel
+export default HeaderPanelMobile

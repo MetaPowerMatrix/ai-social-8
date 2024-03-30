@@ -7,14 +7,13 @@ import styles from "./TaskPanel.module.css"
 import {UploadOutlined} from "@ant-design/icons";
 import {api_url, getApiServer} from "@/common";
 
-const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean)=>void}) => {
+const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress: (s: boolean)=>void, panelWidth: number}) => {
 	const t = useTranslations('Task');
 	const command = commandDataContainer.useContainer()
 	const [userPray, setUserPray] = useState('');
 	const [dailyEvent, setDailyEvent] = useState('');
 	const [knowledge, setKnowledge] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [panelWidth, setPanelWidth] = useState(300);
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 	const handlePray = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -102,8 +101,7 @@ const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean
 	};
 
 	return(
-		<>
-			<Flex vertical justify="space-around" align="flex-start" gap={40}>
+		<div>
 				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9"}} title={t('taskDaily')}>
 					<TextArea placeholder={t('taskDailyTips')} rows={3} onChange={(e) => dailyInput(e)}/>
 					<button className={styles.task} onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
@@ -119,8 +117,7 @@ const TaskPanel = ({id, onShowProgress}:{id: string, onShowProgress: (s: boolean
 					<TextArea placeholder={t('taskPrayTips')} rows={2} onChange={(e) => prayInput(e)}/>
 					<button className={styles.task} onClick={(e) => handlePray(e)}>{t('submit')}</button>
 				</Card>
-			</Flex>
-		</>
+		</div>
 	)
 }
 

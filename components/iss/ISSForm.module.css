@@ -18,3 +18,12 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+.iss_form_content_mobile {
+    position: absolute;
+    background-color: white;
+    padding: 30px;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

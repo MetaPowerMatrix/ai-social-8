@@ -15,6 +15,7 @@ interface DepositProps {
 	visible: boolean;
 	id: string,
 	onClose: ()=>void;
+	mobile: boolean;
 }
 
 declare global {
@@ -23,7 +24,7 @@ declare global {
 	}
 }
 
-const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
+const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 	const t = useTranslations('ISSForm');
 	const [form] = Form.useForm();
 	const [formDonation] = Form.useForm();
@@ -174,18 +175,15 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 
 	return (
 		<div hidden={!visible} className={styles.call_form_container}>
-			<div className={styles.call_form_content}>
-				<h5 style={{display: 'inline-block'}}>{t("stakeTips")}</h5>
+			<div className={mobile ? styles.call_form_content_mobile : styles.call_form_content}>
 				<Button onClick={connectToBsc} style={{marginLeft:50}}>
 					{t("connectMM")}
 				</Button>
 				<Button onClick={onClose} style={{marginLeft:50}}>
 					{t("close")}
 				</Button>
-				<div>
-					<Image priority src="/images/pab.jpg" height={12} width={12} style={{display: 'inline-block', marginRight: 10}} alt={"pab"}/>
-					<h5 style={{display: 'inline-block'}}>{t("tips3")}</h5>
-				</div>
+				<Divider type={"horizontal"}/>
+				<h5 style={{display: 'inline-block'}}>{t("tips3")}</h5>
 				<Form layout="inline" form={form} variant="filled" onFinish={handleSubmit}>
 					<Form.Item label={t("amount")} name="amount" rules={[{required: true, message: '必填项'}]}>
 						<Input/>
@@ -199,8 +197,6 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 				</Form>
 				<Divider type={"horizontal"}/>
 				<div>
-					<Image priority src="/images/pab.jpg" height={12} width={12}
-					       style={{display: 'inline-block', marginRight: 10}} alt={"pab"}/>
 					<h5 style={{display: 'inline-block'}}>{t("donationTips")}</h5>
 				</div>
 				<Form layout="inline" form={formDonation} variant="filled" onFinish={handleSubmitDonation}>
@@ -215,8 +211,6 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose}) => {
 				</Form>
 				<Divider type={"horizontal"}/>
 				<div>
-					<Image priority src="/images/pab.jpg" height={12} width={12}
-					       style={{display: 'inline-block', marginRight: 10}} alt={"pab"}/>
 					<h5 style={{display: 'inline-block'}}>{t("daoTips")}</h5>
 				</div>
 				<Form layout="inline" form={formDao} variant="filled" onFinish={handleSubmitDAO}>
