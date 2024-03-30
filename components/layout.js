@@ -169,7 +169,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
                         }}
             />
             <ISSForm mobile={false} userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
-            <CallPato mobile={true} id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>
+            <CallPato mobile={false} id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>
             <Deposit mobile={false} id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
             <LiveChat id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
                       visible={openLive} onShowProgress={showProgressBar}/>

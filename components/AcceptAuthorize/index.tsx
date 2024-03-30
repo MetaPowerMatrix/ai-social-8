@@ -47,7 +47,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 			<div className={ mobile ? styles.authorize_content_mobile : styles.authorize_content}>
 				<Row>
 					<Col span={24} style={{textAlign: "center"}}>
-						<div><h5>{t("tipsAuthorize")}</h5></div>
+						<div><h5>{name}{t("tipsAuthorize")}</h5></div>
 						<Button onClick={handleAccept}>接受</Button>
 					</Col>
 				</Row>

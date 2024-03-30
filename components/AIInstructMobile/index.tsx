@@ -1,6 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import styles from "@/components/AIInstructMobile/AIInstructMobileComponent.module.css";
-import {Button, Card, Col, Divider, Form, GetProp, List, Row, Upload, UploadFile, UploadProps} from "antd";
+import {
+	Button,
+	Card,
+	Col, DatePicker,
+	DatePickerProps,
+	Divider,
+	Form,
+	GetProp,
+	List,
+	Row,
+	Upload,
+	UploadFile,
+	UploadProps
+} from "antd";
 import {useTranslations} from "next-intl";
 import {
 	AudioOutlined, CloseOutlined,
@@ -13,7 +26,8 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import TextArea from "antd/es/input/TextArea";
 import mqtt from "mqtt";
 import SubscriptionsComponent from "@/components/Subscriptions";
-import {getCookie} from "@/lib/utils";
+import {getCookie, getTodayDateString} from "@/lib/utils";
+import dayjs from "dayjs";
 
 interface AIInstructPros {
 	id: string,
@@ -45,6 +59,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const [callid, setCallid] = useState<string>("");
+	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
@@ -134,6 +149,30 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 		command.callPato(id, callid).then((res) => {
 			alert(t("waitingCall"))
 		})
+	}
+	useEffect(()=> {
+		command.getProHistoryMessages(id, callid, queryDate).then((response) => {
+			let txtMessages: string[] = []
+			if (response !== null) {
+				let session_messages = response
+				session_messages.forEach((item) => {
+					let msg = item.messages.map((msg) => {
+						return msg.sender + ":" + msg.question + "\n" + msg.receiver + ":" + msg.answer;
+					})
+					txtMessages.push(msg.join("\n"))
+				})
+				setAnswer(txtMessages.join("\n"))
+			}
+		})
+	},[id, queryDate])
+
+	const onChange: DatePickerProps['onChange'] = (_, dateString) => {
+		changeQueryDate(dateString as string)
+		// console.log(date, dateString);
+	};
+
+	const changeQueryDate = (datestring: string) => {
+		setQueryDate(datestring);
 	}
 
 	const handleAutoChat = () => {
@@ -324,15 +363,17 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
                     </Row>
                     <Row>
                         <Col span={24} style={{marginTop: 20, textAlign: "center", height: 180}}>
-                            <h4>回复</h4>
+                            <h4 style={{marginRight: 20, display: "inline-block"}}>回复</h4>
+                            <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}}
+                                        onChange={onChange}/>
                             <TextArea placeholder={"回复"} value={answer} rows={8}/>
                         </Col>
                     </Row>
                 </>
 						}
 						{activeAgentKey !== "qa" &&
-                <Row align={"middle"} justify={"space-between"} style={{marginTop:20}}>
-		                <Col span={7}/>
+                <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
+                    <Col span={7}/>
                     <Col span={10} style={{textAlign: "center", height: 400}}>
                         <Image onClick={()=>setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
                     </Col>

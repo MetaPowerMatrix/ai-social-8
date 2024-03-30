@@ -102,11 +102,11 @@ const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress
 
 	return(
 		<div>
-				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9"}} title={t('taskDaily')}>
+				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9", marginBottom: 20}} title={t('taskDaily')}>
 					<TextArea placeholder={t('taskDailyTips')} rows={3} onChange={(e) => dailyInput(e)}/>
 					<button className={styles.task} onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
 				</Card>
-				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9"}} title={t('taskUpgrade')}>
+				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9", marginBottom: 20}} title={t('taskUpgrade')}>
 					<TextArea style={{marginBottom: 10, display: "none"}} placeholder={t('knowledgeTips')} rows={2} onChange={(e) => knowledgeInput(e)}/>
 					<Upload {...props}>
 						<Button icon={<UploadOutlined />}>{t('Upload')}</Button>

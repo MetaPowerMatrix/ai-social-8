@@ -5,14 +5,8 @@ import {
 	Card,
 	Col,
 	DatePicker, DatePickerProps,
-	Divider,
-	Form,
-	GetProp,
 	List,
-	Rate,
 	Row,
-	Tag,
-	Upload,
 	UploadFile,
 	UploadProps
 } from "antd";
@@ -21,7 +15,7 @@ import {
 	AudioOutlined, CloseOutlined,
 	PauseOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, getMQTTBroker, LiveOpenResponse} from "@/common";
+import {api_url, getApiServer, getMQTTBroker} from "@/common";
 import Image from "next/image";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
@@ -52,7 +46,6 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [stopped, setStopped] = useState<boolean>(true);
-	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/two-boy.png");
 	const [answer, setAnswer] = useState<string>("");
 	const [question, setQuestion] = useState<string>("");
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
@@ -157,7 +150,7 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 				setAnswer(txtMessages.join("\n"))
 			}
 		})
-	},[id, queryDate])
+	},[callid, queryDate])
 
 	const onChange: DatePickerProps['onChange'] = (_, dateString) => {
 		changeQueryDate(dateString as string)
@@ -365,6 +358,7 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 								                    onClick={(e) => {
 									                    setSelectedIndex(index)
 									                    setCallid(item.value)
+									                    setAnswer('')
 								                    }}
 							                    >
 								                    <h5>{item.label}</h5>
