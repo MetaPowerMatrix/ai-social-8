@@ -264,13 +264,13 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
                         </Col>
                     </Row>
                     <Row align={"middle"} justify={"space-between"}>
-                        <Col span={24} style={{marginTop:20, textAlign: "center", height: 200}}>
+                        <Col span={24} style={{marginTop:20, textAlign: "center", height: 160}}>
                             <Image src={roleOnePortrait} fill={true} alt={"role1"}/>
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={24} style={{marginTop: 40, textAlign: "center", height: 200}}>
-                            <TextArea placeholder={"任务结果"}  value={answer} rows={10}/>
+                        <Col span={24} style={{marginTop: 20, textAlign: "center", height: 180}}>
+                            <TextArea placeholder={"任务结果"}  value={answer} rows={8}/>
                         </Col>
                     </Row>
 								</>
