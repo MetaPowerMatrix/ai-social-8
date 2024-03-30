@@ -59,13 +59,13 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
-		{key: "qa", label: "问答"},
-		{key: "X", label: "发X"},
-		{key: "gmail", label: "收发邮件"},
-		{key: "telegram", label: "电报消息同步"},
-		{key: "solana", label: "solana交易"},
+		{key: "qa", label: "交谈"},
+		{key: "X", label: "X"},
+		{key: "telegram", label: "Telegram"},
+		{key: "solana", label: "Solana"},
 		{key: "search", label: "搜索"},
-		{key: "tiktok", label: "tiktok"},
+		{key: "tiktok", label: "TikTok"},
+		{key: "gmail", label: "邮件"},
 	]
 	useEffect(() => {
 		// Initialize MQTT client and connect
