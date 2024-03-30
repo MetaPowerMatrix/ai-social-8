@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from './layout.module.css';
-import utilStyles from '../styles/utils.module.css';
 import {Col, Divider, Flex, FloatButton, Row} from "antd";
 import {
     PhoneOutlined,
@@ -9,7 +8,7 @@ import {
     RedoOutlined,
     SettingOutlined,
     EuroOutlined,
-    TikTokOutlined, UserOutlined
+    TikTokOutlined, UserOutlined, QrcodeOutlined
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
@@ -26,10 +25,12 @@ import Deposit from "@/components/deposit";
 import LiveChat from "@/components/LiveChat";
 import {Streaming_Server} from "@/common";
 import AIInstructComponent from "@/components/AIInstruct";
+import QRCodeComponent from "@/components/QRCode";
 
 export default function Layout({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(true);
     const [editISS, setEditISS] = useState(false);
+    const [openCode, setOpenCode] = useState(false);
     const [openLive, setOpenLive] = useState(false);
     const [openInstruct, setOpenInstruct] = useState(false);
     const [openCall, setOpenCall] = useState(false);
@@ -155,6 +156,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
                 <FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenDeposit(true)}} icon={<EuroOutlined />}/>
                 <FloatButton onClick={()=>{setEditISS(true)}} icon={<SettingOutlined />}/>
+                <FloatButton onClick={()=>{setOpenCode(true)}} icon={<QrcodeOutlined />}/>
                 <FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>
             </FloatButton.Group>
             <ModalLogin isOpen={!isLogin} tips={t} options={availableIds}
@@ -173,6 +175,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
                       visible={openLive} onShowProgress={showProgressBar}/>
             <AIInstructComponent id={activeId} serverUrl={Streaming_Server} visible={openInstruct} onShowProgress={showProgressBar}
                 onClose={()=>setOpenInstruct(false)}/>
+            <QRCodeComponent visible={openCode} id={activeId} onClose={()=>setOpenCode(false)} mobile={false}/>
         </div>
     );
 }
