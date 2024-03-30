@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styles from "@/components/AIInstruct/AIInstructComponent.module.css";
-import {Card, Col, Divider, Form, GetProp, Row, Upload, UploadFile, UploadProps} from "antd";
+import {Button, Card, Col, Divider, Form, GetProp, List, Rate, Row, Tag, Upload, UploadFile, UploadProps} from "antd";
 import {useTranslations} from "next-intl";
 import {
 	AudioOutlined, CloseOutlined,
@@ -13,6 +13,7 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import TextArea from "antd/es/input/TextArea";
 import mqtt from "mqtt";
 import SubscriptionsComponent from "@/components/Subscriptions";
+import {getCookie} from "@/lib/utils";
 
 interface AIInstructPros {
 	id: string,
@@ -41,6 +42,9 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const [activeAgentKey, setActiveAgentKey] = useState<string>("qa");
 	const [openSub, setOpenSub] = useState<boolean>(false);
+	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
+	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
+	const [callid, setCallid] = useState<string>("");
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
@@ -107,6 +111,20 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 		}
 	}, [visible])
 
+	useEffect(() => {
+		const cookie2 = getCookie('authorized-ids');
+		if (cookie2 !== "" || cookie2 !== null) {
+			const ids = cookie2.split(',');
+			const idsMap = ids.filter((element)=> {return (element !== '')} )
+				.map((id) => {
+					console.log(id)
+					return {label: id.split(":")[1], value: id.split(":")[0]};
+			});
+			// console.log(idsMap)
+			setAuthorisedIds(idsMap);
+		}
+	},[]);
+
 	const close_clean = () => {
 		if (wsSocket !== undefined){
 			wsSocket.close();
@@ -116,6 +134,20 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 		}
 		onClose()
 	}
+
+	const callPato = (id: string, callid: string) => {
+		command.callPato(id, callid).then((res) => {
+			alert(t("waitingCall"))
+		})
+	}
+
+	const handleAutoChat = () => {
+		if (callid === ""){
+			alert(t("requireId"))
+		}else {
+			callPato(id, callid)
+		}
+	};
 
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
@@ -254,7 +286,7 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 						{ activeAgentKey === "qa" &&
 								<>
                     <Row align={"middle"} justify={"space-between"}>
-                        <Col span={22}>
+                        <Col span={20}>
                             <TextArea placeholder={"你的指令"}  value={question} rows={1}/>
                         </Col>
                         <Col span={1}>
@@ -265,13 +297,41 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 															<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
 													}
                         </Col>
+                        <Col span={2}>
+                            <Button onClick={handleAutoChat}>自动聊</Button>
+                        </Col>
                     </Row>
                     <Row align={"middle"} justify={"space-between"} style={{marginTop:20}}>
                         <Col span={8} style={{textAlign: "center", height: 400}}>
-                            <Image src={roleOnePortrait} fill={true} alt={"role1"}/>
+                            <h4>专家</h4>
+                            <List
+                                itemLayout="vertical"
+                                size="small"
+                                pagination={{
+							                    onChange: (page) => {
+								                    console.log(page);
+							                    },
+							                    pageSize: 6,
+						                    }}
+                                dataSource={authorisedIds}
+                                renderItem={(item, index) => (
+							                    <List.Item
+								                    key={index}
+								                    className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
+								                    defaultValue={item.value}
+								                    onClick={(e) => {
+									                    setSelectedIndex(index)
+									                    setCallid(item.value)
+								                    }}
+							                    >
+								                    <h5>{item.label}</h5>
+							                    </List.Item>
+						                    )}
+                            />
                         </Col>
                         <Col span={14} style={{textAlign: "center", height: 400}}>
-                            <TextArea placeholder={"任务结果"}  value={answer} rows={17}/>
+		                        <h4>回复</h4>
+                            <TextArea contentEditable={false} placeholder={"回复"}  value={answer} rows={15}/>
                         </Col>
                     </Row>
 								</>

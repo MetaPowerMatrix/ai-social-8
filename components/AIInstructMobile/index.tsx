@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styles from "@/components/AIInstructMobile/AIInstructMobileComponent.module.css";
-import {Card, Col, Divider, Form, GetProp, Row, Upload, UploadFile, UploadProps} from "antd";
+import {Button, Card, Col, Divider, Form, GetProp, List, Row, Upload, UploadFile, UploadProps} from "antd";
 import {useTranslations} from "next-intl";
 import {
 	AudioOutlined, CloseOutlined,
@@ -13,6 +13,7 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import TextArea from "antd/es/input/TextArea";
 import mqtt from "mqtt";
 import SubscriptionsComponent from "@/components/Subscriptions";
+import {getCookie} from "@/lib/utils";
 
 interface AIInstructPros {
 	id: string,
@@ -41,6 +42,9 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const [activeAgentKey, setActiveAgentKey] = useState<string>("qa");
 	const [openSub, setOpenSub] = useState<boolean>(false);
+	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
+	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
+	const [callid, setCallid] = useState<string>("");
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
@@ -104,6 +108,19 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 		}
 	}, [visible])
 
+	useEffect(() => {
+		const cookie2 = getCookie('authorized-ids');
+		if (cookie2 !== "" || cookie2 !== null) {
+			const ids = cookie2.split(',');
+			const idsMap = ids.filter((element)=> {return (element !== '')} )
+				.map((id) => {
+					return {label: id.split(":")[1], value: id.split(":")[0]};
+				});
+			// console.log(idsMap)
+			setAuthorisedIds(idsMap);
+		}
+	},[]);
+
 	const close_clean = () => {
 		if (wsSocket !== undefined){
 			wsSocket.close();
@@ -113,6 +130,18 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 		}
 		onClose()
 	}
+	const callPato = (id: string, callid: string) => {
+		command.callPato(id, callid).then((res) => {
+			alert(t("waitingCall"))
+		})
+	}
+
+	const handleAutoChat = () => {
+		if (callid === ""){
+			alert(t("requireId"))
+		}
+		callPato(id, callid)
+	};
 
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
@@ -249,33 +278,59 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 						}}
 					>
 						{ activeAgentKey === "qa" &&
-								<>
+                <>
                     <Row align={"middle"} justify={"space-between"}>
-                        <Col span={22}>
-                            <TextArea placeholder={"你的指令"}  value={question} rows={1}/>
+                        <Col span={20}>
+                            <TextArea placeholder={"你的指令"} value={question} rows={1}/>
                         </Col>
                         <Col span={1}>
 													{
-														stopped?
-															<AudioOutlined  style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+														stopped ?
+															<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
 															:
 															<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
 													}
                         </Col>
+                        <Col span={2}>
+                            <Button onClick={handleAutoChat}>自动聊</Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={24} style={{marginBottom:10, textAlign: "center", height: 10}}>
+			                    <h4>专家</h4>
+                        </Col>
                     </Row>
                     <Row align={"middle"} justify={"space-between"}>
-                        <Col span={24} style={{marginTop:20, textAlign: "center", height: 160}}>
-                            <Image src={roleOnePortrait} fill={true} alt={"role1"}/>
+                        <Col span={24} style={{overflow: "scroll", textAlign: "center", height: 160}}>
+                            <List
+                                itemLayout="vertical"
+                                size="small"
+                                dataSource={authorisedIds}
+                                renderItem={(item, index) => (
+																	<List.Item
+																		key={index}
+																		className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
+																		defaultValue={item.value}
+																		onClick={(e) => {
+																			setSelectedIndex(index)
+																			setCallid(item.value)
+																		}}
+																	>
+																		<h5>{item.label}</h5>
+																	</List.Item>
+																)}
+                            />
                         </Col>
                     </Row>
                     <Row>
                         <Col span={24} style={{marginTop: 20, textAlign: "center", height: 180}}>
-                            <TextArea placeholder={"任务结果"}  value={answer} rows={8}/>
+                            <h4>回复</h4>
+                            <TextArea placeholder={"回复"} value={answer} rows={8}/>
                         </Col>
                     </Row>
-								</>
+                </>
 						}
-						{ activeAgentKey !== "qa" &&
+						{activeAgentKey !== "qa" &&
                 <Row align={"middle"} justify={"space-between"} style={{marginTop:20}}>
 		                <Col span={7}/>
                     <Col span={10} style={{textAlign: "center", height: 400}}>

@@ -133,7 +133,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 <>
                     <HeaderPanelMobile activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}/>
                     <Divider/>
-                    <TaskPanel id={activeId} onShowProgress={showProgressBar} panelWidth={400}/>
+                    <TaskPanel id={activeId} onShowProgress={showProgressBar} panelWidth={360}/>
                     <Divider/>
                     {children}
                 </>
