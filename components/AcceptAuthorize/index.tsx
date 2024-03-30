@@ -9,7 +9,6 @@ interface AuthorizeComponentProps {
 	mobile: boolean;
 }
 
-
 const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 	const t = useTranslations('others');
 	const [id, setId] = React.useState<string>('');
@@ -18,21 +17,22 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
-		const currentUrl = window.location.href;
+		const currentUrl = window.location.search;
+		console.log(currentUrl)
 		const searchParams = new URLSearchParams(currentUrl);
-
 		const paramName = 'owner';
 		const token = searchParams.get(paramName);
 
 		console.log(token);
 
 		command.queryPatoAuthToken(token).then((res) => {
+			console.log(res)
 			if (res.length > 1) {
 				setId(res[0])
 				setName(res[1])
 			}
 		})
-	},[id])
+	},[])
 
 	const handleAccept = (values: any) => {
 		// let userid = "b120f295-fcaf-4ddf-a3f3-ac0fc54a5093"
