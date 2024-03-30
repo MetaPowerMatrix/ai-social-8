@@ -8,7 +8,7 @@ import {
     RedoOutlined,
     SettingOutlined,
     EuroOutlined,
-    TikTokOutlined, UserOutlined
+    TikTokOutlined, UserOutlined, QrcodeOutlined
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
@@ -27,10 +27,12 @@ import AIInstructComponent from "@/components/AIInstruct";
 import HeaderPanelMobile from "./header_mobile";
 import LiveChatMobile from "@/components/LiveChatMobile";
 import AIInstructMobileComponent from "@/components/AIInstructMobile";
+import QRCodeComponent from "@/components/QRCode";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(false);
     const [editISS, setEditISS] = useState(false);
+    const [openCode, setOpenCode] = useState(false);
     const [openLive, setOpenLive] = useState(false);
     const [openInstruct, setOpenInstruct] = useState(false);
     const [openCall, setOpenCall] = useState(false);
@@ -148,6 +150,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 <FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenDeposit(true)}} icon={<EuroOutlined />}/>
                 <FloatButton onClick={()=>{setEditISS(true)}} icon={<SettingOutlined />}/>
+                <FloatButton onClick={()=>{setOpenCode(true)}} icon={<QrcodeOutlined />}/>
                 <FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>
             </FloatButton.Group>
             <ModalLogin mobile={true} isOpen={!isLogin} tips={t} options={availableIds}
@@ -166,6 +169,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                       visible={openLive} onShowProgress={showProgressBar}/>
             <AIInstructMobileComponent id={activeId} serverUrl={Streaming_Server} visible={openInstruct} onShowProgress={showProgressBar}
                 onClose={()=>setOpenInstruct(false)}/>
+            <QRCodeComponent visible={openCode} id={activeId} onClose={()=>setOpenCode(false)} mobile={true}/>
         </div>
     );
 }
