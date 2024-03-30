@@ -1,5 +1,5 @@
 import {createContainer} from "unstated-next"
-import {api_url, ChatMessage, getApiServer, PatoInfo, Persona, sessionMessages, StatsInfo} from "@/common";
+import {api_url, getApiServer, PatoInfo, Persona, sessionMessages} from "@/common";
 
 const useCommand = () => {
   const create_pato = async (name: string): Promise<string> => {
@@ -255,8 +255,56 @@ const useCommand = () => {
     }
     return null
   }
+  const genPatoAuthToken = async (id: string) => {
+    if (id === "") return null
+    let url = getApiServer(80) + api_url.portal.auth.gen + "/" + id
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        let token = dataJson.content
+        return token
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return null
+  }
+  const queryPatoAuthToken = async (token: string | null) => {
+    if (token === null) return []
+    let url = getApiServer(80) + api_url.portal.auth.query + "/" + token
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        return dataJson.content.split(',')
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return []
+  }
+  const getProHistoryMessages = async (id: string, pro_id: string, date: string) => {
+    if (id === "" || date === "") return null
+    let url = getApiServer(80) + api_url.portal.message.pro + "/" + id + "/" + pro_id + "/" + date
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        let patoMessages: sessionMessages[] = JSON.parse(dataJson.content)
+        patoMessages.forEach((item) => {
+          item.messages.sort((a, b) => a.created_at - b.created_at)
+        })
+        return patoMessages
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return null
+  }
   return { login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages, getPatoISS, callPato,
-    deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat
+    deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat,
+    getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken
   }
 }
 

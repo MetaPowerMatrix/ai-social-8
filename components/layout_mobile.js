@@ -49,11 +49,11 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const t = useTranslations('Login');
 
     const zones = [
-        { id: 'zone1', top: 260, left: 110, height:220, width:320,
+        { id: 'zone1', top: 360, left: 110, height:220, width:320,
             tips: '每天在这里设置一个话题，可以增加和别人交谈的机会哦'},
-        { id: 'zone2', top: 480, left: 110, height:220, width:320,
+        { id: 'zone2', top: 560, left: 110, height:220, width:320,
             tips: '如果你有一些专业的知识，在这里上传，别人会很愿意和你聊天哦'},
-        { id: 'zone3', top: 270, left: 450, height:140, width:860,
+        { id: 'zone3', top: 760, left: 110, height:140, width:320,
             tips: '这里显示你的Pato的聊天记录，可以按时间查询' },
     ];
 

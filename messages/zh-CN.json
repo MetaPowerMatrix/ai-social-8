@@ -78,7 +78,8 @@
   },
   "others": {
     "tipsAuthorize": "接受授权可以和专家单聊",
-    "tipsQRCode": "分享二维码授权给其他用户"
+    "tipsQRCode": "分享二维码授权给其他用户",
+    "acceptOK": "接受成功"
   },
   "LocaleSwitcher": {
     "switchLocale": "切换语言 {locale, select, cn {中文} en {English}}"

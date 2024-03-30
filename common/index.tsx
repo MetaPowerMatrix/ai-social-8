@@ -79,7 +79,12 @@ export const api_url = {
       'pato': '/api/pato/info',
       'message':{
         'history': '/api/pato/messages',
-        'archive': '/api/pato/archive'
+        'archive': '/api/pato/archive',
+        'pro': '/api/pato/pro/messages',
+      },
+      'auth':{
+        'gen': '/api/pato/pro/auth/gen',
+        'query': '/api/pato/pro/auth/query'
       },
       'task': {
         'pray': '/api/pray',
