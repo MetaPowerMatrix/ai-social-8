@@ -9,13 +9,6 @@ interface AuthorizeComponentProps {
 	mobile: boolean;
 }
 
-const currentUrl = window.location.href;
-const searchParams = new URLSearchParams(currentUrl);
-
-const paramName = 'owner';
-const token = searchParams.get(paramName);
-
-console.log(token);
 
 const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 	const t = useTranslations('others');
@@ -25,12 +18,20 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
-			command.queryPatoAuthToken(token).then((res) => {
-				if (res.length > 1) {
-					setId(res[0])
-					setName(res[1])
-				}
-			})
+		const currentUrl = window.location.href;
+		const searchParams = new URLSearchParams(currentUrl);
+
+		const paramName = 'owner';
+		const token = searchParams.get(paramName);
+
+		console.log(token);
+
+		command.queryPatoAuthToken(token).then((res) => {
+			if (res.length > 1) {
+				setId(res[0])
+				setName(res[1])
+			}
+		})
 	},[id])
 
 	const handleAccept = (values: any) => {
