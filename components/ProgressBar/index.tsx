@@ -5,9 +5,10 @@ import styles from './ProgressBarComponent.module.css'; // Assuming CSS is defin
 
 interface ProgressBarComponentProps {
 	visible: boolean;
+	steps: number;
 }
 
-const ProgressBarComponent: React.FC<ProgressBarComponentProps> = ({ visible}) => {
+const ProgressBarComponent: React.FC<ProgressBarComponentProps> = ({ visible, steps}) => {
 	const [percent, setPercent] = React.useState(5);
 
 	useEffect(() => {
@@ -35,7 +36,7 @@ const ProgressBarComponent: React.FC<ProgressBarComponentProps> = ({ visible}) =
 	return (
 		<div className={styles.progress_bar_container}>
 			<div className={styles.progress_bar_content}>
-				<Progress strokeColor={"yellow"} trailColor={"white"} steps={30} percent={percent} size={[20, 30]} status="active" showInfo={false} />
+				<Progress strokeColor={"yellow"} trailColor={"white"} steps={steps} percent={percent} size={[20, 30]} status="active" showInfo={false} />
 			</div>
 		</div>
 	);

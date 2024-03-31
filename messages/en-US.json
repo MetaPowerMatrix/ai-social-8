@@ -5,7 +5,9 @@
     "sampleName": "LucaLuca",
     "taskMessage": "task messages",
     "taskTips": "*** 通过和其他pato的对话可以获得很多资讯，并且可以请求其他Pato帮助做事",
-    "noMessage": "还没有消息哦，发出一个话题和大家聊聊天吧"
+    "noMessage": "还没有消息哦，发出一个话题和大家聊聊天吧",
+    "deleted": "删除成功！",
+    "his": "查看历史消息"
   },
   "Task": {
     "taskPray": "祈祷(试一试和上帝对话)",
@@ -32,7 +34,8 @@
     "MatrixTime": "小镇时间",
     "Name": "昵称",
     "Balance": "原力余额",
-    "pro": "专业"
+    "pro": "专业",
+    "name_tips": "给你的Pato起一个响亮的名字吧！"
   },
   "ISSForm": {
     "id": "ID",
@@ -62,7 +65,10 @@
     "donation": "捐赠",
     "dao": "Stake",
     "requireAmount": "充值数量要大于0， 可以是小数",
-    "connectMM": "连接metamask"
+    "connectMM": "连接metamask",
+    "must": "必填项",
+    "donated": "捐赠成功",
+    "deposited": "充值成功"
   },
   "LiveChat": {
     "role1": "角色1-ID",
@@ -74,12 +80,30 @@
     "confirm": "提交",
     "scene": "直播描述",
     "context": "直播内容上传",
-    "close": "关闭"
+    "close": "关闭",
+    "end": "结束直播成功",
+    "restore": "恢复直播成功",
+    "started": "进入直播成功",
+    "start_fail": "进入直播失败",
+    "must": "必填项"
+  },
+  "AIInstruct": {
+    "waitingCall": "已经开始联系专家交流，稍后可以查看聊天记录",
+    "requireId": "请选择一个交流的专家",
+    "assist_fail": "任务失败",
+    "automatic_comm": "自动聊",
+    "pro": "专家",
+    "reply": "回复",
+    "talk": "交谈",
+    "search": "搜索",
+    "mail": "邮件",
+    "command": "你的问题"
   },
   "others": {
     "tipsAuthorize": "授权你和他/她的AI代理交谈",
     "tipsQRCode": "分享二维码授权给其他用户",
-    "acceptOK": "接受成功"
+    "acceptOK": "接受成功",
+    "accept": "接受"
   },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"

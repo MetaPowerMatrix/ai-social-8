@@ -41,7 +41,7 @@ declare global {
 }
 
 const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id, onClose, onShowProgress}) => {
-	const t = useTranslations('LiveChat');
+	const t = useTranslations('AIInstruct');
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -59,13 +59,13 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
-		{key: "qa", label: "交谈"},
+		{key: "qa", label: t("talk")},
 		{key: "X", label: "X"},
 		{key: "telegram", label: "Telegram"},
 		{key: "solana", label: "Solana"},
-		{key: "search", label: "搜索"},
+		{key: "search", label: t('search')},
 		{key: "tiktok", label: "TikTok"},
-		{key: "gmail", label: "邮件"},
+		{key: "gmail", label: t('mail')},
 	]
 	useEffect(() => {
 		// Initialize MQTT client and connect
@@ -255,13 +255,13 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 					// setRoleOnePortrait(openInfo.role_1_portarit)
 					// alert('等待助手执行任务');
 				}else{
-					alert('任务失败');
+					alert(t('assist_fail'));
 				}
 				onShowProgress(false);
 			})
 			.catch((error) => {
 				console.error('Error:', error);
-				alert('任务失败');
+				alert(t('assist_fail'));
 				onShowProgress(false);
 			});
 	};
@@ -323,7 +323,7 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 								<>
                     <Row align={"middle"} justify={"space-between"}>
                         <Col span={20}>
-                            <TextArea placeholder={"你的指令"}  value={question} rows={1}/>
+                            <TextArea placeholder={t('command')}  value={question} rows={1}/>
                         </Col>
                         <Col span={1}>
 													{
@@ -334,12 +334,12 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 													}
                         </Col>
                         <Col span={2}>
-                            <Button onClick={handleAutoChat}>自动聊</Button>
+                            <Button onClick={handleAutoChat}>{t('automatic_comm')}</Button>
                         </Col>
                     </Row>
                     <Row align={"middle"} justify={"space-between"} style={{marginTop:20}}>
                         <Col span={8} style={{textAlign: "center", height: 400}}>
-                            <h4>专家</h4>
+                            <h4>{t('pro')}</h4>
                             <List
                                 itemLayout="vertical"
                                 size="small"
@@ -367,10 +367,10 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
                             />
                         </Col>
                         <Col span={14} style={{textAlign: "center", height: 400}}>
-                            <h4 style={{marginRight: 20, display: "inline-block"}}>回复</h4>
+                            <h4 style={{marginRight: 20, display: "inline-block"}}>{t('reply')}</h4>
                             <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}}
                                         onChange={onChange}/>
-                            <TextArea contentEditable={false} placeholder={"回复"} value={answer} rows={15}/>
+                            <TextArea contentEditable={false} placeholder={t('reply')} value={answer} rows={15}/>
                         </Col>
                     </Row>
                 </>

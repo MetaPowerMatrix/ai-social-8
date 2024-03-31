@@ -68,7 +68,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 					<Form.Item
 						label={t("innate")}
 						name="innate"
-						rules={[{required: true, message: '开朗，积极，乐观'}]}
+						rules={[{required: true, message: t('must')}]}
 					>
 						<Input.TextArea/>
 					</Form.Item>
@@ -76,7 +76,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 					<Form.Item
 						label={t("learned")}
 						name="learned"
-						rules={[{required: true, message: '在学编程'}]}
+						rules={[{required: true, message: t('must')}]}
 					>
 						<Input.TextArea/>
 					</Form.Item>
@@ -84,7 +84,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 					<Form.Item
 						label={t("currently")}
 						name="currently"
-						rules={[{required: true, message: '在写书'}]}
+						rules={[{required: true, message: t('must')}]}
 					>
 						<Input.TextArea/>
 					</Form.Item>
@@ -92,7 +92,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 					<Form.Item
 						label={t("lifestyle")}
 						name="lifestyle"
-						rules={[{required: true, message: '独立'}]}
+						rules={[{required: true, message: t('must')}]}
 					>
 						<Input.TextArea/>
 					</Form.Item>
@@ -100,7 +100,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 					<Form.Item
 						label={t("daily_plan_req")}
 						name="daily_plan_req"
-						rules={[{required: true, message: '早睡早起'}]}
+						rules={[{required: true, message: t('must')}]}
 					>
 						<Input.TextArea/>
 					</Form.Item>

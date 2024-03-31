@@ -149,7 +149,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
                 <Image priority src="/images/ai-town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
             }
             <MaskedHighlight zones={zones} visible={guide} />
-            <ProgressBarComponent visible={loading} />
+            <ProgressBarComponent visible={loading} steps={30} />
             <FloatButton.Group open={open} trigger="click" style={{right: 64}} onClick={onChange} icon={<MenuOutlined/>}>
                 <FloatButton onClick={()=>{setOpenInstruct(true)}} icon={<UserOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenLive(true)}} icon={<TikTokOutlined/>}/>

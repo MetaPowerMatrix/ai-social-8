@@ -5,12 +5,8 @@ import {
 	Card,
 	Col, DatePicker,
 	DatePickerProps,
-	Divider,
-	Form,
-	GetProp,
 	List,
 	Row,
-	Upload,
 	UploadFile,
 	UploadProps
 } from "antd";
@@ -19,7 +15,7 @@ import {
 	AudioOutlined, CloseOutlined,
 	PauseOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, getMQTTBroker, LiveOpenResponse} from "@/common";
+import {api_url, getApiServer, getMQTTBroker} from "@/common";
 import Image from "next/image";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
@@ -63,7 +59,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
-		{key: "qa", label: "问答"},
+		{key: "qa", label: t('talk')},
 		{key: "X", label: "X"},
 		{key: "telegram", label: "Telegram"},
 		{key: "solana", label: "Solana"},
@@ -177,7 +173,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 
 	const handleAutoChat = () => {
 		if (callid === ""){
-			alert(t("requireId"))
+			alert(t(t("requireId")))
 		}
 		callPato(id, callid)
 	};
@@ -252,13 +248,13 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 					// setRoleOnePortrait(openInfo.role_1_portarit)
 					// alert('等待助手执行任务');
 				}else{
-					alert('任务失败');
+					alert(t('assist_fail'));
 				}
 				onShowProgress(false);
 			})
 			.catch((error) => {
 				console.error('Error:', error);
-				alert('任务失败');
+				alert(t('assist_fail'));
 				onShowProgress(false);
 			});
 	};
@@ -320,7 +316,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
                 <>
                     <Row align={"middle"} justify={"space-between"}>
                         <Col span={20}>
-                            <TextArea placeholder={"你的指令"} value={question} rows={1}/>
+                            <TextArea placeholder={t('command')} value={question} rows={1}/>
                         </Col>
                         <Col span={1}>
 													{
@@ -331,12 +327,12 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 													}
                         </Col>
                         <Col span={2}>
-                            <Button onClick={handleAutoChat}>自动聊</Button>
+                            <Button onClick={handleAutoChat}>{t('automatic_comm')}</Button>
                         </Col>
                     </Row>
                     <Row>
                         <Col span={24} style={{marginBottom:10, textAlign: "center", height: 10}}>
-			                    <h4>专家</h4>
+			                    <h4>{t('pro')}</h4>
                         </Col>
                     </Row>
                     <Row align={"middle"} justify={"space-between"}>
@@ -363,10 +359,10 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
                     </Row>
                     <Row>
                         <Col span={24} style={{marginTop: 20, textAlign: "center", height: 180}}>
-                            <h4 style={{marginRight: 20, display: "inline-block"}}>回复</h4>
+                            <h4 style={{marginRight: 20, display: "inline-block"}}>{t('reply')}</h4>
                             <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}}
                                         onChange={onChange}/>
-                            <TextArea placeholder={"回复"} value={answer} rows={8}/>
+                            <TextArea placeholder={t('reply')} value={answer} rows={8}/>
                         </Col>
                     </Row>
                 </>

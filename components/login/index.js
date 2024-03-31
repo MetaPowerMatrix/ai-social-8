@@ -18,7 +18,7 @@ function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
 		// document.cookie = "username=John Doe; path=/; max-age=3600; secure";
 		event.preventDefault();
 		if (username === "") {
-			alert("给你的Pato起一个响亮的名字吧！")
+			alert(t("name_tips"))
 			return
 		}
 		let userid = await command.create_pato(username)

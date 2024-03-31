@@ -99,9 +99,9 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 						console.log(res)
 					})
 					if (is_donation){
-						alert("捐赠成功")
+						alert(t("donated"))
 					}else{
-						alert("充值成功")
+						alert(t('deposited'))
 					}
 					onClose()
 				})
@@ -185,7 +185,7 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 				<Divider type={"horizontal"}/>
 				<h5 style={{display: 'inline-block'}}>{t("tips3")}</h5>
 				<Form layout="inline" form={form} variant="filled" onFinish={handleSubmit}>
-					<Form.Item label={t("amount")} name="amount" rules={[{required: true, message: '必填项'}]}>
+					<Form.Item label={t("amount")} name="amount" rules={[{required: true, message: t('must')}]}>
 						<Input/>
 					</Form.Item>
 					<Form.Item>
@@ -200,7 +200,7 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 					<h5 style={{display: 'inline-block'}}>{t("donationTips")}</h5>
 				</div>
 				<Form layout="inline" form={formDonation} variant="filled" onFinish={handleSubmitDonation}>
-					<Form.Item label={t("DonationAmount")} name="DonationAmount" rules={[{required: true, message: '必填项'}]}>
+					<Form.Item label={t("DonationAmount")} name="DonationAmount" rules={[{required: true, message: t('must')}]}>
 						<Input/>
 					</Form.Item>
 					<Form.Item>
@@ -214,7 +214,7 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 					<h5 style={{display: 'inline-block'}}>{t("daoTips")}</h5>
 				</div>
 				<Form layout="inline" form={formDao} variant="filled" onFinish={handleSubmitDAO}>
-					<Form.Item initialValue={100000} label={t("DAOAmount")} name="DAOAmount" rules={[{required: true, message: '必填项'}]}>
+					<Form.Item initialValue={100000} label={t("DAOAmount")} name="DAOAmount" rules={[{required: true, message: t('must')}]}>
 						<InputNumber style={{width: 300}} />
 					</Form.Item>
 					<Form.Item>

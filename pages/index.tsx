@@ -86,7 +86,7 @@ export default function Home() {
   const archiveSession = () =>{
     command.archive_session(activeId, sessionTabKey, queryDate).then((res) => {
       if (res){
-        alert("删除成功！")
+        alert(t('deleted'))
       }
     })
   }
@@ -143,7 +143,7 @@ export default function Home() {
         chatMessages.length === 0 ?
           <div style={{textAlign: "center", width: 1000}}>
             <h3>{t('noMessage')}</h3>
-            <label>查看历史消息 <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}} onChange={onChange} /></label>
+            <label>{t('his')} <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}} onChange={onChange} /></label>
           </div>
           :
           <>

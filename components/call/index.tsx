@@ -39,7 +39,7 @@ const CallPato: React.FC<CallPatoProps> = ({visible, id, onClose, mobile}) => {
 			<div className={ mobile ? styles.call_form_content_mobile : styles.call_form_content}>
 				<div><h5>{t("tips2")}</h5></div>
 				<Form form={form} variant="filled" onFinish={handleSubmit}>
-					<Form.Item label={t("id")} name="id" rules={[{required: true, message: '必填项'}]}>
+					<Form.Item label={t("id")} name="id" rules={[{required: true, message: t('must')}]}>
 						<Input/>
 					</Form.Item>
 					<Form.Item wrapperCol={{offset: 6, span: 16}}>

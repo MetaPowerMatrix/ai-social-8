@@ -141,13 +141,13 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 	const end_session = () => {
 		command.end_live_chat([roleOne, roleTwo]).then((res) => {
 			console.log(res)
-			alert("结束直播成功")
+			alert(t('end'))
 		})
 	}
 	const reload_session = () => {
 		command.restore_live_chat([roleOne, roleTwo], session).then((res) => {
 			console.log(res)
-			alert("恢复直播成功")
+			alert(t('restore'))
 		})
 	}
 	// Function to initialize audio recording and streaming
@@ -270,16 +270,16 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 					setRoleOnePortrait(openInfo.role_1_portarit)
 					// setRoleTwoPortrait(openInfo.role_2_portrait)
 					initAudioStream().then(() => {});
-					alert('进入直播成功');
+					alert(t('started'));
 					setHideSettings(true)
 				}else{
-					alert('进入直播失败');
+					alert(t('start_fail'));
 				}
 				onShowProgress(false);
 			})
 			.catch((error) => {
 				console.error('Error:', error);
-				alert('进入直播失败');
+				alert(t('start_fail'));
 				onShowProgress(false);
 			});
 	};
@@ -341,25 +341,25 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 					<Row>
 						<Col span={20}>
 							<Form form={form} variant="filled" onFinish={handleSubmit}>
-								<Form.Item label={t("topic")} name="topic" rules={[{required: true, message: '必填项'}]}>
+								<Form.Item label={t("topic")} name="topic" rules={[{required: true, message: t('must')}]}>
 									<Input/>
 								</Form.Item>
-								<Form.Item label={t("role1")} name="role_1_id" rules={[{required: true, message: '必填项'}]}>
+								<Form.Item label={t("role1")} name="role_1_id" rules={[{required: true, message: t('must')}]}>
 									<Input onChange={(event)=>{
 										let id = event.target.value
 										setRoleOne(id)
 									}}/>
 								</Form.Item>
-								<Form.Item label={t("role1_portrait")} name="role_1_dec" rules={[{required: true, message: '必填项'}]}>
+								<Form.Item label={t("role1_portrait")} name="role_1_dec" rules={[{required: true, message: t('must')}]}>
 									<Input/>
 								</Form.Item>
-								<Form.Item label={t("role2")} name="role_2_id" rules={[{required: true, message: '必填项'}]}>
+								<Form.Item label={t("role2")} name="role_2_id" rules={[{required: true, message: t('must')}]}>
 									<Input onChange={(event)=>{
 										let id = event.target.value
 										setRoleTwo(id)
 									}}/>
 								</Form.Item>
-								<Form.Item label={t("role2_portrait")} name="role_2_dec" rules={[{required: true, message: '必填项'}]}>
+								<Form.Item label={t("role2_portrait")} name="role_2_dec" rules={[{required: true, message: t('must')}]}>
 									<Input/>
 								</Form.Item>
 								<Form.Item label={t("context")} required>
