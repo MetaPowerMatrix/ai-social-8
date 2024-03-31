@@ -268,7 +268,7 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 					setRoleOne(values.role_1_id)
 					setRoleTwo(values.role_2_id)
 					setRoleOnePortrait(openInfo.role_1_portarit)
-					setRoleTwoPortrait(openInfo.role_2_portrait)
+					// setRoleTwoPortrait(openInfo.role_2_portrait)
 					initAudioStream().then(() => {});
 					alert('进入直播成功');
 					setHideSettings(true)
