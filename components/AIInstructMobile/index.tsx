@@ -41,7 +41,7 @@ declare global {
 }
 
 const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id, onClose, onShowProgress}) => {
-	const t = useTranslations('LiveChat');
+	const t = useTranslations('AIInstruct');
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
