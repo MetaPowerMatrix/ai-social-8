@@ -377,7 +377,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
                 </Row>
 						}
 					</Card>
-					<SubscriptionsComponent id={id} onClose={() => setOpenSub(false)} visible={openSub} onShowProgress={onShowProgress}/>
+					<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub} onShowProgress={onShowProgress}/>
 				</div>
 			</div>
 		</div>
