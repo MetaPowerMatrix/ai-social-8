@@ -370,7 +370,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 						{activeAgentKey !== "qa" &&
                 <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
                     <Col span={7}/>
-                    <Col span={10} style={{textAlign: "center", height: 400}}>
+                    <Col span={10} style={{textAlign: "center", height: 360}}>
                         <Image onClick={()=>setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
                     </Col>
                     <Col span={7}/>

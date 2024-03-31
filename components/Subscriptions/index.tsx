@@ -24,7 +24,7 @@ declare global {
 	}
 }
 
-const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onClose, onShowProgress}) => {
+const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onClose, onShowProgress, mobile}) => {
 	const t = useTranslations('others');
 	const command = commandDataContainer.useContainer()
 
@@ -129,7 +129,7 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 	return (
 		<div hidden={!visible}>
 			<div className={styles.voice_instruct_container}>
-				<div className={styles.voice_instruct_content}>
+				<div className={mobile ? styles.voice_instruct_content_mobile : styles.voice_instruct_content}>
 					<Row>
 						<Col span={8}>
 							<CloseOutlined style={{color: "black", fontSize: 20}} onClick={() => onClose()}/>
