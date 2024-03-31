@@ -103,7 +103,10 @@
     "tipsAuthorize": "授权你和他/她的AI代理交谈",
     "tipsQRCode": "分享二维码授权给其他用户",
     "acceptOK": "接受成功",
-    "accept": "接受"
+    "accept": "接受",
+    "sub_ok": "订阅成功",
+    "sub_fail":  "订阅失败",
+    "upgrade": "升级"
   },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"

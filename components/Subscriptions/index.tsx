@@ -23,7 +23,7 @@ declare global {
 }
 
 const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onClose, onShowProgress}) => {
-	const t = useTranslations('LiveChat');
+	const t = useTranslations('others');
 	const command = commandDataContainer.useContainer()
 
 	const transferToken = async (id: string, amount: number, type: string, web3: Web3) => {
@@ -113,14 +113,14 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 			.then(response => response.json())
 			.then(data => {
 				if (data.code === "200") {
-					alert('订阅成功');
+					alert(t('sub_ok'));
 				}else{
-					alert('订阅失败');
+					alert(t('sub_fail'));
 				}
 			})
 			.catch((error) => {
 				console.error('Error:', error);
-				alert('订阅失败');
+				alert(t('sub_fail'));
 			});
 	};
 
@@ -138,31 +138,34 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 	          <Col span={8} style={{textAlign: "center", height: 400, border: "1px dotted cyan"}}>
 		          <h1>Basic</h1>
 		          <h2>PAB 100000/Month</h2>
-		          <Button type={"primary"} onClick={handleSubmitBasic}>升级</Button>
+		          <Button type={"primary"} onClick={handleSubmitBasic}>{t('upgrade')}</Button>
 		          <h4><CheckOutlined /> 对话条数100</h4>
 		          <h4><CheckOutlined /> 对话角色3</h4>
 	          </Col>
 	          <Col span={8} style={{textAlign: "center", height: 400, border: "1px dotted cyan"}}>
 		          <h1>Plus</h1>
 		          <h2>PAB 10000000/Month</h2>
-		          <Button type={"primary"} onClick={handleSubmitPlus}>升级</Button>
+		          <Button type={"primary"} onClick={handleSubmitPlus}>{t('upgrade')}</Button>
 		          <h4><CheckOutlined /> 对话条数1000</h4>
 		          <h4><CheckOutlined /> 对话角色10</h4>
 	          </Col>
 	          <Col span={8} style={{textAlign: "center", height: 400, border: "1px dotted cyan"}}>
 		          <h1>Pro</h1>
 		          <h2>PAB 1000000000/Month</h2>
-		          <Button type={"primary"} onClick={handleSubmitPro}>升级</Button>
+		          <Button type={"primary"} onClick={handleSubmitPro}>{t('upgrade')}</Button>
 		          <h4><CheckOutlined /> 对话条数10000</h4>
 		          <h4><CheckOutlined /> 对话角色50</h4>
 	          </Col>
           </Row>
 					<Divider type={"horizontal"}/>
 					<Row>
-						<Col span={12} style={{textAlign: "center"}}>
+						<Col span={8} style={{textAlign: "center"}}>
 						<a href={"https://pancakeswap.finance/swap?outputCurrency=0xD6311f9A6bd3a802263F4cd92e2729bC2C31Ed23&inputCurrency=0x55d398326f99059fF775485246999027B3197955"}>PAB购买地址</a>
 						</Col>
-						<Col span={12} style={{textAlign: "center"}}>
+						<Col span={8} style={{textAlign: "center"}}>
+
+						</Col>
+						<Col span={8} style={{textAlign: "center"}}>
 							<a href={"https://bscscan.com/address/0xd6311f9a6bd3a802263f4cd92e2729bc2c31ed23"}>PAB合约地址</a>
 						</Col>
 					</Row>
