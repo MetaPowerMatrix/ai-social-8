@@ -16,6 +16,7 @@ interface SubscriptionsPros {
 	onClose: ()=>void;
 	visible: boolean;
 	onShowProgress: (s: boolean)=>void;
+	mobile: boolean;
 }
 declare global {
 	interface Window {
@@ -136,41 +137,41 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 					</Row>
 					<Divider type={"horizontal"}/>
           <Row align={"middle"} justify={"space-between"} style={{marginTop:20}}>
-	          <Col span={8} style={{textAlign: "center", height: 400, border: "1px dotted cyan"}}>
+	          <Col span={8} style={{textAlign: "center", height: 300, border: "1px dotted cyan"}}>
 		          <h1>Basic</h1>
 		          <h2>PAB 100000/Month</h2>
 		          <Button type={"primary"} onClick={handleSubmitBasic}>{t('upgrade')}</Button>
-		          <h4><CheckOutlined /> 对话条数100</h4>
-		          <h4><CheckOutlined /> 对话角色3</h4>
+		          <h4><CheckOutlined /> 对话100</h4>
+		          <h4><CheckOutlined /> 角色3</h4>
 	          </Col>
-	          <Col span={8} style={{textAlign: "center", height: 400, border: "1px dotted cyan"}}>
+	          <Col span={8} style={{textAlign: "center", height: 300, border: "1px dotted cyan"}}>
 		          <h1>Plus</h1>
 		          <h2>PAB 10000000/Month</h2>
 		          <Button type={"primary"} onClick={handleSubmitPlus}>{t('upgrade')}</Button>
-		          <h4><CheckOutlined /> 对话条数1000</h4>
-		          <h4><CheckOutlined /> 对话角色10</h4>
+		          <h4><CheckOutlined /> 对话1000</h4>
+		          <h4><CheckOutlined /> 角色10</h4>
 	          </Col>
-	          <Col span={8} style={{textAlign: "center", height: 400, border: "1px dotted cyan"}}>
+	          <Col span={8} style={{textAlign: "center", height: 300, border: "1px dotted cyan"}}>
 		          <h1>Pro</h1>
 		          <h2>PAB 1000000000/Month</h2>
 		          <Button type={"primary"} onClick={handleSubmitPro}>{t('upgrade')}</Button>
-		          <h4><CheckOutlined /> 对话条数10000</h4>
-		          <h4><CheckOutlined /> 对话角色50</h4>
+		          <h4><CheckOutlined /> 对话10000</h4>
+		          <h4><CheckOutlined /> 角色50</h4>
 	          </Col>
           </Row>
 					<Divider type={"horizontal"}/>
 					<Row>
 						<Col span={8} style={{textAlign: "center"}}>
-						<a href={"https://pancakeswap.finance/swap?outputCurrency=0xD6311f9A6bd3a802263F4cd92e2729bC2C31Ed23&inputCurrency=0x55d398326f99059fF775485246999027B3197955"}>PAB购买地址</a>
+						<a target={"_blank"} href={"https://pancakeswap.finance/swap?outputCurrency=0xD6311f9A6bd3a802263F4cd92e2729bC2C31Ed23&inputCurrency=0x55d398326f99059fF775485246999027B3197955"}>PAB购买地址</a>
 						</Col>
 						<Col span={8} style={{textAlign: "center"}}>
 							<Popover  content={<Image width={246} height={336} onClick={()=>alert(t('scan'))} src={"/images/wepay.png"} alt={"scan"}/>} title={t('scan')}>
-								<Button type="primary">Hover me</Button>
+								<Button type="primary">{t('scan_btn')}</Button>
 							</Popover>
 
 						</Col>
 						<Col span={8} style={{textAlign: "center"}}>
-							<a href={"https://bscscan.com/address/0xd6311f9a6bd3a802263f4cd92e2729bc2c31ed23"}>PAB合约地址</a>
+							<a target={"_blank"} href={"https://bscscan.com/address/0xd6311f9a6bd3a802263f4cd92e2729bc2c31ed23"}>PAB合约地址</a>
 						</Col>
 					</Row>
 				</div>
