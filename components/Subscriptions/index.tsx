@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from "@/components/Subscriptions/SubscriptionsComponent.module.css";
-import {Button, Col, Divider, Row} from "antd";
+import {Button, Col, Divider, Popover, Row} from "antd";
 import {useTranslations} from "next-intl";
 import {
 	CheckOutlined,
@@ -9,6 +9,7 @@ import {
 import {api_url, getApiServer, recipientAddress, tokenAbi, tokenContractAddress} from "@/common";
 import commandDataContainer from "@/container/command";
 import Web3 from "web3";
+import Image from "next/image";
 
 interface SubscriptionsPros {
 	id: string,
@@ -163,6 +164,9 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 						<a href={"https://pancakeswap.finance/swap?outputCurrency=0xD6311f9A6bd3a802263F4cd92e2729bC2C31Ed23&inputCurrency=0x55d398326f99059fF775485246999027B3197955"}>PAB购买地址</a>
 						</Col>
 						<Col span={8} style={{textAlign: "center"}}>
+							<Popover  content={<Image width={246} height={336} onClick={()=>alert(t('scan'))} src={"/images/wepay.png"} alt={"scan"}/>} title={t('scan')}>
+								<Button type="primary">Hover me</Button>
+							</Popover>
 
 						</Col>
 						<Col span={8} style={{textAlign: "center"}}>

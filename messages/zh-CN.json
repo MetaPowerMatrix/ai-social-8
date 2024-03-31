@@ -106,7 +106,8 @@
     "accept": "接受",
     "sub_ok": "订阅成功",
     "sub_fail":  "订阅失败",
-    "upgrade": "升级"
+    "upgrade": "升级",
+    "scan": "扫码支付，备注小镇id或者编号"
   },
   "LocaleSwitcher": {
     "switchLocale": "切换语言 {locale, select, cn {中文} en {English}}"

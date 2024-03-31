@@ -113,10 +113,10 @@ const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress
 					</Upload>
 					<button className={styles.task} onClick={(e) => handleKnowledge(e)}>{t('start')}</button>
 				</Card>
-				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9"}} title={t('taskPray')}>
-					<TextArea placeholder={t('taskPrayTips')} rows={2} onChange={(e) => prayInput(e)}/>
-					<button className={styles.task} onClick={(e) => handlePray(e)}>{t('submit')}</button>
-				</Card>
+				{/*<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9"}} title={t('taskPray')}>*/}
+				{/*	<TextArea placeholder={t('taskPrayTips')} rows={2} onChange={(e) => prayInput(e)}/>*/}
+				{/*	<button className={styles.task} onClick={(e) => handlePray(e)}>{t('submit')}</button>*/}
+				{/*</Card>*/}
 		</div>
 	)
 }
