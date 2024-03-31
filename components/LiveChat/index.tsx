@@ -268,7 +268,7 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 					setRoleOne(values.role_1_id)
 					setRoleTwo(values.role_2_id)
 					setRoleOnePortrait(openInfo.role_1_portarit)
-					setRoleTwoPortrait(openInfo.role_2_portrait)
+					// setRoleTwoPortrait(openInfo.role_2_portrait)
 					initAudioStream().then(() => {});
 					alert('进入直播成功');
 					setHideSettings(true)
@@ -323,17 +323,17 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 					</Row>
 					<Divider type={"horizontal"}/>
 					<Row align={"middle"} justify={"space-between"}>
-						<Col span={8} style={{textAlign: "center", height: 500}}>
+						<Col span={12} style={{textAlign: "center", height: 500}}>
 							<Image src={roleOnePortrait} fill={true} alt={"role1"}/>
 						</Col>
-						<Col span={8} style={{textAlign: "center", height: 400, color:"white"}}>
+						<Col span={11} style={{textAlign: "center", height: 400, color:"white"}}>
 							<AudioOutlined style={{fontSize: 40, marginBottom: 30}} spin={!stopped}/>
 							<h4>{lyrics[0]}</h4>
 							<h4>{lyrics[1]}</h4>
 						</Col>
-						<Col span={8} style={{textAlign: "center", height: 500}}>
-							<Image fill={true} src={roleTwoPortrait} alt={"role1"}/>
-						</Col>
+						{/*<Col span={8} style={{textAlign: "center", height: 500}}>*/}
+						{/*	<Image fill={true} src={roleTwoPortrait} alt={"role1"}/>*/}
+						{/*</Col>*/}
 					</Row>
 				</div>
 				<div hidden={true} className={styles.live_chat_message}>
