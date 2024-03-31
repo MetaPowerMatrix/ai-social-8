@@ -146,12 +146,12 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             <ProgressBarComponent visible={loading} />
             <FloatButton.Group  open={open} trigger="click" style={{right: 34}} onClick={onChange} icon={<MenuOutlined/>}>
                 <FloatButton onClick={()=>{setOpenInstruct(true)}} icon={<UserOutlined/>}/>
-                <FloatButton onClick={()=>{setOpenLive(true)}} icon={<TikTokOutlined/>}/>
-                <FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>
+                {/*<FloatButton onClick={()=>{setOpenLive(true)}} icon={<TikTokOutlined/>}/>*/}
+                {/*<FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>*/}
                 <FloatButton onClick={()=>{setOpenDeposit(true)}} icon={<EuroOutlined />}/>
                 <FloatButton onClick={()=>{setEditISS(true)}} icon={<SettingOutlined />}/>
                 <FloatButton onClick={()=>{setOpenCode(true)}} icon={<QrcodeOutlined />}/>
-                <FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>
+                {/*<FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>*/}
             </FloatButton.Group>
             <ModalLogin mobile={true} isOpen={!isLogin} tips={t} options={availableIds}
                         onClose={(id) => {
@@ -163,10 +163,10 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                         }}
             />
             <ISSForm mobile={true} userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
-            <CallPato mobile={true} id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>
+            {/*<CallPato mobile={true} id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>*/}
             <Deposit mobile={true} id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
-            <LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
-                      visible={openLive} onShowProgress={showProgressBar}/>
+            {/*<LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}*/}
+            {/*          visible={openLive} onShowProgress={showProgressBar}/>*/}
             <AIInstructMobileComponent id={activeId} serverUrl={Streaming_Server} visible={openInstruct} onShowProgress={showProgressBar}
                 onClose={()=>setOpenInstruct(false)}/>
             <QRCodeComponent visible={openCode} id={activeId} onClose={()=>setOpenCode(false)} mobile={true}/>
