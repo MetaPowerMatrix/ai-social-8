@@ -19,7 +19,7 @@ const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress
 	const handlePray = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		event.preventDefault();
 		if (userPray === ""){
-			alert('祈祷是要说话的')
+			alert(t('pray'))
 			return
 		}
 		onShowProgress(true);
@@ -31,12 +31,12 @@ const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress
 	const handleTodayEvent = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		event.preventDefault();
 		if (dailyEvent === ""){
-			alert('说说你想聊的话题吧')
+			alert(t('event'))
 			return
 		}
 		onShowProgress(true);
 		command.create_today_event(id, dailyEvent).then((response) => {
-			alert('等一等，马上会有人来和你聊天了')
+			alert(t('waiting'))
 			onShowProgress(false);
 		})
 	};
@@ -70,7 +70,7 @@ const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress
 	const handleKnowledge= (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		event.preventDefault(); // Prevent the default form submission
 		if (fileList.length <= 0){
-			alert("书籍是人类智慧的结晶，上传你的结晶吧")
+			alert(t('power'))
 			return
 		}
 		const formData = new FormData();

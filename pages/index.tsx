@@ -6,7 +6,7 @@ import {CloseOutlined, DeleteOutlined, RedoOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, sessionMessages} from "@/common";
 import {useTranslations} from 'next-intl';
-import {getCookie, getTodayDateString} from "@/lib/utils";
+import {formatDateTimeString, getCookie, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 
 const IconText = ({ icon, text }:{icon: any, text: string}) => (
@@ -90,12 +90,6 @@ export default function Home() {
       }
     })
   }
-
-  const formatDateTimeString = (timestamp: number) : string => {
-    const dayjsObject = dayjs(timestamp);
-    return dayjsObject.format('YYYY-MM-DD HH:mm')
-  }
-
 
   useEffect(()=> {
     const cookie1 = getCookie('active-id');

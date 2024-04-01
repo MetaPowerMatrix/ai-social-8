@@ -19,7 +19,11 @@
     "submit": "发送",
     "view": "查看",
     "start": "上传",
-    "Upload": "选择文件"
+    "Upload": "选择文件",
+    "event": "发起一个话题哦",
+    "power": "上传你独有的知识文档，让知识变现哦",
+    "waiting": "等一等，马上会有人来和你聊天了",
+    "pray": "祈祷是要说话的"
   },
   "Login": {
     "notLoginTips": "当前没有活跃的Pato，登陆或者注册一个Pato，进入原力小镇",
@@ -100,7 +104,8 @@
     "talk": "交谈",
     "search": "数据",
     "mail": "邮件",
-    "paper": "论文"
+    "paper": "论文",
+    "payment": "支付&投资"
   },
   "others": {
     "tipsAuthorize": "授权你和他/她的AI代理交谈",

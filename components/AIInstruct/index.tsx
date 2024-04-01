@@ -4,26 +4,27 @@ import {
 	Button,
 	Card,
 	Col,
-	DatePicker, DatePickerProps,
-	List,
-	Row,
+	DatePicker, DatePickerProps, Divider,
+	List, Rate,
+	Row, Tag,
 	UploadFile,
 	UploadProps
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
-	AudioOutlined, CloseOutlined,
-	PauseOutlined
+	AudioOutlined, CloseOutlined, DeleteOutlined,
+	PauseOutlined, RedoOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, getMQTTBroker} from "@/common";
+import {api_url, ChatMessage, getApiServer, getMQTTBroker} from "@/common";
 import Image from "next/image";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import TextArea from "antd/es/input/TextArea";
 import mqtt from "mqtt";
 import SubscriptionsComponent from "@/components/Subscriptions";
-import {getCookie, getTodayDateString} from "@/lib/utils";
+import {formatDateTimeString, getCookie, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
+import ms from "ms";
 
 interface AIInstructPros {
 	id: string,
@@ -54,17 +55,19 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const [callid, setCallid] = useState<string>("");
-	const [chatMessages, setChatMessages] = useState<string[]>([]);
+	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
+	const [summary, setSummary] = useState<string>("");
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
 		{key: "qa", label: t("talk")},
+		{key: "payment", label: t('payment')},
+		{key: "telegram", label: "Telegram"},
 		{key: "solana", label: "Solana"},
 		{key: "X", label: "X"},
 		{key: "search", label: t('search')},
 		{key: "paper", label: "paper"},
-		{key: "telegram", label: "Telegram"},
 	]
 	useEffect(() => {
 		// Initialize MQTT client and connect
@@ -137,16 +140,19 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 
 	useEffect(()=> {
 		command.getProHistoryMessages(id, callid, queryDate).then((response) => {
-			let txtMessages: string[] = []
+			let messages: ChatMessage[] = []
 			if (response !== null) {
 				let session_messages = response
+				let summary = ""
 				session_messages.forEach((item) => {
-					let msg = item.messages.map((msg) => {
-						return msg.sender + ":" + msg.question + "\n" + msg.receiver + ":" + msg.answer;
+					let msg = item.messages.filter((msg) => {
+						return (msg.question.length > 0 && msg.answer.length > 0)
 					})
-					txtMessages.push(msg.join("\n"))
+					messages.push(...msg)
+					summary += item.summary
 				})
-				setAnswer(txtMessages.join("\n"))
+				setSummary(summary)
+				setChatMessages(messages)
 			}
 		})
 	},[callid, queryDate])
@@ -365,11 +371,36 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 						                    )}
                             />
                         </Col>
-                        <Col span={14} style={{textAlign: "center", height: 400}}>
+                        <Col span={14} style={{textAlign: "start", height: 400, overflow: "scroll"}}>
                             <h4 style={{marginRight: 20, display: "inline-block"}}>{t('reply')}</h4>
                             <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}}
                                         onChange={onChange}/>
-                            <TextArea contentEditable={false} placeholder={t('reply')} value={answer} rows={15}/>
+                            <h5>{summary}</h5>
+                            <List
+                                itemLayout="vertical"
+                                size="small"
+                                pagination={{
+							                    onChange: (page) => {
+								                    console.log(page);
+							                    },
+							                    pageSize: 6,
+						                    }}
+                                dataSource={chatMessages}
+                                renderItem={(item) => (
+							                    <List.Item
+								                    key={item.subject}
+								                    actions={[
+									                    <Rate key={item.created_at} defaultValue={3} allowClear={false}/>
+								                    ]}
+							                    >
+								                    <h5>{item.sender}: {item.question}</h5>
+								                    <h5>{item.receiver === item.sender ? item.receiver + "#2" : item.receiver}: {item.answer}</h5>
+								                    <h5>{formatDateTimeString(item.created_at * 1000)} <Tag
+									                    color="green">{item.place}</Tag><Tag color="yellow">{item.subject}</Tag></h5>
+							                    </List.Item>
+						                    )}
+                            />
+                            {/*<TextArea contentEditable={false} placeholder={t('reply')} value={answer} rows={15}/>*/}
                         </Col>
                     </Row>
                 </>

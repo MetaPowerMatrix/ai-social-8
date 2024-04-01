@@ -5,8 +5,8 @@ import {
 	Card,
 	Col, DatePicker,
 	DatePickerProps,
-	List,
-	Row,
+	List, Rate,
+	Row, Tag,
 	UploadFile,
 	UploadProps
 } from "antd";
@@ -15,14 +15,14 @@ import {
 	AudioOutlined, CloseOutlined,
 	PauseOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, getMQTTBroker} from "@/common";
+import {api_url, ChatMessage, getApiServer, getMQTTBroker} from "@/common";
 import Image from "next/image";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import TextArea from "antd/es/input/TextArea";
 import mqtt from "mqtt";
 import SubscriptionsComponent from "@/components/Subscriptions";
-import {getCookie, getTodayDateString} from "@/lib/utils";
+import {formatDateTimeString, getCookie, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 
 interface AIInstructPros {
@@ -55,14 +55,17 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const [callid, setCallid] = useState<string>("");
-	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [activeQAKey, setActiveQAKey] = useState<string>("pro");
+	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+	const [queryDate, setQueryDate] = useState(getTodayDateString());
+	const [summary, setSummary] = useState<string>("");
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
 		{key: "qa", label: t('talk')},
-		{key: "X", label: "X"},
+		{key: "payment", label: t('payment')},
 		{key: "telegram", label: "Telegram"},
+		{key: "X", label: "X"},
 		{key: "solana", label: "Solana"},
 	]
 	useEffect(() => {
@@ -149,16 +152,19 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	}
 	useEffect(()=> {
 		command.getProHistoryMessages(id, callid, queryDate).then((response) => {
-			let txtMessages: string[] = []
+			let messages: ChatMessage[] = []
 			if (response !== null) {
 				let session_messages = response
+				let summary = ""
 				session_messages.forEach((item) => {
-					let msg = item.messages.map((msg) => {
-						return msg.sender + ":" + msg.question + "\n" + msg.receiver + ":" + msg.answer;
+					let msg = item.messages.filter((msg) => {
+						return (msg.question.length > 0 && msg.answer.length > 0)
 					})
-					txtMessages.push(msg.join("\n"))
+					messages.push(...msg)
+					summary += item.summary
 				})
-				setAnswer(txtMessages.join("\n"))
+				setSummary(summary)
+				setChatMessages(messages)
 			}
 		})
 	},[id, queryDate])
@@ -361,10 +367,34 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
                         />
 		                    :
 		                    <div>
-			                    <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom:10}}
+			                    <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom: 10}}
 			                                onChange={onChange}/>
-			                    <TextArea placeholder={t('reply')} value={answer} rows={8}/>
-		                    </div>
+			                    <h5>{summary}</h5>
+			                    <List
+				                    itemLayout="vertical"
+				                    size="small"
+				                    pagination={{
+					                    onChange: (page) => {
+						                    console.log(page);
+					                    },
+					                    pageSize: 6,
+				                    }}
+				                    dataSource={chatMessages}
+				                    renderItem={(item) => (
+					                    <List.Item
+						                    key={item.subject}
+						                    actions={[
+							                    <Rate key={item.created_at} defaultValue={3} allowClear={false}/>
+						                    ]}
+					                    >
+						                    <h5>{item.sender}: {item.question}</h5>
+						                    <h5>{item.receiver === item.sender ? item.receiver + "#2" : item.receiver}: {item.answer}</h5>
+						                    <h5>{formatDateTimeString(item.created_at * 1000)} <Tag
+							                    color="green">{item.place}</Tag><Tag color="yellow">{item.subject}</Tag></h5>
+					                    </List.Item>
+				                    )}
+			                    />
+												</div>
 	                    }
                     </Card>
                 </>
@@ -373,13 +403,14 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
                 <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
                     <Col span={7}/>
                     <Col span={10} style={{textAlign: "center", height: 360}}>
-                        <Image onClick={()=>setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
+                        <Image onClick={() => setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
                     </Col>
                     <Col span={7}/>
                 </Row>
 						}
 					</Card>
-					<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub} onShowProgress={onShowProgress}/>
+					<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub}
+					                        onShowProgress={onShowProgress}/>
 				</div>
 			</div>
 		</div>
