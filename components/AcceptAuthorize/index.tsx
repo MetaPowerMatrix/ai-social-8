@@ -49,6 +49,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 					<Col span={24} style={{textAlign: "center"}}>
 						<div><h5>{name}{t("tipsAuthorize")}</h5></div>
 						<Button onClick={handleAccept}>{t('accept')}</Button>
+						<a href="https://social.metapowermatrix.ai/mobile">{t('go_talk')}</a>
 					</Col>
 				</Row>
 			</div>

@@ -131,7 +131,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     <HeaderPanelMobile activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}/>
                     <Divider/>
                     <Card
-                        style={{ width: '100%', marginTop:20, maxHeight: 400, overflow: "scroll" }}
+                        style={{ border: "none", width: '100%', marginTop:20, maxHeight: 400, overflow: "scroll" }}
                         tabList={[{label: t('task'), key: 'task'},{label: t('messages'), key: 'messages'}]}
                         activeTabKey={activeTabKey}
                         onTabChange={(key)=> setActiveTabKey(key)}

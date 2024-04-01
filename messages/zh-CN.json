@@ -98,14 +98,16 @@
     "reply": "回复",
     "command": "你的问题",
     "talk": "交谈",
-    "search": "搜索",
-    "mail": "邮件"
+    "search": "数据",
+    "mail": "邮件",
+    "paper": "论文"
   },
   "others": {
     "tipsAuthorize": "授权你和他/她的AI代理交谈",
     "tipsQRCode": "分享二维码授权给其他用户",
     "acceptOK": "接受成功",
     "accept": "接受",
+    "go_talk": "去聊天",
     "sub_ok": "订阅成功",
     "sub_fail":  "订阅失败",
     "upgrade": "升级",
