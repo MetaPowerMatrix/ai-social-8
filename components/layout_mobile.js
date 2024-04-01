@@ -1,14 +1,12 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from './layout_mobile.module.css';
-import {Col, Divider, Flex, FloatButton, Row} from "antd";
+import {Card, Divider, FloatButton} from "antd";
 import {
-    PhoneOutlined,
     MenuOutlined,
-    RedoOutlined,
     SettingOutlined,
     EuroOutlined,
-    TikTokOutlined, UserOutlined, QrcodeOutlined
+    UserOutlined, QrcodeOutlined
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
@@ -19,11 +17,8 @@ import ProgressBarComponent from "@/components/ProgressBar";
 import MaskedHighlight from "@/components/MaskedHighlight";
 import ISSForm from "@/components/iss";
 import commandDataContainer from "@/container/command";
-import CallPato from "@/components/call";
 import Deposit from "@/components/deposit";
-import LiveChat from "@/components/LiveChat";
 import {Streaming_Server} from "@/common";
-import AIInstructComponent from "@/components/AIInstruct";
 import HeaderPanelMobile from "./header_mobile";
 import LiveChatMobile from "@/components/LiveChatMobile";
 import AIInstructMobileComponent from "@/components/AIInstructMobile";
@@ -35,7 +30,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const [openCode, setOpenCode] = useState(false);
     const [openLive, setOpenLive] = useState(false);
     const [openInstruct, setOpenInstruct] = useState(false);
-    const [openCall, setOpenCall] = useState(false);
     const [openDeposit, setOpenDeposit] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
@@ -46,6 +40,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const [userFeed, setUserFeed] = useState([{children:"新的一天开始了"}]);
     const command = commandDataContainer.useContainer()
     const [userISS, setUserISS] = useState();
+    const [activeTabKey, setActiveTabKey] = useState('task');
     const t = useTranslations('Login');
 
     const zones = [
@@ -135,9 +130,23 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 <>
                     <HeaderPanelMobile activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}/>
                     <Divider/>
-                    <TaskPanel id={activeId} onShowProgress={showProgressBar} panelWidth={360}/>
-                    <Divider/>
-                    {children}
+                    <Card
+                        style={{ width: '100%', marginTop:20, maxHeight: 400, overflow: "scroll" }}
+                        tabList={[{label: t('task'), key: 'task'},{label: t('messages'), key: 'messages'}]}
+                        activeTabKey={activeTabKey}
+                        onTabChange={(key)=> setActiveTabKey(key)}
+                        tabProps={{
+                            size: 'small',
+                        }}
+                    >
+                        {activeTabKey === "task" ?
+                            <TaskPanel id={activeId} onShowProgress={showProgressBar} panelWidth={340}/>
+                            :
+                            <div>
+                                {children}
+                            </div>
+                        }
+                    </Card>
                 </>
                 :
                 <Image priority src="/images/ai-town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>

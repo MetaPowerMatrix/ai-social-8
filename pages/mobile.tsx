@@ -86,7 +86,7 @@ export default function Home() {
 
 	const formatDateTimeString = (timestamp: number) : string => {
 		const dayjsObject = dayjs(timestamp);
-		return dayjsObject.format('YYYY-MM-DD HH:mm:ss')
+		return dayjsObject.format('YYYY-MM-DD HH:mm')
 	}
 
 
@@ -165,7 +165,7 @@ export default function Home() {
 									>
 										<h5>{item.sender}: {item.question}</h5>
 										<h5>{item.receiver === item.sender ? item.receiver+"#2":item.receiver}: {item.answer}</h5>
-										<h5><Tag color="green">{item.place}</Tag>#{item.session}#{item.subject}#{formatDateTimeString(item.created_at*1000)}</h5>
+										<h5>{formatDateTimeString(item.created_at*1000)} <Tag color="green">{item.place}</Tag><Tag color="green">{item.subject}</Tag></h5>
 									</List.Item>
 								)}
 							/>

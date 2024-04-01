@@ -35,7 +35,9 @@
     "Name": "昵称",
     "Balance": "原力余额",
     "pro": "专业",
-    "name_tips": "给你的Pato起一个响亮的名字吧！"
+    "name_tips": "给你的Pato起一个响亮的名字吧！",
+    "task": "任务",
+    "messages": "消息"
   },
   "ISSForm": {
     "id": "ID",
@@ -91,7 +93,7 @@
     "waitingCall": "已经开始联系专家交流，稍后可以查看聊天记录",
     "requireId": "请选择一个交流的专家",
     "assist_fail": "任务失败",
-    "automatic_comm": "自动聊",
+    "automatic_comm": "AI代聊",
     "pro": "专家",
     "reply": "回复",
     "command": "你的问题",

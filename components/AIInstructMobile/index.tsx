@@ -56,6 +56,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const [callid, setCallid] = useState<string>("");
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
+	const [activeQAKey, setActiveQAKey] = useState<string>("pro");
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
@@ -315,7 +316,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 						{ activeAgentKey === "qa" &&
                 <>
                     <Row align={"middle"} justify={"space-between"}>
-                        <Col span={20}>
+                        <Col span={14}>
                             <TextArea placeholder={t('command')} value={question} rows={1}/>
                         </Col>
                         <Col span={1}>
@@ -326,45 +327,46 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 															<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
 													}
                         </Col>
-                        <Col span={2}>
+                        <Col span={6}>
                             <Button onClick={handleAutoChat}>{t('automatic_comm')}</Button>
                         </Col>
                     </Row>
-                    <Row>
-                        <Col span={24} style={{marginBottom:10, textAlign: "center", height: 10}}>
-			                    <h4>{t('pro')}</h4>
-                        </Col>
-                    </Row>
-                    <Row align={"middle"} justify={"space-between"}>
-                        <Col span={24} style={{overflow: "scroll", textAlign: "center", height: 160}}>
-                            <List
-                                itemLayout="vertical"
-                                size="small"
-                                dataSource={authorisedIds}
-                                renderItem={(item, index) => (
-																	<List.Item
-																		key={index}
-																		className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
-																		defaultValue={item.value}
-																		onClick={(e) => {
-																			setSelectedIndex(index)
-																			setCallid(item.value)
-																		}}
-																	>
-																		<h5>{item.label}</h5>
-																	</List.Item>
-																)}
-                            />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={24} style={{marginTop: 20, textAlign: "center", height: 180}}>
-                            <h4 style={{marginRight: 20, display: "inline-block"}}>{t('reply')}</h4>
-                            <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{textAlign: "end"}}
-                                        onChange={onChange}/>
-                            <TextArea placeholder={t('reply')} value={answer} rows={8}/>
-                        </Col>
-                    </Row>
+                    <Card
+                        style={{ width: '100%', marginTop:20, maxHeight: 400, overflow: "scroll" }}
+                        tabList={[{label: t('pro'), key: 'pro'},{label: t('reply'), key: 'reply'}]}
+                        activeTabKey={activeQAKey}
+                        onTabChange={(key)=> setActiveQAKey(key)}
+                        tabProps={{
+			                    size: 'small',
+		                    }}
+                    >
+	                    { activeQAKey === 'pro' ?
+                        <List
+                            itemLayout="vertical"
+                            size="small"
+                            dataSource={authorisedIds}
+                            renderItem={(item, index) => (
+															<List.Item
+																key={index}
+																className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
+																defaultValue={item.value}
+																onClick={(e) => {
+																	setSelectedIndex(index)
+																	setCallid(item.value)
+																}}
+															>
+																<h5>{item.label}</h5>
+															</List.Item>
+														)}
+                        />
+		                    :
+		                    <div>
+			                    <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom:10}}
+			                                onChange={onChange}/>
+			                    <TextArea placeholder={t('reply')} value={answer} rows={8}/>
+		                    </div>
+	                    }
+                    </Card>
                 </>
 						}
 						{activeAgentKey !== "qa" &&
