@@ -248,9 +248,9 @@ export default function Home() {
     })
   },[activeId, queryDate, reloadTimes])
 
-  useEffect(() =>{
-    setClient(null)
-  }, [activeId])
+  // useEffect(() =>{
+  //   setClient(null)
+  // }, [activeId])
 
   useEffect(() => {
     if (client) {
