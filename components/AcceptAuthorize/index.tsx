@@ -13,7 +13,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 	const t = useTranslations('others');
 	const [id, setId] = React.useState<string>('');
 	const [name, setName] = React.useState<string>('');
-	const [jumpUrl, setJumpUrl] = React.useState<String>('');
+	const [jumpUrl, setJumpUrl] = React.useState<string>('');
 
 	const command = commandDataContainer.useContainer()
 
@@ -37,7 +37,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 
 	useEffect(() => {
 		if (jumpUrl !== ''){
-			window.location.href = "https://social.metapowermatrix.ai/mobile?to=instruct";
+			window.location.href = jumpUrl;
 		}
 	},[jumpUrl])
 
@@ -45,6 +45,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 		let ids = getCookie('authorized-ids');
 		document.cookie = `authorized-ids=${ids},${id}:${name}`;
 		alert(t('acceptOK'))
+		setJumpUrl('https://social.metapowermatrix.ai/mobile?to=instruct')
 	};
 
 	return (

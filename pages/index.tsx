@@ -143,7 +143,7 @@ export default function Home() {
   const [sessionTabKey, setSessionTabKey] = useState<string>('');
   const [sessionList, setSessionList] = useState<{key: string, label: string}[]>([])
   const [summary, setSummary] = useState<string>('')
-  const [continueTalk, setContinueTalk] = useState<boolean>(false)
+  const [continueTalk, setContinueTalk] = useState<boolean>(true)
   const [api, contextHolder] = notification.useNotification();
   const [client, setClient] = useState<mqtt.MqttClient | null>(null);
   const [isMySeesion, setIsMySession] = useState<boolean>(false)
@@ -165,7 +165,6 @@ export default function Home() {
     if (session_message.length > 0){
       setChatMessages(session_message[0].messages)
       if (session_message[0].messages.length > 0){
-        // console.log(session_message[0].messages[0].sender, activeName)
         let realname = session_message[0].messages[0].sender.split('(')[0]
         if ( realname === activeName){
           setIsMySession(true)
@@ -231,6 +230,12 @@ export default function Home() {
         })
         setSessionList(sessions)
         setSessionMessages(session_messages)
+        if (sessionTabKey !== ''){
+          session_messages = sessionMessages.filter((item) => item.session === sessionTabKey)
+          setSessionTabKey(sessionTabKey)
+        }else{
+          setSessionTabKey(session_messages[0].session)
+        }
         if (session_messages.length > 0){
           setChatMessages(session_messages[0].messages)
           if (session_messages[0].messages.length > 0){
@@ -242,7 +247,6 @@ export default function Home() {
             }
           }
           setSummary(session_messages[0].summary)
-          setSessionTabKey(session_messages[0].session)
         }
       }
     })
@@ -253,7 +257,7 @@ export default function Home() {
   // }, [activeId])
 
   useEffect(() => {
-    if (client) {
+    if (client && sessionTabKey !== '') {
       const msg_refresh = activeId+"/refresh";
       const chat_continue = activeId+"/continue";
 
@@ -263,8 +267,9 @@ export default function Home() {
         if (topic === msg_refresh){
           console.log("begin refresh")
           increaseReloadTimes()
-          setSessionTabKey(message.toString())
         }else{
+          console.log("set continue session: ", sessionTabKey)
+          handleContinueChat(true)
           if ( sessionTabKey === message.toString()){
             setContinueTalk(true)
           }else{
@@ -290,7 +295,7 @@ export default function Home() {
         }
       };
     }
-  }, [client]);
+  }, [client, sessionTabKey]);
 
   const handleSave = (index: number, value: ChatMessage) => {
     setChatMessages(chatMessages.map((item, i) => i === index ? value : item));
