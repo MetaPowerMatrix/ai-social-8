@@ -147,6 +147,7 @@ export default function Home() {
   const [api, contextHolder] = notification.useNotification();
   const [client, setClient] = useState<mqtt.MqttClient | null>(null);
   const [isMySeesion, setIsMySession] = useState<boolean>(false)
+  const [activeName, setActiveName] = useState<string>("")
 
   const t = useTranslations('Index');
 
@@ -164,7 +165,9 @@ export default function Home() {
     if (session_message.length > 0){
       setChatMessages(session_message[0].messages)
       if (session_message[0].messages.length > 0){
-        if (session_message[0].messages[0].sender === activeId){
+        // console.log(session_message[0].messages[0].sender, activeName)
+        let realname = session_message[0].messages[0].sender.split('(')[0]
+        if ( realname === activeName){
           setIsMySession(true)
         }else{
           setIsMySession(false)
@@ -210,6 +213,7 @@ export default function Home() {
     setClient(mqttClient);
 
     return () => {
+      console.log("Messages Disconnecting from MQTT broker")
       mqttClient.end(); // Clean up the connection on component unmount
     };
   },[])
@@ -223,14 +227,15 @@ export default function Home() {
         let session_messages = response
         let sessions = session_messages.map((item) => {
           // return {key: item.session, label: item.session.substring(0, 4) + '...' + item.session.substring(30, 34)}
-          return {key: item.session, label: item.messages[0].subject}
+          return {key: item.session, label: item.messages[0]?.subject}
         })
         setSessionList(sessions)
         setSessionMessages(session_messages)
         if (session_messages.length > 0){
           setChatMessages(session_messages[0].messages)
           if (session_messages[0].messages.length > 0){
-            if (session_messages[0].messages[0].sender === activeId){
+            let realname = session_messages[0].messages[0].sender.split('(')[0]
+            if ( realname === activeName){
               setIsMySession(true)
             }else{
               setIsMySession(false)
@@ -243,6 +248,10 @@ export default function Home() {
     })
   },[activeId, queryDate, reloadTimes])
 
+  useEffect(() =>{
+    setClient(null)
+  }, [activeId])
+
   useEffect(() => {
     if (client) {
       const msg_refresh = activeId+"/refresh";
@@ -252,6 +261,7 @@ export default function Home() {
       const onMessage = async (topic: string, message: Buffer) => {
         console.log("receive ", topic, " ", message.toString())
         if (topic === msg_refresh){
+          console.log("begin refresh")
           increaseReloadTimes()
           setSessionTabKey(message.toString())
         }else{
@@ -274,6 +284,7 @@ export default function Home() {
       // Return a cleanup function to unsubscribe and remove the message handler
       return () => {
         if (client) {
+          console.log("Messages unsubscribe from ", [msg_refresh, chat_continue])
           client.unsubscribe([msg_refresh, chat_continue]);
           client.removeListener('message', onMessage);
         }
@@ -288,7 +299,7 @@ export default function Home() {
   const handleEditMessages = () => {
     command.edit_session_messages(activeId, sessionTabKey, queryDate, chatMessages).then((res) =>
     {
-      openNotification("保存成功", "保存结果将影响之后的聊天")
+      openNotification("修改成功", "修改结果将影响之后的聊天")
     })
   }
   const handleContinueChat = (continued: boolean) => {
@@ -298,7 +309,8 @@ export default function Home() {
   }
 
   return (
-    <Layout onRefresh={increaseReloadTimes} onChangeId={(newId:string)=>setActiveId(newId)} title={t('title')} description={t('description')}>
+    <Layout onRefresh={(name: string)=> setActiveName(name)} onChangeId={(newId:string)=>setActiveId(newId)} title={t('title')} description={t('description')}>
+      {contextHolder}
       <Head>
         <title>{t('title')}</title>
       </Head>
@@ -332,7 +344,7 @@ export default function Home() {
             }}
             dataSource={chatMessages}
             renderItem={(item, index) => {
-              if (item.sender == activeId) {
+              if (isMySeesion) {
                 return <EditableListItem initialValue={item} onSave={(value) => handleSave(index, value)}/>
               }else{
                 return (

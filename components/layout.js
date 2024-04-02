@@ -98,6 +98,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
                 if (item.value !== '' && item.value === activeId) {
                     // console.log(item.label)
                     setActiveName(item.label);
+                    onRefresh(item.label)
                 }
             });
             setAvailableIds(idsMap);
