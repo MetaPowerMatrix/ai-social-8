@@ -8,10 +8,7 @@ import {
   DatePicker,
   DatePickerProps,
   Divider,
-  Input,
   List,
-  Popover,
-  Rate,
   Row,
   Space,
   Tag,
@@ -21,10 +18,8 @@ import {CloseOutlined, DeleteOutlined, FormOutlined, RedoOutlined, UploadOutline
 import commandDataContainer from "@/container/command"
 import {ChatMessage, getMQTTBroker, sessionMessages} from "@/common";
 import {useTranslations} from 'next-intl';
-import {formatDateTimeString, getCookie, getTodayDateString, subscribe_topic} from "@/lib/utils";
+import {formatDateTimeString, getCookie, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
-import TextArea from "antd/es/input/TextArea";
-import Image from "next/image";
 import mqtt from "mqtt";
 
 const IconText = ({ icon, text }:{icon: any, text: string}) => (
@@ -151,6 +146,8 @@ export default function Home() {
   const [continueTalk, setContinueTalk] = useState<boolean>(false)
   const [api, contextHolder] = notification.useNotification();
   const [client, setClient] = useState<mqtt.MqttClient | null>(null);
+  const [isMySeesion, setIsMySession] = useState<boolean>(false)
+
   const t = useTranslations('Index');
 
   const openNotification = (title: string, message: string) => {
@@ -166,6 +163,13 @@ export default function Home() {
     let session_message = sessionMessages.filter((item) => item.session === key)
     if (session_message.length > 0){
       setChatMessages(session_message[0].messages)
+      if (session_message[0].messages.length > 0){
+        if (session_message[0].messages[0].sender === activeId){
+          setIsMySession(true)
+        }else{
+          setIsMySession(false)
+        }
+      }
       setSummary(session_message[0].summary)
       setSessionTabKey(session_message[0].session)
     }
@@ -225,6 +229,13 @@ export default function Home() {
         setSessionMessages(session_messages)
         if (session_messages.length > 0){
           setChatMessages(session_messages[0].messages)
+          if (session_messages[0].messages.length > 0){
+            if (session_messages[0].messages[0].sender === activeId){
+              setIsMySession(true)
+            }else{
+              setIsMySession(false)
+            }
+          }
           setSummary(session_messages[0].summary)
           setSessionTabKey(session_messages[0].session)
         }
@@ -320,20 +331,36 @@ export default function Home() {
               position: "bottom"
             }}
             dataSource={chatMessages}
-            renderItem={(item, index) => (
-              <EditableListItem initialValue={item} onSave={(value) => handleSave(index, value)} />
-            )}
+            renderItem={(item, index) => {
+              if (item.sender == activeId) {
+                return <EditableListItem initialValue={item} onSave={(value) => handleSave(index, value)}/>
+              }else{
+                return (
+                  <List.Item
+                    key={item.subject}
+                  >
+                    <h5>{item.sender}: {item.question}</h5>
+                    <h5>{item.receiver === item.sender ? item.receiver + "#2" : item.receiver}: {item.answer}</h5>
+                    <h5>{formatDateTimeString(item.created_at*1000)} <Tag color="green">{item.place}</Tag><Tag color="yellow">{item.subject}</Tag></h5>
+                  </List.Item>
+                )
+              }
+            }}
           />
-            <Divider/>
-            <Row>
-              <Col span={4} style={{marginTop:10}}>
-                <label>是否继续聊天?</label>
-              </Col>
-              <Col span={12} style={{marginTop:10}}>
-                <Button disabled={!continueTalk} type={"primary"} style={{marginRight:30}}>是</Button>
-                <Button disabled={!continueTalk}>否</Button>
-              </Col>
-            </Row>
+          {isMySeesion &&
+            <>
+              <Divider/>
+              <Row>
+                <Col span={4} style={{marginTop:10}}>
+                  <label>是否继续聊天?</label>
+                </Col>
+                <Col span={12} style={{marginTop:10}}>
+                  <Button onClick={() => handleContinueChat(true)} disabled={!continueTalk} type={"primary"} style={{marginRight:30}}>是</Button>
+                  <Button onClick={() => handleContinueChat(false)} disabled={!continueTalk}>否</Button>
+                </Col>
+              </Row>
+            </>
+          }
           </>
       }
       </Card>
