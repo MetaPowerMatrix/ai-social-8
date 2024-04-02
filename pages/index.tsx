@@ -234,7 +234,7 @@ export default function Home() {
           session_messages = sessionMessages.filter((item) => item.session === sessionTabKey)
           setSessionTabKey(sessionTabKey)
         }else{
-          setSessionTabKey(session_messages[0].session)
+          setSessionTabKey(session_messages[0]?.session)
         }
         if (session_messages.length > 0){
           setChatMessages(session_messages[0].messages)
@@ -265,11 +265,9 @@ export default function Home() {
       const onMessage = async (topic: string, message: Buffer) => {
         console.log("receive ", topic, " ", message.toString())
         if (topic === msg_refresh){
-          console.log("begin refresh")
           increaseReloadTimes()
         }else{
           console.log("set continue session: ", sessionTabKey)
-          handleContinueChat(true)
           if ( sessionTabKey === message.toString()){
             setContinueTalk(true)
           }else{
