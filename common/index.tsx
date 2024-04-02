@@ -81,6 +81,8 @@ export const api_url = {
         'history': '/api/pato/messages',
         'archive': '/api/pato/archive',
         'pro': '/api/pato/pro/messages',
+        'edit': '/api/pato/edit/messages',
+        'continue': '/api/pato/continue/chat'
       },
       'auth':{
         'gen': '/api/pato/pro/auth/gen',

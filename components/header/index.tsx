@@ -9,7 +9,6 @@ import {StatsInfo, TimeLineItem} from "@/common";
 
 const HeaderPanel = ({activeName, activeId, userFeed, onChangeId}:{activeName: string, activeId:string, userFeed: TimeLineItem[], onChangeId: (s: boolean)=>void}) => {
 	const [userInfo, setUserInfo] = useState<StatsInfo[]>([]);
-	// const [userFeed, setUserFeed] = useState<TimeLineItem[]>([{children:"新的一天开始了"}]);
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('Login');
 

@@ -130,7 +130,7 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 			const ids = cookie2.split(',');
 			const idsMap = ids.filter((element)=> {return (element !== '')} )
 				.map((id) => {
-					console.log(id)
+					// console.log(id)
 					return {label: id.split(":")[1], value: id.split(":")[0]};
 			});
 			// console.log(idsMap)

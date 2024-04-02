@@ -13,6 +13,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 	const t = useTranslations('others');
 	const [id, setId] = React.useState<string>('');
 	const [name, setName] = React.useState<string>('');
+	const [jumpUrl, setJumpUrl] = React.useState<String>('');
 
 	const command = commandDataContainer.useContainer()
 
@@ -34,9 +35,13 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 		})
 	},[])
 
+	useEffect(() => {
+		if (jumpUrl !== ''){
+			window.location.href = "https://social.metapowermatrix.ai/mobile?to=instruct";
+		}
+	},[jumpUrl])
+
 	const handleAccept = (values: any) => {
-		// let userid = "b120f295-fcaf-4ddf-a3f3-ac0fc54a5093"
-		// let username = "Luca Williams"
 		let ids = getCookie('authorized-ids');
 		document.cookie = `authorized-ids=${ids},${id}:${name}`;
 		alert(t('acceptOK'))
@@ -49,7 +54,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 					<Col span={24} style={{textAlign: "center"}}>
 						<div><h5>{name}{t("tipsAuthorize")}</h5></div>
 						<Button onClick={handleAccept}>{t('accept')}</Button>
-						<a href="https://social.metapowermatrix.ai/mobile">{t('go_talk')}</a>
+						<a href="https://social.metapowermatrix.ai/mobile?to=instruct">{t('go_talk')}</a>
 					</Col>
 				</Row>
 			</div>

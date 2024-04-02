@@ -51,16 +51,12 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
-		// if (stopped){
-			console.log("init player")
-			setPlayer(new SequentialAudioPlayer(voiceUrls, window));
-	// 	}
-	// }, [stopped]);
-	// useEffect(() => {
+		console.log("init player")
+		setPlayer(new SequentialAudioPlayer(voiceUrls, window));
 		// Initialize MQTT client and connect
 		const mqttClient = mqtt.connect(getMQTTBroker());
 		mqttClient.on("connect", () => {
-			console.log("Instruct Connected to MQTT broker");
+			console.log("LiveChat Connected to MQTT broker");
 		});
 		mqttClient.on("error", (err) => {
 			console.error("Error connecting to MQTT broker:", err);
@@ -73,7 +69,6 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	}, []);
 
 	useEffect(() => {
-		console.log("init player: ", player)
 		if (client) {
 			const topic_voice = session+"/voice";
 			const topic_text = session+"/text";

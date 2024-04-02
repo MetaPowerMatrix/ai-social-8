@@ -1,5 +1,5 @@
 import {createContainer} from "unstated-next"
-import {api_url, getApiServer, PatoInfo, Persona, sessionMessages} from "@/common";
+import {api_url, ChatMessage, getApiServer, PatoInfo, Persona, sessionMessages} from "@/common";
 
 const useCommand = () => {
   const create_pato = async (name: string): Promise<string> => {
@@ -180,6 +180,44 @@ const useCommand = () => {
       // let data = JSON.parse(dataJson.content)
     }
   }
+  const edit_session_messages = async (id: string, session: string, date: string, messages: ChatMessage[]) => {
+    let data = {id: id, session: session, date: date, messages: messages}
+    let url = getApiServer(80) + api_url.portal.message.edit
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+      // let data = JSON.parse(dataJson.content)
+    }
+  }
+  const continue_session_chat = async (id: string, session: string, date: string, continued: boolean) => {
+    let data = {id: id, session: session, date: date, continued: continued}
+    let url = getApiServer(80) + api_url.portal.message.continue
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+      // let data = JSON.parse(dataJson.content)
+    }
+  }
   const deposit_metapower = async (id: string, amount: number, is_donation: boolean) => {
     let data = {id: id, amount: amount, is_donation: is_donation}
     let url = getApiServer(80) + api_url.account.wallet.deposit
@@ -304,7 +342,7 @@ const useCommand = () => {
   }
   return { login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages, getPatoISS, callPato,
     deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat,
-    getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken
+    getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken, edit_session_messages, continue_session_chat
   }
 }
 

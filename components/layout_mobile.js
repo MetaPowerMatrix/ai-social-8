@@ -44,11 +44,11 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const t = useTranslations('Login');
 
     const zones = [
-        { id: 'zone1', top: 360, left: 110, height:220, width:320,
+        { id: 'zone1', top: 560, left: 80, height:220, width:320,
             tips: '每天在这里设置一个话题，可以增加和别人交谈的机会哦'},
-        { id: 'zone2', top: 560, left: 110, height:220, width:320,
+        { id: 'zone2', top: 760, left: 80, height:220, width:320,
             tips: '如果你有一些专业的知识，在这里上传，别人会很愿意和你聊天哦'},
-        { id: 'zone3', top: 760, left: 110, height:140, width:320,
+        { id: 'zone3', top: 960, left: 80, height:140, width:320,
             tips: '这里显示你的Pato的聊天记录，可以按时间查询' },
     ];
 
@@ -116,6 +116,19 @@ export default function LayoutMobile({ children, title, description, onChangeId,
         command.getPatoISS(activeId).then((res) => {
             setUserISS(res)
         })
+    }, [activeId])
+
+    useEffect(() => {
+        if (activeId !== ''){
+            const currentUrl = window.location.search;
+            const searchParams = new URLSearchParams(currentUrl);
+            const paramName = 'to';
+            const to_page = searchParams.get(paramName);
+            console.log(to_page);
+            if (to_page === 'instruct'){
+                setOpenInstruct(true)
+            }
+        }
     }, [activeId])
 
     return (
