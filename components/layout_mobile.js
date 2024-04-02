@@ -18,11 +18,12 @@ import MaskedHighlight from "@/components/MaskedHighlight";
 import ISSForm from "@/components/iss";
 import commandDataContainer from "@/container/command";
 import Deposit from "@/components/deposit";
-import {Streaming_Server} from "@/common";
+import {getMQTTBroker, Streaming_Server} from "@/common";
 import HeaderPanelMobile from "./header_mobile";
 import LiveChatMobile from "@/components/LiveChatMobile";
 import AIInstructMobileComponent from "@/components/AIInstructMobile";
 import QRCodeComponent from "@/components/QRCode";
+import mqtt from "mqtt";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(false);
@@ -41,6 +42,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const command = commandDataContainer.useContainer()
     const [userISS, setUserISS] = useState();
     const [activeTabKey, setActiveTabKey] = useState('task');
+    const [client, setClient] = useState(null);
     const t = useTranslations('Login');
 
     const zones = [
@@ -61,6 +63,22 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const onChange = () => {
         setOpen(!open);
     };
+
+    useEffect(()=>{
+        const mqttClient = mqtt.connect(getMQTTBroker());
+        mqttClient.on("connect", () => {
+            console.log("Feed Connected to MQTT broker");
+        });
+        mqttClient.on("error", (err) => {
+            console.error("Error connecting to MQTT broker:", err);
+        });
+        setClient(mqttClient);
+
+        return () => {
+            mqttClient.end(); // Clean up the connection on component unmount
+        };
+    },[])
+
     useEffect(() => {
         const cookie1 = getCookie('active-id');
         if (cookie1 === "" || cookie1 === null) {
@@ -90,33 +108,47 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             setGuide(true)
             // console.log("guide", guide)
         }
-    },[activeId]);
-
-    useEffect(() => {
-        // console.log("sub: ", activeId)
-        if (activeId !== ""){
-            subscribe_topic(activeId, (message) => {
-                // const byteArray = new Uint8Array(message);
-                // const decoder = new TextDecoder("utf-8");
-                // const decode_msg = decoder.decode(byteArray);
-                let item = {children: message.toString()}
-                setUserFeed((prevFeed)=>{
-                    const newFeed = [...prevFeed]
-                    if (newFeed.length >= 10){
-                        newFeed.shift()
-                    }
-                    newFeed.push(item)
-                    return newFeed
-                })
-            })
-        }
-    }, [activeId]);
-
-    useEffect(() => {
         command.getPatoISS(activeId).then((res) => {
             setUserISS(res)
         })
-    }, [activeId])
+    },[activeId]);
+
+    useEffect(() => {
+        if (client) {
+            const msg_feed = activeId;
+            // Handler for incoming messages
+            const onMessage = async (topic, message) => {
+                console.log("receive ", topic, " ", message.toString())
+                if (topic === msg_feed){
+                    let item = {children: message.toString()}
+                    setUserFeed((prevFeed)=>{
+                        const newFeed = [...prevFeed]
+                        if (newFeed.length >= 10){
+                            newFeed.shift()
+                        }
+                        newFeed.push(item)
+                        return newFeed
+                    })
+                }
+            };
+
+            // Subscribe to the topic
+            client.subscribe([msg_feed], (err) => {
+                if (!err) {
+                    console.log("Feed Subscribed to topic: ", [msg_feed]);
+                    client.on('message', onMessage);
+                }
+            });
+
+            // Return a cleanup function to unsubscribe and remove the message handler
+            return () => {
+                if (client) {
+                    client.unsubscribe([msg_feed]);
+                    client.removeListener('message', onMessage);
+                }
+            };
+        }
+    }, [client]);
 
     useEffect(() => {
         if (activeId !== ''){
