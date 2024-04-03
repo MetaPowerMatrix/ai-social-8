@@ -57,7 +57,7 @@ export interface ChatMessage{
   subject: string,
   sender_role: string
 }
-export interface sessionMessages{
+export interface SessionMessages{
   session: string,
   summary: string,
   messages: ChatMessage[]
@@ -69,6 +69,7 @@ export interface SessionList{
   subject: string,
   summary: string,
   created_at: number,
+  messages: ChatMessage[]
 }
 export interface Persona {
   name: string,

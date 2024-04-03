@@ -16,7 +16,7 @@ import {
 } from "antd";
 import {CloseOutlined, DeleteOutlined, FormOutlined, RedoOutlined, UploadOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
-import {ChatMessage, getMQTTBroker, sessionMessages} from "@/common";
+import {ChatMessage, getMQTTBroker, SessionMessages} from "@/common";
 import {useTranslations} from 'next-intl';
 import {formatDateTimeString, getCookie, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
@@ -131,7 +131,7 @@ const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSav
 export default function Home() {
   const [activeId, setActiveId] = useState("");
   const command = commandDataContainer.useContainer()
-  const [sessionMessages, setSessionMessages] = useState<sessionMessages[]>([]);
+  const [sessionMessages, setSessionMessages] = useState<SessionMessages[]>([]);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [queryDate, setQueryDate] = useState(getTodayDateString());
   const [reloadTimes, setReloadTimes] = useState(0);

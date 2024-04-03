@@ -12,8 +12,8 @@ import {
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
-	AudioOutlined, CloseOutlined,
-	PauseOutlined
+	AudioOutlined, CloseOutlined, LeftOutlined,
+	PauseOutlined, RightOutlined
 } from "@ant-design/icons";
 import {api_url, ChatMessage, getApiServer, getMQTTBroker} from "@/common";
 import Image from "next/image";
@@ -43,11 +43,9 @@ declare global {
 const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id, onClose, onShowProgress}) => {
 	const t = useTranslations('AIInstruct');
 	const [recorder, setRecorder] = useState<MediaRecorder>();
-	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/two-boy.png");
-	const [answer, setAnswer] = useState<string>("");
 	const [question, setQuestion] = useState<string>("");
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const [activeAgentKey, setActiveAgentKey] = useState<string>("qa");
@@ -55,10 +53,10 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const [callid, setCallid] = useState<string>("");
-	const [activeQAKey, setActiveQAKey] = useState<string>("pro");
 	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [summary, setSummary] = useState<string>("");
+	const [hideMessages, setHideMessages] = useState<boolean>(false);
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
@@ -93,7 +91,6 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 			const onMessage = (topic: string, message: Buffer) => {
 				if (topic === topic_instruct){
 					console.log("receive answer: ", message.toString())
-					setAnswer(message.toString())
 				}else{
 					console.log("receive audio: ", message.toString())
 					playAudioWithWebAudioApi(message.toString())
@@ -136,15 +133,6 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 		}
 	},[]);
 
-	const close_clean = () => {
-		if (wsSocket !== undefined){
-			wsSocket.close();
-		}
-		if (recorder !== undefined){
-			recorder.stop()
-		}
-		onClose()
-	}
 	const callPato = (id: string, callid: string) => {
 		command.callPato(id, callid).then((res) => {
 			alert(t("waitingCall"))
@@ -157,7 +145,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 				let session_messages = response
 				let summary = ""
 				session_messages.forEach((item) => {
-					let msg = item.messages.filter((msg) => {
+					let msg = item.messages.filter((msg: ChatMessage) => {
 						return (msg.question.length > 0 && msg.answer.length > 0)
 					})
 					messages.push(...msg)
@@ -208,7 +196,6 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 		// const socket = new WebSocket(serverUrl + "/up");
 		const socket = new WebSocketManager(serverUrl + "/up", process_ws_message);
 
-		setWsSocket(socket);
 		setRecorder(mediaRecorder)
 
 		mediaRecorder.ondataavailable = (event) => {
@@ -297,43 +284,6 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 		fileList,
 	};
 
-	const onTabChange = (key: string) => {
-			setActiveAgentKey(key)
-	};
-
-	const messages = () => {
-		return (
-			<div>
-				<DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom: 10}}
-				            onChange={onChange}/>
-				<h5>{summary}</h5>
-				<List
-					itemLayout="vertical"
-					size="small"
-					pagination={{
-						onChange: (page) => {
-							console.log(page);
-						},
-						pageSize: 6,
-					}}
-					dataSource={chatMessages}
-					renderItem={(item) => (
-						<List.Item
-							key={item.subject}
-							actions={[
-								<Rate key={item.created_at} defaultValue={3} allowClear={false}/>
-							]}
-						>
-							<h5>{item.sender}: {item.question}</h5>
-							<h5>{item.receiver === item.sender ? item.receiver + "#2" : item.receiver}: {item.answer}</h5>
-							<h5>{formatDateTimeString(item.created_at * 1000)} <Tag
-								color="green">{item.place}</Tag><Tag color="yellow">{item.subject}</Tag></h5>
-						</List.Item>
-					)}
-				/>
-			</div>
-		)
-	}
 	return (
 			<div className={styles.voice_instruct_container}>
 				<div className={styles.voice_instruct_content}>
@@ -352,46 +302,79 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 							</Col>
 						</Row>
 						<Divider/>
-						<Row>
-							<Col span={24} style={{overflow:"scroll"}}>
-								<h5>{t('pro')}</h5>
-								<List
-									itemLayout="horizontal"
-									size="small"
-									dataSource={authorisedIds}
-									renderItem={(item, index) => (
-										<List.Item
-											key={index}
-											className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
-											defaultValue={item.value}
-											onClick={(e) => {
-												setSelectedIndex(index)
-												setCallid(item.value)
-											}}
-										>
-											<h5>{item.label}</h5>
-										</List.Item>
-									)}
-								/>
-							</Col>
-						</Row>
-						<Row style={{padding:10}}>
-							<Col span={24}>
-								<Button style={{width: "100%", marginTop:20}} type={"primary"} onClick={handleAutoChat}>{t('automatic_comm')}</Button>
-							</Col>
-						</Row>
-							{activeAgentKey !== "qa" &&
-	                <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
-	                    <Col span={7}/>
-	                    <Col span={10} style={{textAlign: "center", height: 360}}>
-	                        <Image onClick={() => setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
-	                    </Col>
-	                    <Col span={7}/>
-	                </Row>
-							}
-							<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub}
-	                        onShowProgress={onShowProgress}/>
-          </>
+						<div hidden={hideMessages} style={{overflow: "scroll", width: "100%", height: 650, padding: 15}}>
+							<h5>{t('pro')}</h5>
+							<List
+								itemLayout="horizontal"
+								size="small"
+								dataSource={authorisedIds}
+								renderItem={(item, index) => (
+									<List.Item
+										key={index}
+										className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
+										defaultValue={item.value}
+										onClick={(e) => {
+											setHideMessages(false)
+											setSelectedIndex(index)
+											setCallid(item.value)
+										}}
+									>
+										<Row style={{width:"100%"}}>
+											<Col span={22}><h5>{item.label}</h5></Col>
+											<Col span={2} style={{textAlign: "end"}}><RightOutlined/></Col>
+										</Row>
+									</List.Item>
+								)}
+							/>
+							<Row style={{padding: 10}}>
+								<Col span={24}>
+									<Button style={{width: "100%", marginTop: 20}} type={"primary"}
+									        onClick={handleAutoChat}>{t('automatic_comm')}</Button>
+								</Col>
+							</Row>
+						</div>
+						<div hidden={!hideMessages} style={{overflow: "scroll", height: 700, padding: 15}}>
+							<Row>
+								<LeftOutlined onClick={() => setHideMessages(true)}/>
+							</Row>
+							<Divider/>
+							<DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom: 10}}
+							            onChange={onChange}/>
+							<h5>{summary}</h5>
+							<List
+								itemLayout="vertical"
+								size="small"
+								dataSource={chatMessages}
+								renderItem={(item) => (
+									<List.Item
+										key={item.session}
+									>
+										<Row>
+											<Col span={24}>
+												<h5>{item.sender.split('(')[0]}: {item.question}</h5>
+											</Col>
+										</Row>
+										<Row>
+											<Col span={24} style={{textAlign:"end"}}>
+												<h5>{item.answer} : {item.receiver.split('(')[0]}</h5>
+											</Col>
+										</Row>
+									</List.Item>
+								)}
+							/>
+						</div>
+						{activeAgentKey !== "qa" &&
+                <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
+                    <Col span={7}/>
+                    <Col span={10} style={{textAlign: "center", height: 360}}>
+                        <Image onClick={() => setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
+                    </Col>
+                    <Col span={7}/>
+                </Row>
+						}
+						<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub}
+						                        onShowProgress={onShowProgress}/>
+					</>
 				</div>
 			</div>
 	);

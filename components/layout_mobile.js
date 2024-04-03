@@ -38,6 +38,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const [userISS, setUserISS] = useState();
     const [openLive, setOpenLive] = useState(false);
     const [client, setClient] = useState(null);
+    const [activeTab, setActivTab] = useState('chat');
     const t = useTranslations('Login');
 
     const zones = [
@@ -94,6 +95,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 if (item.value !== '' && item.value === activeId) {
                     // console.log(item.label)
                     setActiveName(item.label);
+                    onRefresh(item.label)
                 }
             });
             setAvailableIds(idsMap);
@@ -153,7 +155,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             const to_page = searchParams.get(paramName);
             console.log(to_page);
             if (to_page === 'instruct'){
-                setOpenInstruct(true)
+                setActivTab("pro")
             }
         }
     }, [activeId])
@@ -183,7 +185,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     <UserFeedMobile userFeed={userFeed}/>
                 }
                 {key === 'discovery' &&
-                    <div style={{padding:10, height: 750}}>
+                    <div style={{padding:10, height: 660}}>
                         <Row className={styles.header_meta} onClick={() => setOpenLive(true)}>
                             <Col  className={styles.colorBar} span={12}>
                                 <h5>{t("live")}</h5>
@@ -222,6 +224,8 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     type={"line"}
                     animated={true}
                     tabPosition="bottom"
+                    activeKey={activeTab}
+                    onChange={(key)=>setActivTab(key)}
                     items={tabs.map((tab, i) => {
                         return {
                             label: tab.label,
