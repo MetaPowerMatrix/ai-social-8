@@ -2,16 +2,13 @@ import React, {useEffect, useState} from 'react';
 import Head from 'next/head';
 import {
 	Avatar, Button,
-	Card,
 	Col,
 	DatePicker,
 	DatePickerProps,
 	Divider,
 	Input,
 	List, notification,
-	Rate,
 	Row,
-	Space,
 	Tag,
 	Tooltip
 } from "antd";
@@ -107,9 +104,20 @@ const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSav
 			key={initialValue.subject}
 			onClick={handleEdit}
 		>
-			<h5>{initialValue.sender}: {initialValue.question}</h5>
-			<h5>{initialValue.receiver === initialValue.sender ? initialValue.receiver + "#2" : initialValue.receiver}: {initialValue.answer}</h5>
-			<h5>{formatDateTimeString(initialValue.created_at*1000)} <Tag color="green">{initialValue.place}</Tag><Tag color="yellow">{initialValue.subject}</Tag></h5>
+			<Row>
+				<Col span={24}>
+					<h5>{initialValue.sender.split('(')[0]}: {initialValue.question}</h5>
+				</Col>
+			</Row>
+			<Row>
+				<Col span={24} style={{textAlign:"end"}}>
+					<h5>{initialValue.answer} : {initialValue.receiver.split('(')[0]}</h5>
+				</Col>
+			</Row>
+
+			{/*<h5>{initialValue.sender}: {initialValue.question}</h5>*/}
+			{/*<h5>{initialValue.receiver === initialValue.sender ? initialValue.receiver + "#2" : initialValue.receiver}: {initialValue.answer}</h5>*/}
+			{/*<h5>{formatDateTimeString(initialValue.created_at*1000)} <Tag color="green">{initialValue.place}</Tag><Tag color="yellow">{initialValue.subject}</Tag></h5>*/}
 		</List.Item>
 	);
 };
@@ -281,7 +289,11 @@ export default function Home() {
 	}
 	const handleContinueChat = (continued: boolean) => {
 		command.continue_session_chat(activeId, currentSession, queryDate, continued).then((res) => {
-			openNotification("继续聊天", "支付了对方1个原力")
+			if (continued){
+				openNotification("继续聊天", "支付了对方1个原力")
+			}else{
+				openNotification("结束聊天", "有机会再聊吧")
+			}
 		})
 	}
 
@@ -289,45 +301,50 @@ export default function Home() {
 		<LayoutMobile onRefresh={(name: string) => setActiveName(name)} onChangeId={(newId: string) => setActiveId(newId)}
 		              title={t('title')}
 		              description={t('description')}>
+			{contextHolder}
 			<Head>
 				<title>{t('title')}</title>
 			</Head>
-			<div hidden={!hideDetail} style={{overflow: "scroll", height: pageHeight, padding: 10}}>
-				<Row align={"middle"}>
-					<Col span={5} style={{textAlign: "start"}}><label>{t('event')}</label></Col>
-					<Col span={15} style={{textAlign: "center"}}>
-						<Input placeholder={t('taskDailyTips')} onChange={(e) => dailyInput(e)}/>
-					</Col>
-					<Col span={4} style={{textAlign: "center"}}>
-						<button onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
-					</Col>
-				</Row>
-				<List
-					itemLayout="horizontal"
-					header={<MessageHeader queryDate={queryDate} onChangeDate={changeQueryDate}
-					                       onClickReload={increaseReloadTimes}/>}
-					size="small"
-					dataSource={sessionList}
-					renderItem={(item) => (
-						<List.Item
-							key={item.session}
-							actions={[
-								<DeleteOutlined key={"delete"} onClick={() => archiveSession(item.session)}/>,
-								<RightOutlined key={"detail"} onClick={() => showSessionDetail(item.session)}/>
-							]}
-						>
-							<List.Item.Meta
-								avatar={<Avatar src={"/images/notlogin.png"}/>}
-								title={item.receiver.split('(')[0]}
-								description={<><Tag color="green">{item.place}</Tag><Tag
-									color="green">{item.subject}</Tag>{formatDateTimeString(item.created_at)}</>}
-							/>
-							<Tooltip title={item.summary} color={"cyan"} key={"cyan"}>
-								<h5>{item.summary.substring(0, 8)}</h5>
-							</Tooltip>
-						</List.Item>
-					)}
-				/>
+			<div hidden={!hideDetail} style={{height: pageHeight, padding: 10}}>
+				<div style={{padding: 10}}>
+					<Row align={"middle"}>
+						<Col span={5} style={{textAlign: "start"}}><label>{t('event')}</label></Col>
+						<Col span={15} style={{textAlign: "center"}}>
+							<Input placeholder={t('taskDailyTips')} onChange={(e) => dailyInput(e)}/>
+						</Col>
+						<Col span={4} style={{textAlign: "center"}}>
+							<button onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
+						</Col>
+					</Row>
+				</div>
+				<div style={{overflow: "scroll", height: 600, padding: 10}}>
+					<List
+						itemLayout="horizontal"
+						header={<MessageHeader queryDate={queryDate} onChangeDate={changeQueryDate}
+						                       onClickReload={increaseReloadTimes}/>}
+						size="small"
+						dataSource={sessionList}
+						renderItem={(item) => (
+							<List.Item
+								key={item.session}
+								actions={[
+									<DeleteOutlined key={"delete"} onClick={() => archiveSession(item.session)}/>,
+									<RightOutlined key={"detail"} onClick={() => showSessionDetail(item.session)}/>
+								]}
+							>
+								<List.Item.Meta
+									avatar={<Avatar src={"/images/notlogin.png"}/>}
+									title={item.receiver.split('(')[0]}
+									description={<><Tag color="green">{item.place}</Tag><Tag
+										color="green">{item.subject}</Tag>{formatDateTimeString(item.created_at)}</>}
+								/>
+								<Tooltip title={item.summary} color={"cyan"} key={"cyan"}>
+									<h5>{item.summary.substring(0, 8)}</h5>
+								</Tooltip>
+							</List.Item>
+						)}
+					/>
+				</div>
 			</div>
 			<div hidden={hideDetail} style={{overflow: "scroll", height: pageHeight, padding: 15}}>
 				<Row>

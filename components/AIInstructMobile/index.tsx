@@ -140,23 +140,26 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 		})
 	}
 	useEffect(()=> {
-		command.getProHistoryMessages(id, callid, queryDate).then((response) => {
-			let messages: ChatMessage[] = []
-			if (response !== null) {
-				let session_messages = response
-				let summary = ""
-				session_messages.forEach((item) => {
-					let msg = item.messages.filter((msg: ChatMessage) => {
-						return (msg.question.length > 0 && msg.answer.length > 0)
+		if (id !== '' && callid !== '')
+		{
+			command.getProHistoryMessages(id, callid, queryDate).then((response) => {
+				let messages: ChatMessage[] = []
+				if (response !== null) {
+					let session_messages = response
+					let summary = ""
+					session_messages.forEach((item) => {
+						let msg = item.messages.filter((msg: ChatMessage) => {
+							return (msg.question.length > 0 && msg.answer.length > 0)
+						})
+						messages.push(...msg)
+						summary += item.summary
 					})
-					messages.push(...msg)
-					summary += item.summary
-				})
-				setSummary(summary)
-				setChatMessages(messages)
-			}
-		})
-	},[id, queryDate])
+					setSummary(summary)
+					setChatMessages(messages)
+				}
+			})
+		}
+	},[id, callid, queryDate])
 
 	const onChange: DatePickerProps['onChange'] = (_, dateString) => {
 		changeQueryDate(dateString as string)
@@ -185,7 +188,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	};
 
 	const process_ws_message = (event: any) => {
-		console.log(event)
+		console.log(event.data.toString())
 		setQuestion(event.data.toString())
 		handleVoiceCommand({topic: event.data.toString()})
 	}
@@ -289,7 +292,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	return (
 			<div className={styles.voice_instruct_container}>
 				<div className={styles.voice_instruct_content}>
-					<>
+					<div hidden={!hideMessages} >
 						<Row align={"middle"} justify={"space-between"}>
 							<Col span={20}>
 								<TextArea placeholder={t('command')} value={question} rows={1}/>
@@ -304,7 +307,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 							</Col>
 						</Row>
 						<Divider/>
-						<div hidden={!hideMessages} style={{overflow: "scroll", padding: 15}}>
+						<div style={{overflow: "scroll", padding: 15}}>
 							<h5>{t('pro')}</h5>
 							<List
 								itemLayout="horizontal"
@@ -335,48 +338,48 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 								</Col>
 							</Row>
 						</div>
-						<div hidden={hideMessages} style={{overflow: "scroll", height: 700, padding: 15}}>
-							<Row>
-								<LeftOutlined onClick={() => setHideMessages(true)}/>
-							</Row>
-							<Divider/>
-							<DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom: 10}}
-							            onChange={onChange}/>
-							<h5>{summary}</h5>
-							<List
-								itemLayout="vertical"
-								size="small"
-								dataSource={chatMessages}
-								renderItem={(item) => (
-									<List.Item
-										key={item.session}
-									>
-										<Row>
-											<Col span={24}>
-												<h5>{item.sender.split('(')[0]}: {item.question}</h5>
-											</Col>
-										</Row>
-										<Row>
-											<Col span={24} style={{textAlign:"end"}}>
-												<h5>{item.answer} : {item.receiver.split('(')[0]}</h5>
-											</Col>
-										</Row>
-									</List.Item>
-								)}
-							/>
-						</div>
-						{activeAgentKey !== "qa" &&
-                <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
-                    <Col span={7}/>
-                    <Col span={10} style={{textAlign: "center", height: 360}}>
-                        <Image onClick={() => setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
-                    </Col>
-                    <Col span={7}/>
-                </Row>
-						}
-						<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub}
-						                        onShowProgress={onShowProgress}/>
-					</>
+					</div>
+					<div hidden={hideMessages} style={{overflow: "scroll", height: 700, padding: 15}}>
+						<Row>
+							<LeftOutlined onClick={() => setHideMessages(true)}/>
+						</Row>
+						<Divider/>
+						<DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom: 10}}
+						            onChange={onChange}/>
+						<h5>{summary}</h5>
+						<List
+							itemLayout="vertical"
+							size="small"
+							dataSource={chatMessages}
+							renderItem={(item) => (
+								<List.Item
+									key={item.session}
+								>
+									<Row>
+										<Col span={24}>
+											<h5>{item.sender.split('(')[0]}: {item.question}</h5>
+										</Col>
+									</Row>
+									<Row>
+										<Col span={24} style={{textAlign:"end"}}>
+											<h5>{item.answer} : {item.receiver.split('(')[0]}</h5>
+										</Col>
+									</Row>
+								</List.Item>
+							)}
+						/>
+					</div>
+					{activeAgentKey !== "qa" &&
+              <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
+                  <Col span={7}/>
+                  <Col span={10} style={{textAlign: "center", height: 360}}>
+                      <Image onClick={() => setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
+                  </Col>
+                  <Col span={7}/>
+              </Row>
+					}
+					<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub}
+					                        onShowProgress={onShowProgress}/>
 				</div>
 			</div>
 	);

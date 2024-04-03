@@ -5,20 +5,22 @@ import {EditOutlined, QrcodeOutlined, RightOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
 import commandDataContainer from "@/container/command";
 import {useTranslations} from "next-intl";
-import {PatoInfo, StatsInfo, TimeLineItem} from "@/common";
+import {PatoInfo, Persona, StatsInfo, TimeLineItem} from "@/common";
 import TaskPanel from "@/components/taskPanel";
 import styles from './HeaderPanelMobile.module.css'
+import ISSForm from "@/components/iss";
 
-const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, showDeposit, showISS}:
+const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, showDeposit}:
    {activeName: string, activeId:string,
 	   onShowProgress: (s: boolean)=>void, onChangeId: (s: boolean)=>void,
 	   showQRCode: ()=>void,
 	   showDeposit: ()=>void,
-	   showISS: ()=>void,
 	 }) =>
 {
 	const [userInfo, setUserInfo] = useState<PatoInfo>();
 	const command = commandDataContainer.useContainer()
+	const [editISS, setEditISS] = useState(false);
+	const [userISS, setUserISS] = useState<Persona>();
 	const t = useTranslations('Login');
 
 	const pad = function(src: Number, size: number) {
@@ -38,6 +40,11 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 		command.getPatoInfo(activeId).then((res): void => {
 			if ( res !== null){
 				setUserInfo(res);
+			}
+		})
+		command.getPatoISS(activeId).then((res) => {
+			if (res !== undefined){
+				setUserISS(res)
 			}
 		})
 	},[activeId]);
@@ -66,7 +73,8 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 					}}>{userInfo?.id === undefined ? '' : userInfo?.id.substring(0, 14) + '...' + userInfo?.id.substring(28, 36)}</a>
 				</Col>
 			</Row>
-			<Row className={styles.header_meta} onClick={showISS}>
+			<div className={styles.header_panel_mobile_info}>
+			<Row className={styles.header_meta} onClick={()=> setEditISS(true)}>
 				<Col span={12}>
 					<h5>AI设定</h5>
 				</Col>
@@ -124,6 +132,8 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 					<Button style={{width: "100%"}} type={"primary"} onClick={() => onChangeId(false)}>切换账号</Button>
 				</Col>
 			</Row>
+			</div>
+			<ISSForm mobile={true} userISS={userISS!} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
 		</header>
 	)
 }

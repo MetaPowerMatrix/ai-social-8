@@ -11,7 +11,6 @@ import {useTranslations} from 'next-intl';
 import {getCookie} from "@/lib/utils";
 import ProgressBarComponent from "@/components/ProgressBar";
 import MaskedHighlight from "@/components/MaskedHighlight";
-import ISSForm from "@/components/iss";
 import commandDataContainer from "@/container/command";
 import Deposit from "@/components/deposit";
 import {getMQTTBroker, Streaming_Server} from "@/common";
@@ -24,7 +23,6 @@ import LiveChatMobile from "@/components/LiveChatMobile";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(false);
-    const [editISS, setEditISS] = useState(false);
     const [openCode, setOpenCode] = useState(false);
     const [openDeposit, setOpenDeposit] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
@@ -105,9 +103,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             // setGuide(true)
             // console.log("guide", guide)
         }
-        command.getPatoISS(activeId).then((res) => {
-            setUserISS(res)
-        })
     },[activeId]);
 
     useEffect(() => {
@@ -199,7 +194,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 {key === 'mine' &&
                     <HeaderPanelMobile
                         showDeposit={()=>{setOpenDeposit(true)}}
-                        showISS={()=>{setEditISS(true)}}
                         showQRCode={()=>{setOpenCode(true)}}
                         onShowProgress={showProgressBar}
                         activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}
@@ -239,7 +233,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 <Image priority src="/images/ai-town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
             }
             <MaskedHighlight zones={zones} visible={guide} />
-            <ProgressBarComponent visible={loading} steps={10} />
+            <ProgressBarComponent visible={loading} steps={15} />
             <ModalLogin mobile={true} isOpen={!isLogin} tips={t} options={availableIds}
                         onClose={(id) => {
                             setIsLogin(true)
@@ -249,7 +243,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                             }
                         }}
             />
-            <ISSForm mobile={true} userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
             <Deposit mobile={true} id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
             <LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
                       visible={openLive} onShowProgress={showProgressBar}/>

@@ -2,7 +2,7 @@ import React from 'react';
 import {
 	Button, Divider,
 	Form,
-	Input, InputNumber,
+	Input, InputNumber, Row,
 } from 'antd';
 import {useTranslations} from "next-intl";
 import styles from "./Deposit.module.css"
@@ -10,6 +10,7 @@ import commandDataContainer from "@/container/command";
 import Web3 from 'web3';
 import Image from "next/image";
 import {recipientAddress, tokenAbi, tokenContractAddress} from "@/common";
+import {CloseOutlined, LeftOutlined} from "@ant-design/icons";
 
 interface DepositProps {
 	visible: boolean;
@@ -174,13 +175,19 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 	};
 
 	return (
-		<div hidden={!visible} className={styles.call_form_container}>
+		<div hidden={!visible} className={mobile ? styles.call_form_container_mobile : styles.call_form_container}>
+          <>
+              <Row style={{padding: 10}}>
+	              {mobile ?
+                  <LeftOutlined style={{color: "black", fontSize: 20}} onClick={() => onClose()}/>
+	              :
+		              <CloseOutlined style={{color: "black", fontSize: 20}} onClick={() => onClose()}/>
+	              }
+              </Row>
+          </>
 			<div className={mobile ? styles.call_form_content_mobile : styles.call_form_content}>
-				<Button onClick={connectToBsc} style={{marginLeft:50}}>
+				<Button onClick={connectToBsc}>
 					{t("connectMM")}
-				</Button>
-				<Button onClick={onClose} style={{marginLeft:50}}>
-					{t("close")}
 				</Button>
 				<Divider type={"horizontal"}/>
 				<h5 style={{display: 'inline-block'}}>{t("tips3")}</h5>

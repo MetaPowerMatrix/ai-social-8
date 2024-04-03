@@ -3,11 +3,12 @@ import {
 	Button, Divider,
 	Form,
 	Input,
-	InputNumber,
+	InputNumber, Row,
 } from 'antd';
 import {useTranslations} from "next-intl";
 import {api_url, getApiServer, Persona} from "@/common";
 import styles from "./ISSForm.module.css"
+import {LeftOutlined} from "@ant-design/icons";
 
 interface ISSFormProps {
 	visible: boolean;
@@ -47,13 +48,32 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 				// handle error
 			});
 	};
-
+	// const formItemLayout = {
+	// 	labelCol: {
+	// 		xs: { span: 24 },
+	// 		sm: { span: 6 },
+	// 	},
+	// 	wrapperCol: {
+	// 		xs: { span: 24 },
+	// 		sm: { span: 14 },
+	// 	},
+	// };
 	return (
-		<div hidden={!visible} className={styles.iss_form_container}>
-			<div className={ mobile ? styles.iss_form_content_mobile : styles.iss_form_content}>
-				<div><h5>{t("tips")}</h5></div>
-				<Form form={form} variant="filled" onFinish={handleSubmit}>
-					<Form.Item  label={t("name")} name="name" rules={[{required: true, message: 'do not change here'}]}>
+		<div hidden={!visible} className={ mobile?styles.iss_form_container_mobile:styles.iss_form_container}>
+			{
+				mobile &&
+          <>
+              <Row style={{padding: 10}}>
+                  <LeftOutlined size={30} onClick={() => onClose()}/>
+              </Row>
+          </>
+			}
+			<div className={mobile ? styles.iss_form_content_mobile : styles.iss_form_content}>
+				<Form
+					variant="filled"
+					form={form} onFinish={handleSubmit}
+				>
+					<Form.Item label={t("name")} name="name" rules={[{required: true, message: 'do not change here'}]}>
 						<Input disabled={true}/>
 					</Form.Item>
 
@@ -104,15 +124,20 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 					>
 						<Input.TextArea/>
 					</Form.Item>
+					<div style={{marginBottom: 10}}>{t("tips")}</div>
 
-					<Form.Item wrapperCol={{offset: 6, span: 16}}>
+					<Form.Item wrapperCol={{offset: 10, span: 16}}>
 						<Button type="primary" htmlType="submit">
 							{t("Submit")}
 						</Button>
-						<Divider type={"vertical"}/>
-						<Button onClick={onClose}>
-							{t("close")}
-						</Button>
+						{!mobile &&
+                <>
+                    <Divider type={"vertical"}/>
+                    <Button onClick={onClose}>
+											{t("close")}
+                    </Button>
+                </>
+						}
 					</Form.Item>
 				</Form>
 			</div>
