@@ -295,10 +295,10 @@ export default function Home() {
 			<div hidden={!hideDetail} style={{overflow: "scroll", height: pageHeight, padding: 10}}>
 				<Row align={"middle"}>
 					<Col span={5} style={{textAlign: "start"}}><label>{t('event')}</label></Col>
-					<Col span={16} style={{textAlign: "center"}}>
+					<Col span={15} style={{textAlign: "center"}}>
 						<Input placeholder={t('taskDailyTips')} onChange={(e) => dailyInput(e)}/>
 					</Col>
-					<Col span={3} style={{textAlign: "center"}}>
+					<Col span={4} style={{textAlign: "center"}}>
 						<button onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
 					</Col>
 				</Row>
