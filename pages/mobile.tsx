@@ -298,7 +298,7 @@ export default function Home() {
 					<Col span={16} style={{textAlign: "center"}}>
 						<Input placeholder={t('taskDailyTips')} onChange={(e) => dailyInput(e)}/>
 					</Col>
-					<Col span={4} style={{textAlign: "center"}}>
+					<Col span={3} style={{textAlign: "center"}}>
 						<button onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
 					</Col>
 				</Row>
