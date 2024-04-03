@@ -26,7 +26,14 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 		while (s.length < (size || 2)) {s = "0" + s;}
 		return s;
 	};
-
+	const copyToClipboard = async (text: string) => {
+		try {
+			await navigator.clipboard.writeText(text);
+			console.log('Text copied to clipboard');
+		} catch (err) {
+			console.error('Failed to copy text to clipboard: ', err);
+		}
+	};
 	useEffect(() => {
 		command.getPatoInfo(activeId).then((res): void => {
 			if ( res !== null){
@@ -53,7 +60,10 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 						{userInfo?.name}
 						<QrcodeOutlined  style={{marginLeft:10}} onClick={showQRCode}/>
 					</h5>
-					<a onClick={() => alert(userInfo?.id)}>{userInfo?.id === undefined ? '' : userInfo?.id.substring(0, 14) + '...' + userInfo?.id.substring(28, 36)}</a>
+					<a onClick={() => {
+						copyToClipboard(userInfo?.id ?? '')
+						alert("已复制ID")
+					}}>{userInfo?.id === undefined ? '' : userInfo?.id.substring(0, 14) + '...' + userInfo?.id.substring(28, 36)}</a>
 				</Col>
 			</Row>
 			<Row className={styles.header_meta} onClick={showISS}>
