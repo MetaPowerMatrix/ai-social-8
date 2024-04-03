@@ -1,4 +1,15 @@
 .container {
   max-width: 430px;
-  padding: 20px 20px;
+  height: 100%;
+}
+.header_meta{
+  background-color: #e9f5f9;
+  padding: 5px;
+  line-height: 10px;
+  margin-bottom: 10px;
+}
+.colorBarEnd {
+  text-align: end;
+}
+.colorBar {
 }

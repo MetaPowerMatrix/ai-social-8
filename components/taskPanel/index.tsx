@@ -11,7 +11,6 @@ const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress
 	const t = useTranslations('Task');
 	const command = commandDataContainer.useContainer()
 	const [userPray, setUserPray] = useState('');
-	const [dailyEvent, setDailyEvent] = useState('');
 	const [knowledge, setKnowledge] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -28,25 +27,10 @@ const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress
 			onShowProgress(false);
 		})
 	};
-	const handleTodayEvent = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		event.preventDefault();
-		if (dailyEvent === ""){
-			alert(t('event'))
-			return
-		}
-		onShowProgress(true);
-		command.create_today_event(id, dailyEvent).then((response) => {
-			alert(t('waiting'))
-			onShowProgress(false);
-		})
-	};
+
 	const prayInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		event.preventDefault();
 		setUserPray(event.target.value)
-	}
-	const dailyInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-		event.preventDefault();
-		setDailyEvent(event.target.value)
 	}
 	const knowledgeInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		event.preventDefault();
@@ -102,11 +86,7 @@ const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress
 
 	return(
 		<div>
-				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9", marginBottom: 20}} title={t('taskDaily')}>
-					<TextArea placeholder={t('taskDailyTips')} rows={3} onChange={(e) => dailyInput(e)}/>
-					<button className={styles.task} onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
-				</Card>
-				<Card size={"small"} hoverable style={{width: panelWidth, backgroundColor: "#e9f5f9", marginBottom: 20}} title={t('taskUpgrade')}>
+				<Card size={"small"} hoverable style={{backgroundColor: "#e9f5f9", marginBottom: 20}} title={t('taskUpgrade')}>
 					<TextArea style={{marginBottom: 10, display: "none"}} placeholder={t('knowledgeTips')} rows={2} onChange={(e) => knowledgeInput(e)}/>
 					<Upload {...props}>
 						<Button icon={<UploadOutlined />}>{t('Upload')}</Button>

@@ -1,18 +1,14 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from './layout_mobile.module.css';
-import {Card, Divider, FloatButton} from "antd";
+import {Col, Row, Tabs} from "antd";
 import {
-    MenuOutlined,
-    SettingOutlined,
-    EuroOutlined,
-    UserOutlined, QrcodeOutlined
+    UserOutlined, QrcodeOutlined, BarsOutlined, ShopOutlined, SolutionOutlined, CommentOutlined, RightOutlined
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
-import {getCookie, subscribe_topic} from "@/lib/utils";
-import TaskPanel from "@/components/taskPanel";
+import {getCookie} from "@/lib/utils";
 import ProgressBarComponent from "@/components/ProgressBar";
 import MaskedHighlight from "@/components/MaskedHighlight";
 import ISSForm from "@/components/iss";
@@ -20,17 +16,16 @@ import commandDataContainer from "@/container/command";
 import Deposit from "@/components/deposit";
 import {getMQTTBroker, Streaming_Server} from "@/common";
 import HeaderPanelMobile from "./header_mobile";
-import LiveChatMobile from "@/components/LiveChatMobile";
 import AIInstructMobileComponent from "@/components/AIInstructMobile";
 import QRCodeComponent from "@/components/QRCode";
 import mqtt from "mqtt";
+import UserFeedMobile from "@/components/user_feed";
+import LiveChatMobile from "@/components/LiveChatMobile";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(false);
     const [editISS, setEditISS] = useState(false);
     const [openCode, setOpenCode] = useState(false);
-    const [openLive, setOpenLive] = useState(false);
-    const [openInstruct, setOpenInstruct] = useState(false);
     const [openDeposit, setOpenDeposit] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
@@ -41,7 +36,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const [userFeed, setUserFeed] = useState([{children:"新的一天开始了"}]);
     const command = commandDataContainer.useContainer()
     const [userISS, setUserISS] = useState();
-    const [activeTabKey, setActiveTabKey] = useState('task');
+    const [openLive, setOpenLive] = useState(false);
     const [client, setClient] = useState(null);
     const t = useTranslations('Login');
 
@@ -105,7 +100,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
         }
         const cookie3 = getCookie('guide-completed');
         if ((cookie3 === null || cookie3 === "" ) && isLogin){
-            setGuide(true)
+            // setGuide(true)
             // console.log("guide", guide)
         }
         command.getPatoISS(activeId).then((res) => {
@@ -163,6 +158,55 @@ export default function LayoutMobile({ children, title, description, onChangeId,
         }
     }, [activeId])
 
+    const tabs =[
+        {label: t('messages'), key:"chat", icon: <CommentOutlined/>},
+        {label: t('task'), key:"pro", icon: <SolutionOutlined />},
+        {label: t("town"), key:"feed", icon: <ShopOutlined />},
+        {label: t("discovery"), key:"discovery", icon: <BarsOutlined />},
+        {label: t("mine"), key:"mine", icon: <UserOutlined />}
+    ]
+
+    const content = (key) => {
+        return(
+            <>
+                {key === 'chat' &&
+                    <div>
+                        {children}
+                    </div>
+                }
+                {key === 'pro' &&
+                    <AIInstructMobileComponent id={activeId} serverUrl={Streaming_Server} visible={true}
+                                               onShowProgress={showProgressBar}
+                                               onClose={() => setOpenInstruct(false)}/>
+                }
+                {key === 'feed' &&
+                    <UserFeedMobile userFeed={userFeed}/>
+                }
+                {key === 'discovery' &&
+                    <div style={{padding:10, height: 750}}>
+                        <Row className={styles.header_meta} onClick={() => setOpenLive(true)}>
+                            <Col  className={styles.colorBar} span={12}>
+                                <h5>{t("live")}</h5>
+                            </Col>
+                            <Col className={styles.colorBarEnd} span={12}>
+                                <h5><RightOutlined /></h5>
+                            </Col>
+                        </Row>
+                    </div>
+                }
+                {key === 'mine' &&
+                    <HeaderPanelMobile
+                        showDeposit={()=>{setOpenDeposit(true)}}
+                        showISS={()=>{setEditISS(true)}}
+                        showQRCode={()=>{setOpenCode(true)}}
+                        onShowProgress={showProgressBar}
+                        activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}
+                    />
+                }
+            </>
+        )
+    }
+
     return (
         <div className={styles.container}>
             <Head>
@@ -172,41 +216,26 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
             </Head>
             {isLogin ?
-                <>
-                    <HeaderPanelMobile activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}/>
-                    <Divider/>
-                    <Card
-                        style={{ border: "none", width: '100%', marginTop:20, maxHeight: 400, overflow: "scroll" }}
-                        tabList={[{label: t('task'), key: 'task'},{label: t('messages'), key: 'messages'}]}
-                        activeTabKey={activeTabKey}
-                        onTabChange={(key)=> setActiveTabKey(key)}
-                        tabProps={{
-                            size: 'small',
-                        }}
-                    >
-                        {activeTabKey === "task" ?
-                            <TaskPanel id={activeId} onShowProgress={showProgressBar} panelWidth={340}/>
-                            :
-                            <div>
-                                {children}
-                            </div>
-                        }
-                    </Card>
-                </>
+                <Tabs
+                    centered
+                    size={"middle"}
+                    type={"line"}
+                    animated={true}
+                    tabPosition="bottom"
+                    items={tabs.map((tab, i) => {
+                        return {
+                            label: tab.label,
+                            key: tab.key,
+                            children: content(tab.key),
+                            icon:tab.icon
+                        };
+                    })}
+                />
                 :
                 <Image priority src="/images/ai-town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
             }
             <MaskedHighlight zones={zones} visible={guide} />
             <ProgressBarComponent visible={loading} steps={10} />
-            <FloatButton.Group  open={open} trigger="click" style={{right: 34}} onClick={onChange} icon={<MenuOutlined/>}>
-                <FloatButton onClick={()=>{setOpenInstruct(true)}} icon={<UserOutlined/>}/>
-                {/*<FloatButton onClick={()=>{setOpenLive(true)}} icon={<TikTokOutlined/>}/>*/}
-                {/*<FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>*/}
-                <FloatButton onClick={()=>{setOpenDeposit(true)}} icon={<EuroOutlined />}/>
-                <FloatButton onClick={()=>{setEditISS(true)}} icon={<SettingOutlined />}/>
-                <FloatButton onClick={()=>{setOpenCode(true)}} icon={<QrcodeOutlined />}/>
-                {/*<FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>*/}
-            </FloatButton.Group>
             <ModalLogin mobile={true} isOpen={!isLogin} tips={t} options={availableIds}
                         onClose={(id) => {
                             setIsLogin(true)
@@ -217,12 +246,9 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                         }}
             />
             <ISSForm mobile={true} userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
-            {/*<CallPato mobile={true} id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>*/}
             <Deposit mobile={true} id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
-            {/*<LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}*/}
-            {/*          visible={openLive} onShowProgress={showProgressBar}/>*/}
-            <AIInstructMobileComponent id={activeId} serverUrl={Streaming_Server} visible={openInstruct} onShowProgress={showProgressBar}
-                onClose={()=>setOpenInstruct(false)}/>
+            <LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
+                      visible={openLive} onShowProgress={showProgressBar}/>
             <QRCodeComponent visible={openCode} id={activeId} onClose={()=>setOpenCode(false)} mobile={true}/>
         </div>
     );

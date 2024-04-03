@@ -62,6 +62,14 @@ export interface sessionMessages{
   summary: string,
   messages: ChatMessage[]
 }
+export interface SessionList{
+  session: string,
+  receiver: string,
+  place: string,
+  subject: string,
+  summary: string,
+  created_at: number,
+}
 export interface Persona {
   name: string,
   age: number,

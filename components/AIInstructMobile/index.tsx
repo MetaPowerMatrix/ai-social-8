@@ -4,7 +4,7 @@ import {
 	Button,
 	Card,
 	Col, DatePicker,
-	DatePickerProps,
+	DatePickerProps, Divider,
 	List, Rate,
 	Row, Tag,
 	UploadFile,
@@ -301,120 +301,99 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 			setActiveAgentKey(key)
 	};
 
+	const messages = () => {
+		return (
+			<div>
+				<DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom: 10}}
+				            onChange={onChange}/>
+				<h5>{summary}</h5>
+				<List
+					itemLayout="vertical"
+					size="small"
+					pagination={{
+						onChange: (page) => {
+							console.log(page);
+						},
+						pageSize: 6,
+					}}
+					dataSource={chatMessages}
+					renderItem={(item) => (
+						<List.Item
+							key={item.subject}
+							actions={[
+								<Rate key={item.created_at} defaultValue={3} allowClear={false}/>
+							]}
+						>
+							<h5>{item.sender}: {item.question}</h5>
+							<h5>{item.receiver === item.sender ? item.receiver + "#2" : item.receiver}: {item.answer}</h5>
+							<h5>{formatDateTimeString(item.created_at * 1000)} <Tag
+								color="green">{item.place}</Tag><Tag color="yellow">{item.subject}</Tag></h5>
+						</List.Item>
+					)}
+				/>
+			</div>
+		)
+	}
 	return (
-		<div hidden={!visible}>
 			<div className={styles.voice_instruct_container}>
 				<div className={styles.voice_instruct_content}>
-					<Row>
-						<Col span={8}>
-							<CloseOutlined style={{color: "black", fontSize: 20}} onClick={() => close_clean()}/>
-						</Col>
-					</Row>
-					<Card
-						style={{ width: '100%', marginTop:20 }}
-						tabList={agents}
-						activeTabKey={activeAgentKey}
-						onTabChange={onTabChange}
-						tabProps={{
-							size: 'small',
-						}}
-					>
-						{ activeAgentKey === "qa" &&
-                <>
-                    <Row align={"middle"} justify={"space-between"}>
-                        <Col span={14}>
-                            <TextArea placeholder={t('command')} value={question} rows={1}/>
-                        </Col>
-                        <Col span={1}>
-													{
-														stopped ?
-															<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
-															:
-															<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
-													}
-                        </Col>
-                        <Col span={6}>
-                            <Button onClick={handleAutoChat}>{t('automatic_comm')}</Button>
-                        </Col>
-                    </Row>
-                    <Card
-                        style={{ width: '100%', marginTop:20, maxHeight: 400, overflow: "scroll" }}
-                        tabList={[{label: t('pro'), key: 'pro'},{label: t('reply'), key: 'reply'}]}
-                        activeTabKey={activeQAKey}
-                        onTabChange={(key)=> setActiveQAKey(key)}
-                        tabProps={{
-			                    size: 'small',
-		                    }}
-                    >
-	                    { activeQAKey === 'pro' ?
-                        <List
-                            itemLayout="vertical"
-                            size="small"
-                            dataSource={authorisedIds}
-                            renderItem={(item, index) => (
-															<List.Item
-																key={index}
-																className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
-																defaultValue={item.value}
-																onClick={(e) => {
-																	setSelectedIndex(index)
-																	setCallid(item.value)
-																}}
-															>
-																<h5>{item.label}</h5>
-															</List.Item>
-														)}
-                        />
-		                    :
-		                    <div>
-			                    <DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom: 10}}
-			                                onChange={onChange}/>
-			                    <h5>{summary}</h5>
-			                    <List
-				                    itemLayout="vertical"
-				                    size="small"
-				                    pagination={{
-					                    onChange: (page) => {
-						                    console.log(page);
-					                    },
-					                    pageSize: 6,
-				                    }}
-				                    dataSource={chatMessages}
-				                    renderItem={(item) => (
-					                    <List.Item
-						                    key={item.subject}
-						                    actions={[
-							                    <Rate key={item.created_at} defaultValue={3} allowClear={false}/>
-						                    ]}
-					                    >
-						                    <h5>{item.sender}: {item.question}</h5>
-						                    <h5>{item.receiver === item.sender ? item.receiver + "#2" : item.receiver}: {item.answer}</h5>
-						                    <h5>{formatDateTimeString(item.created_at * 1000)} <Tag
-							                    color="green">{item.place}</Tag><Tag color="yellow">{item.subject}</Tag></h5>
-					                    </List.Item>
-				                    )}
-			                    />
-												</div>
-	                    }
-                    </Card>
-                </>
-						}
-						{activeAgentKey !== "qa" &&
-                <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
-                    <Col span={7}/>
-                    <Col span={10} style={{textAlign: "center", height: 360}}>
-                        <Image onClick={() => setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
-                    </Col>
-                    <Col span={7}/>
-                </Row>
-						}
-					</Card>
-					<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub}
-					                        onShowProgress={onShowProgress}/>
+					<>
+						<Row align={"middle"} justify={"space-between"}>
+							<Col span={20}>
+								<TextArea placeholder={t('command')} value={question} rows={1}/>
+							</Col>
+							<Col span={2}>
+								{
+									stopped ?
+										<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+										:
+										<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+								}
+							</Col>
+						</Row>
+						<Divider/>
+						<Row>
+							<Col span={24} style={{overflow:"scroll"}}>
+								<h5>{t('pro')}</h5>
+								<List
+									itemLayout="horizontal"
+									size="small"
+									dataSource={authorisedIds}
+									renderItem={(item, index) => (
+										<List.Item
+											key={index}
+											className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
+											defaultValue={item.value}
+											onClick={(e) => {
+												setSelectedIndex(index)
+												setCallid(item.value)
+											}}
+										>
+											<h5>{item.label}</h5>
+										</List.Item>
+									)}
+								/>
+							</Col>
+						</Row>
+						<Row style={{padding:10}}>
+							<Col span={24}>
+								<Button style={{width: "100%", marginTop:20}} type={"primary"} onClick={handleAutoChat}>{t('automatic_comm')}</Button>
+							</Col>
+						</Row>
+							{activeAgentKey !== "qa" &&
+	                <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
+	                    <Col span={7}/>
+	                    <Col span={10} style={{textAlign: "center", height: 360}}>
+	                        <Image onClick={() => setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
+	                    </Col>
+	                    <Col span={7}/>
+	                </Row>
+							}
+							<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub}
+	                        onShowProgress={onShowProgress}/>
+          </>
 				</div>
 			</div>
-		</div>
-
 	);
 };
 

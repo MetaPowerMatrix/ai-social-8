@@ -1,14 +1,23 @@
-import {Col, Descriptions, Divider, Flex, Row, Timeline} from "antd";
+import {Button, Col, Descriptions, Divider, Flex, Row, Timeline} from "antd";
 import Image from "next/image";
 import utilStyles from "@/styles/utils.module.css";
-import {EditOutlined} from "@ant-design/icons";
+import {EditOutlined, QrcodeOutlined, RightOutlined} from "@ant-design/icons";
 import React, {useEffect, useState} from "react";
 import commandDataContainer from "@/container/command";
 import {useTranslations} from "next-intl";
-import {StatsInfo, TimeLineItem} from "@/common";
+import {PatoInfo, StatsInfo, TimeLineItem} from "@/common";
+import TaskPanel from "@/components/taskPanel";
+import styles from './HeaderPanelMobile.module.css'
 
-const HeaderPanelMobile = ({activeName, activeId, userFeed, onChangeId}:{activeName: string, activeId:string, userFeed: TimeLineItem[], onChangeId: (s: boolean)=>void}) => {
-	const [userInfo, setUserInfo] = useState<StatsInfo[]>([]);
+const HeaderPanelMobile = ({activeName, activeId, onChangeId, onShowProgress, showQRCode, showDeposit, showISS}:
+   {activeName: string, activeId:string,
+	   onShowProgress: (s: boolean)=>void, onChangeId: (s: boolean)=>void,
+	   showQRCode: ()=>void,
+	   showDeposit: ()=>void,
+	   showISS: ()=>void,
+	 }) =>
+{
+	const [userInfo, setUserInfo] = useState<PatoInfo>();
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('Login');
 
@@ -21,46 +30,15 @@ const HeaderPanelMobile = ({activeName, activeId, userFeed, onChangeId}:{activeN
 	useEffect(() => {
 		command.getPatoInfo(activeId).then((res): void => {
 			if ( res !== null){
-				let userStats: StatsInfo[] = []
-				userStats.push({
-					key: '1',
-					label: "ID",
-					children: <a onClick={()=>alert(res.id)}>{res.id.substring(0, 8) + '...' + res.id.substring(32, 36)}</a>
-				})
-				userStats.push({
-					key: '3',
-					label: t("MatrixTime"),
-					children: res.matrix_datetime,
-				})
-				userStats.push({
-					key: '4',
-					label: t("RegisteredTime"),
-					children: res.registered_datetime,
-				})
-				userStats.push({
-					key: '5',
-					label: t("SN"),
-					children: pad(res.sn, 5).toString(),
-				})
-				userStats.push({
-					key: '6',
-					label: t("Balance"),
-					children: res.balance.toString(),
-				})
-				userStats.push({
-					key: '7',
-					label: t("pro"),
-					children: res.professionals.join(','),
-				})
-				setUserInfo(userStats);
+				setUserInfo(res);
 			}
 		})
 	},[activeId]);
 
 	return (
-		<header>
-			<Row justify="space-between">
-				<Col span={8} style={{textAlign:"center"}}>
+		<header className={styles.header_panel_mobile_container}>
+			<Row justify="space-between" className={styles.header_user}>
+				<Col span={8} style={{textAlign:"center", marginBottom: 20}}>
 						<Image
 							priority
 							src="/images/notlogin.png"
@@ -70,30 +48,74 @@ const HeaderPanelMobile = ({activeName, activeId, userFeed, onChangeId}:{activeN
 							alt={activeName}
 						/>
 				</Col>
-				<Col span={16} style={{textAlign:"center"}}>
-							<h5 className={utilStyles.headingLg}>
-								{activeName.length > 14 ? activeName.substring(0, 8) + '...' : activeName}
-								<EditOutlined onClick={() => onChangeId(false)}/>
-							</h5>
+				<Col span={16}>
+					<h5 className={utilStyles.headingLg}>
+						{activeName.length > 14 ? activeName.substring(0, 8) + '...' : activeName}
+						<QrcodeOutlined  style={{marginLeft:10}} onClick={showQRCode}/>
+					</h5>
+					<a onClick={() => alert(userInfo?.id)}>{userInfo?.id === undefined ? '' : userInfo?.id.substring(0, 14) + '...' + userInfo?.id.substring(28, 36)}</a>
 				</Col>
 			</Row>
-			<Row>
-				<Col span={24}>
-					<Descriptions size={"small"} bordered={true} column={3} layout="vertical" items={userInfo}/>
+			<Row className={styles.header_meta} onClick={showISS}>
+				<Col span={12}>
+					<h5>AI设定</h5>
+				</Col>
+				<Col className={styles.colorBarEnd} span={12}>
+					<h5><RightOutlined /></h5>
 				</Col>
 			</Row>
-			<Row>
+			<Row className={styles.header_meta} onClick={showDeposit}>
+				<Col className={styles.colorBar} span={12}>
+					<h5>{t("Balance")}</h5>
+				</Col>
+				<Col className={styles.colorBarEnd} span={12}>
+					<h5>{userInfo?.balance.toString()}<RightOutlined /></h5>
+				</Col>
+			</Row>
+			<Row className={styles.header_meta}>
+				<Col  className={styles.colorBar} span={12}>
+					<h5>{t("MatrixTime")}</h5>
+				</Col>
+				<Col  className={styles.colorBarEnd} span={12}>
+					<h5>{userInfo?.matrix_datetime}</h5>
+				</Col>
+			</Row>
+			<Row className={styles.header_meta}>
+				<Col  className={styles.colorBar} span={12}>
+					<h5>{t("RegisteredTime")}</h5>
+				</Col>
+				<Col  className={styles.colorBarEnd} span={12}>
+					<h5>{userInfo?.registered_datetime}</h5>
+				</Col>
+			</Row>
+			<Row className={styles.header_meta}>
+				<Col  className={styles.colorBar} span={12}>
+					<h5>{t("SN")}</h5>
+				</Col>
+				<Col  className={styles.colorBarEnd} span={12}>
+					<h5>{pad(userInfo=== undefined ? 0 : userInfo.sn, 5).toString()}</h5>
+				</Col>
+			</Row>
+			<Row className={styles.header_meta}>
+				<Col className={styles.colorBar} span={12}>
+					<h5>{t("pro")}</h5>
+				</Col>
+				<Col  className={styles.colorBarEnd} span={12}>
+					<h5>{userInfo?.professionals.join(' ')}</h5>
+				</Col>
+			</Row>
+			<Row justify="space-between">
 				<Col span={24}>
-					<div style={{marginTop:20, height: "155px", overflowY: "auto", padding:15, border:"1px dotted blue"}}>
-						<Timeline
-							mode={"alternate"}
-							items={userFeed}
-						/>
-					</div>
+					<TaskPanel id={activeId} onShowProgress={onShowProgress} panelWidth={300}/>
+				</Col>
+			</Row>
+			<Row style={{padding:10}}>
+				<Col span={24}>
+					<Button style={{width: "100%"}} type={"primary"} onClick={() => onChangeId(false)}>切换账号</Button>
 				</Col>
 			</Row>
 		</header>
-)
+	)
 }
 
 export default HeaderPanelMobile

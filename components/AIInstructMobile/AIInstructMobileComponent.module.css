@@ -1,25 +1,14 @@
 .voice_instruct_container {
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
+    padding: 10px;
     width: 100%;
-    height: 100%;
+    height: 750px;
     overflow: auto;
     /*background-color: rgba(0,0,0,0.4);*/
 }
 .voice_instruct_content {
-    position: absolute;
     background-color: white;
-    padding: 20px;
-    width: 90%;
-    height: 85%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow:
-            8px 8px 12px rgba(0, 0, 0, 0.5),
-            -8px -8px 12px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
 }
 .list_item {
     background-color: lightblue;

@@ -7,22 +7,22 @@
     "taskTips": "*** 通过和其他pato的对话可以获得很多资讯，并且可以请求其他Pato帮助做事",
     "noMessage": "还没有消息哦，发出一个话题和大家聊聊天吧",
     "deleted": "删除成功！",
-    "his": "查看历史消息"
+    "his": "查看历史消息",
+    "event": "发起话题",
+    "waiting": "等一等，马上会有人来和你聊天了",
+    "submit": "发送",
+    "taskDaily": "可以提问,可以表达,不许骂人",
+    "taskDailyTips": "比特币的走势接下来会如何呢？"
   },
   "Task": {
     "taskPray": "祈祷(试一试和上帝对话)",
     "taskPrayTips": "我想成为马斯克一样富有的人",
     "taskUpgrade": "成为更好的自己",
-    "taskDaily": "今日话题(mini聊天聚会哦)",
-    "taskDailyTips": "今天想聊点什么，说不定能遇到有趣的灵魂和聪明的头脑，给你一个大大的bingo",
     "knowledgeTips": "我的特长就是没有特长，哈哈哈",
-    "submit": "OK",
     "view": "查看",
     "start": "开始",
     "Upload": "选择文件",
-    "event": "发起一个话题哦",
     "power": "上传你独有的知识文档，让知识变现哦",
-    "waiting": "等一等，马上会有人来和你聊天了",
     "pray": "祈祷是要说话的"
   },
   "Login": {
@@ -39,7 +39,13 @@
     "Name": "昵称",
     "Balance": "原力余额",
     "pro": "专业",
-    "name_tips": "给你的Pato起一个响亮的名字吧！"
+    "name_tips": "给你的Pato起一个响亮的名字吧！",
+    "task": "专家",
+    "message": "消息",
+    "town": "小镇",
+    "discovery": "发现",
+    "mine": "我的",
+    "live": "AI直播"
   },
   "ISSForm": {
     "id": "ID",

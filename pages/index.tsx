@@ -122,11 +122,6 @@ const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSav
       key={initialValue.subject}
       onClick={handleEdit}
     >
-        {/*<div hidden={!editing}>*/}
-        {/*  <input autoFocus={true} value={value.question} onChange={handleChange}/>*/}
-        {/*  <button onClick={handleSave}>Save</button>*/}
-        {/*  <button onClick={handleCancel}>Cancel</button>*/}
-        {/*</div>*/}
       <h5>{initialValue.sender}: {initialValue.question}</h5>
       <h5>{initialValue.receiver === initialValue.sender ? initialValue.receiver + "#2" : initialValue.receiver}: {initialValue.answer}</h5>
       <h5>{formatDateTimeString(initialValue.created_at*1000)} <Tag color="green">{initialValue.place}</Tag><Tag color="yellow">{initialValue.subject}</Tag></h5>
@@ -251,10 +246,6 @@ export default function Home() {
       }
     })
   },[activeId, queryDate, reloadTimes])
-
-  // useEffect(() =>{
-  //   setClient(null)
-  // }, [activeId])
 
   useEffect(() => {
     if (client && sessionTabKey !== '') {
