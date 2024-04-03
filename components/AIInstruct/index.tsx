@@ -145,7 +145,7 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 				let session_messages = response
 				let summary = ""
 				session_messages.forEach((item) => {
-					let msg = item.messages.filter((msg) => {
+					let msg = item.messages.filter((msg: ChatMessage) => {
 						return (msg.question.length > 0 && msg.answer.length > 0)
 					})
 					messages.push(...msg)
