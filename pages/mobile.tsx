@@ -160,9 +160,9 @@ export default function Home() {
 					dataSource={sessionList}
 					renderItem={(item) => (
 						<List.Item
-							key={item.subject}
+							key={item.session}
 							actions={[
-								<DeleteOutlined onClick={() => archiveSession(item.session)}/>
+								<DeleteOutlined key={"delete"} onClick={() => archiveSession(item.session)}/>
 							]}
 						>
 							<List.Item.Meta
