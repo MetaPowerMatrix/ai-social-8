@@ -294,11 +294,11 @@ export default function Home() {
 			</Head>
 			<div hidden={!hideDetail} style={{overflow: "scroll", height: pageHeight, padding: 10}}>
 				<Row align={"middle"} style={{padding: 10}}>
-					<Col span={4}><label>{t('event')}</label></Col>
-					<Col span={16}>
+					<Col span={5} style={{textAlign: "center"}}><label>{t('event')}</label></Col>
+					<Col span={16} style={{textAlign: "center"}}>
 						<Input placeholder={t('taskDailyTips')} onChange={(e) => dailyInput(e)}/>
 					</Col>
-					<Col span={4} style={{textAlign: "center"}}>
+					<Col span={3} style={{textAlign: "center"}}>
 						<button onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
 					</Col>
 				</Row>

@@ -56,7 +56,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [summary, setSummary] = useState<string>("");
-	const [hideMessages, setHideMessages] = useState<boolean>(false);
+	const [hideMessages, setHideMessages] = useState<boolean>(true);
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const command = commandDataContainer.useContainer()
 
@@ -304,7 +304,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 							</Col>
 						</Row>
 						<Divider/>
-						<div hidden={hideMessages} style={{overflow: "scroll", padding: 15}}>
+						<div hidden={!hideMessages} style={{overflow: "scroll", padding: 15}}>
 							<h5>{t('pro')}</h5>
 							<List
 								itemLayout="horizontal"
@@ -335,7 +335,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 								</Col>
 							</Row>
 						</div>
-						<div hidden={!hideMessages} style={{overflow: "scroll", height: 700, padding: 15}}>
+						<div hidden={hideMessages} style={{overflow: "scroll", height: 700, padding: 15}}>
 							<Row>
 								<LeftOutlined onClick={() => setHideMessages(true)}/>
 							</Row>
