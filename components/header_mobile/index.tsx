@@ -9,7 +9,7 @@ import {PatoInfo, StatsInfo, TimeLineItem} from "@/common";
 import TaskPanel from "@/components/taskPanel";
 import styles from './HeaderPanelMobile.module.css'
 
-const HeaderPanelMobile = ({activeName, activeId, onChangeId, onShowProgress, showQRCode, showDeposit, showISS}:
+const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, showDeposit, showISS}:
    {activeName: string, activeId:string,
 	   onShowProgress: (s: boolean)=>void, onChangeId: (s: boolean)=>void,
 	   showQRCode: ()=>void,
@@ -45,12 +45,12 @@ const HeaderPanelMobile = ({activeName, activeId, onChangeId, onShowProgress, sh
 							className={utilStyles.borderCircle}
 							height={72}
 							width={72}
-							alt={activeName}
+							alt={userInfo?.name ?? ''}
 						/>
 				</Col>
 				<Col span={16}>
 					<h5 className={utilStyles.headingLg}>
-						{activeName.length > 14 ? activeName.substring(0, 8) + '...' : activeName}
+						{userInfo?.name}
 						<QrcodeOutlined  style={{marginLeft:10}} onClick={showQRCode}/>
 					</h5>
 					<a onClick={() => alert(userInfo?.id)}>{userInfo?.id === undefined ? '' : userInfo?.id.substring(0, 14) + '...' + userInfo?.id.substring(28, 36)}</a>

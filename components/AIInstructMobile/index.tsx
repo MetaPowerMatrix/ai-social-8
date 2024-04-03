@@ -57,6 +57,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [summary, setSummary] = useState<string>("");
 	const [hideMessages, setHideMessages] = useState<boolean>(false);
+	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const command = commandDataContainer.useContainer()
 
 	const agents = [
@@ -196,6 +197,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 		// const socket = new WebSocket(serverUrl + "/up");
 		const socket = new WebSocketManager(serverUrl + "/up", process_ws_message);
 
+		setWsSocket(socket)
 		setRecorder(mediaRecorder)
 
 		mediaRecorder.ondataavailable = (event) => {

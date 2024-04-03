@@ -202,7 +202,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                         showISS={()=>{setEditISS(true)}}
                         showQRCode={()=>{setOpenCode(true)}}
                         onShowProgress={showProgressBar}
-                        activeName={activeName} activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}
+                        activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}
                     />
                 }
             </>
