@@ -302,7 +302,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({visible, serverUr
 							</Col>
 						</Row>
 						<Divider/>
-						<div hidden={hideMessages} style={{overflow: "scroll", width: "100%", height: 650, padding: 15}}>
+						<div hidden={hideMessages} style={{overflow: "scroll", padding: 15}}>
 							<h5>{t('pro')}</h5>
 							<List
 								itemLayout="horizontal"

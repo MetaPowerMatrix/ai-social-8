@@ -8,7 +8,7 @@ const UserFeedMobile = ({userFeed}:{userFeed: TimeLineItem[]}) => {
 		<div className={styles.user_feed_container}>
 			<Row>
 				<Col span={24}>
-					<div style={{marginTop:20, height: 700, overflowY: "auto", padding:15, border:"1px dotted blue"}}>
+					<div style={{marginTop:20, height: 620, overflowY: "auto", padding:15, border:"1px dotted blue"}}>
 						<Timeline
 							mode={"alternate"}
 							items={userFeed}
