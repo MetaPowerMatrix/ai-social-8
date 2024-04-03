@@ -44,8 +44,7 @@
     "messages": "消息",
     "town": "小镇",
     "discovery": "发现",
-    "mine": "我的",
-    "live": "AI直播"
+    "mine": "我的"
   },
   "ISSForm": {
     "id": "ID",
@@ -105,11 +104,16 @@
     "pro": "专家列表",
     "reply": "回复",
     "command": "你的问题",
-    "talk": "交谈",
+    "talk": "问答",
     "search": "数据",
     "mail": "邮件",
     "paper": "论文",
-    "payment": "支付&投资"
+    "payment": "支付&投资",
+    "summary": "学习",
+    "live": "AI直播",
+    "start": "开始",
+    "Upload": "选择文件",
+    "record": "录制内容"
   },
   "others": {
     "tipsAuthorize": "授权你和他/她的AI代理交谈",

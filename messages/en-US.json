@@ -109,7 +109,12 @@
     "mail": "邮件",
     "command": "你的问题",
     "paper": "论文",
-    "payment": "支付&投资"
+    "payment": "支付&投资",
+    "summary": "学习",
+    "live": "AI直播",
+    "start": "开始",
+    "Upload": "选择文件",
+    "record": "录制内容"
   },
   "others": {
     "tipsAuthorize": "授权你和他/她的AI代理交谈",

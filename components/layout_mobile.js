@@ -1,9 +1,13 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from './layout_mobile.module.css';
-import {Col, Row, Tabs} from "antd";
+import {Tabs} from "antd";
 import {
-    UserOutlined, QrcodeOutlined, BarsOutlined, ShopOutlined, SolutionOutlined, CommentOutlined, RightOutlined
+    UserOutlined,
+    BarsOutlined,
+    ShopOutlined,
+    SolutionOutlined,
+    CommentOutlined,
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
@@ -20,6 +24,7 @@ import QRCodeComponent from "@/components/QRCode";
 import mqtt from "mqtt";
 import UserFeedMobile from "@/components/user_feed";
 import LiveChatMobile from "@/components/LiveChatMobile";
+import DiscoveryComponent from "@/components/discovery";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(false);
@@ -172,24 +177,13 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     </div>
                 }
                 {key === 'pro' &&
-                    <AIInstructMobileComponent id={activeId} serverUrl={Streaming_Server} visible={true}
-                                               onShowProgress={showProgressBar}
-                                               onClose={() => setOpenInstruct(false)}/>
+                    <AIInstructMobileComponent id={activeId} onShowProgress={showProgressBar}/>
                 }
                 {key === 'feed' &&
-                    <UserFeedMobile userFeed={userFeed}/>
+                    <UserFeedMobile mobile={true} userFeed={userFeed}/>
                 }
                 {key === 'discovery' &&
-                    <div style={{padding:10, height: 660}}>
-                        <Row className={styles.header_meta} onClick={() => setOpenLive(true)}>
-                            <Col  className={styles.colorBar} span={12}>
-                                <h5>{t("live")}</h5>
-                            </Col>
-                            <Col className={styles.colorBarEnd} span={12}>
-                                <h5><RightOutlined /></h5>
-                            </Col>
-                        </Row>
-                    </div>
+                    <DiscoveryComponent id={activeId} onShowProgress={showProgressBar} showLiveChat={()=>setOpenLive(true)}/>
                 }
                 {key === 'mine' &&
                     <HeaderPanelMobile
