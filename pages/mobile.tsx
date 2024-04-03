@@ -318,7 +318,7 @@ export default function Home() {
 						>
 							<List.Item.Meta
 								avatar={<Avatar src={"/images/notlogin.png"}/>}
-								title={item.receiver.split(')')[0]}
+								title={item.receiver.split('(')[0]}
 								description={<><Tag color="green">{item.place}</Tag><Tag
 									color="green">{item.subject}</Tag>{formatDateTimeString(item.created_at)}</>}
 							/>
