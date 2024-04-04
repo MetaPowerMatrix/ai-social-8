@@ -211,7 +211,7 @@ const DiscoveryComponent = ({id, onShowProgress, showLiveChat}:{id:string, onSho
 					<TextArea placeholder={"回答"} style={{marginTop:10}} value={answer} cols={3}/>
 				</Row>
 			</div>
-			<SummaryComponent onClose={()=>setShowSummary(false)} id={id} visible={showSummary} onShowProgress={onShowProgress}/>
+			<SummaryComponent onClose={()=>setShowSummary(false)} activeId={id} visible={showSummary} onShowProgress={onShowProgress}/>
 		</div>
 	)
 }

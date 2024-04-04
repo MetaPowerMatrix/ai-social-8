@@ -1,80 +1,32 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, GetProp, Row, Upload, UploadFile, UploadProps} from "antd";
+import {Button, Col, Divider, GetProp, Input, Row, Upload, UploadFile, UploadProps} from "antd";
 import styles from "./SummaryComponent.module.css";
 import {
 	AudioOutlined,
-	DownOutlined,
 	LeftOutlined,
 	PauseOutlined,
-	RightOutlined,
 	UploadOutlined
 } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
-import {api_url, getApiServer, getMQTTBroker, Streaming_Server} from "@/common";
+import {api_url, getApiServer, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
-import mqtt from "mqtt";
 import {useTranslations} from "next-intl";
 
-const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
-	const [question, setQuestion] = useState<string>("");
+const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
+	const [transcriptFile, setTranscriptFile] = useState<string>("");
+	const [query, setQuery] = useState<string>("");
+	const [queryResult, setQueryResult] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
-	const [answer, setAnswer] = useState<string>("");
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
-	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
+	const [wsSocketRecorder, setWsSocketRecorder] = useState<WebSocketManager>();
 	const [knowledge, setKnowledge] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+	const [summary, setSummary] = useState('');
+	const [isUploadRecord, setIsUploadRecord] = useState(true);
 	const t = useTranslations('AIInstruct');
 
-	useEffect(() => {
-		// Initialize MQTT client and connect
-		const mqttClient = mqtt.connect(getMQTTBroker());
-		mqttClient.on("connect", () => {
-			console.log("Instruct Connected to MQTT broker");
-		});
-		mqttClient.on("error", (err) => {
-			console.error("Error connecting to MQTT broker:", err);
-		});
-		setClient(mqttClient);
-
-		return () => {
-			mqttClient.end(); // Clean up the connection on component unmount
-		};
-	}, []);
-
-	useEffect(() => {
-		if (client) {
-			const topic_instruct_voice = id+"/instruct/voice";
-			const topic_instruct = id+"/instruct";
-
-			// Handler for incoming messages
-			const onMessage = (topic: string, message: Buffer) => {
-				if (topic === topic_instruct){
-					console.log("receive answer: ", message.toString())
-					setAnswer(message.toString())
-				}else{
-					console.log("receive audio: ", message.toString())
-					playAudioWithWebAudioApi(message.toString())
-				}
-			};
-
-			// Subscribe to the topic
-			client.subscribe([topic_instruct,topic_instruct_voice], (err) => {
-				if (!err) {
-					console.log("Subscribed to topic: ", [topic_instruct,topic_instruct_voice]);
-					client.on('message', onMessage);
-				}
-			});
-			// Return a cleanup function to unsubscribe and remove the message handler
-			return () => {
-				if (client) {
-					client.unsubscribe([topic_instruct,topic_instruct_voice]);
-					client.removeListener('message', onMessage);
-				}
-			};
-		}
-	}, [client]); // Re-run this effect if the `client` state changes
+	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 	useEffect(() => {
 			initAudioStream().then(()=>{})
@@ -92,8 +44,12 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 
 	const process_ws_message = (event: any) => {
 		console.log(event.data.toString())
-		setQuestion(event.data.toString())
-		handleVoiceCommand({topic: event.data.toString()})
+		setQuery(event.data.toString())
+		handleVoiceQueryCommand(event.data.toString())
+	}
+	const process_recorder_message = (event: any) => {
+		console.log(event.data.toString())
+		setTranscriptFile(event.data.toString())
 	}
 
 	let chunks: BlobPart[] = [];
@@ -101,8 +57,10 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 		const options = {mimeType: 'audio/webm;codecs=pcm'};
 		const mediaRecorder = new MediaRecorder(stream, options);
 		const socket = new WebSocketManager(Streaming_Server + "/up", process_ws_message);
+		const socketRecorder = new WebSocketManager(Streaming_Server + "/record", process_recorder_message);
 
 		setWsSocket(socket)
+		setWsSocketRecorder(socketRecorder)
 		setRecorder(mediaRecorder)
 
 		mediaRecorder.ondataavailable = (event) => {
@@ -113,7 +71,11 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 			}
 		};
 		mediaRecorder.onstop = () => {
-			socket.send(new Blob(chunks, { 'type' : 'audio/webm' }));
+			if (isUploadRecord){
+				socketRecorder.send(new Blob(chunks, { 'type' : 'audio/webm' }));
+			}else{
+				socket.send(new Blob(chunks, { 'type' : 'audio/webm' }));
+			}
 			console.log("send")
 			chunks = [];
 		};
@@ -129,10 +91,9 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 			setStopped(true)
 		}
 	}
-	const handleVoiceCommand = (values: any) => {
-		console.log(values);
-		// onShowProgress(true);
-		const data = {id: id, message: values.topic};
+	const handleVoiceQueryCommand = (query: string) => {
+		onShowProgress(true);
+		const data = {id: activeId, message: query};
 		let url = getApiServer(80) + api_url.portal.interaction.instruct
 		fetch(url, {
 			method: 'POST',
@@ -144,10 +105,8 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 			.then(response => response.json())
 			.then(data => {
 				if (data.code === "200") {
-					// let answer = data.content
-					// setAnswer(answer)
-					// setRoleOnePortrait(openInfo.role_1_portarit)
-					// alert('等待助手执行任务');
+					let answer = data.content
+					setQueryResult(answer)
 				}else{
 					alert(t('assist_fail'));
 				}
@@ -159,7 +118,7 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 				onShowProgress(false);
 			});
 	};
-	const handleKnowledge= (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleKnowledge= (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
 		event.preventDefault(); // Prevent the default form submission
 		if (fileList.length <= 0){
 			alert(t('power'))
@@ -167,7 +126,7 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 		}
 		const formData = new FormData();
 		formData.append('file', fileList[0] as FileType);
-		formData.append('message', JSON.stringify({ id: id, message: knowledge}));
+		formData.append('message', JSON.stringify({ id: activeId, link: knowledge, transcript: transcriptFile}));
 
 		onShowProgress(true);
 		let url = getApiServer(80) + api_url.portal.task.upgrade
@@ -179,35 +138,19 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 			.then(data => {
 				// console.log('Success:', data);
 				if (data.code === "200") {
-					alert('Upload successful!');
+					alert('文档上传成功，等待学习结果!');
 				}else{
-					alert('Upload failed.');
+					alert('文档上传失败.');
 				}
 				onShowProgress(false);
 			})
 			.catch((error) => {
 				console.error('Error:', error);
-				alert('Upload failed.');
+				alert('文档上传失败');
 				onShowProgress(false);
 			});
 	};
 
-	async function playAudioWithWebAudioApi(url: string): Promise<void> {
-		try {
-			const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-			const response = await fetch(url);
-			const arrayBuffer = await response.arrayBuffer();
-			const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-			const source = audioContext.createBufferSource();
-			source.buffer = audioBuffer;
-			source.connect(audioContext.destination);
-			source.start();
-
-		} catch (error) {
-			console.error('Error playing audio with Web Audio API:', error);
-		}
-	}
 	const props: UploadProps = {
 		onRemove: (file) => {
 			const index = fileList.indexOf(file);
@@ -222,28 +165,36 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 		},
 		fileList,
 	};
+	const knowledgeInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+		event.preventDefault();
+		setKnowledge(event.target.value)
+	}
+
 	return (
 		<div hidden={!visible} className={styles.summary_container_mobile}>
 			<div className={styles.summary_content_mobile}>
 				<>
 					<Row style={{padding: 10}}>
-						<LeftOutlined size={30} onClick={() => onClose()}/>
+						<LeftOutlined style={{fontSize: 20}} onClick={() => onClose()}/>
 					</Row>
 				</>
-				<Row className={styles.header_meta} onClick={() => {}}>
+				<Row>
 					<Col span={20}>
-						<TextArea placeholder={"文章连接"} value={question} rows={1}/>
+						<h5>要阅读文章的在线链接</h5>
+						<TextArea placeholder={"https://zh.wikipedia.org/wiki/Web3"} value={knowledge} rows={1} onChange={knowledgeInput}/>
 					</Col>
 				</Row>
-				<Upload {...props}>
-					<Button icon={<UploadOutlined />}>{t('Upload')}</Button>
-				</Upload>
-				<button className={styles.task} onClick={(e) => handleKnowledge(e)}>{t('start')}</button>
-				<Row align={"middle"} justify={"space-between"}>
-					<Col span={20}>
-						<TextArea placeholder={t('record')} value={question} rows={1}/>
+				<Row justify="space-between">
+					<Col span={24}>
+						<h5>上传准备阅读的文章</h5>
+						<Upload {...props}>
+							<Button icon={<UploadOutlined/>}>{t('Upload')}</Button>
+						</Upload>
 					</Col>
-					<Col span={2}>
+				</Row>
+				<Row align={"middle"} justify={"space-between"}>
+					<h5>录制学习内容</h5>
+					<Col span={24}>
 						{
 							stopped ?
 								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
@@ -251,8 +202,37 @@ const SummaryComponent = ({id, visible, onShowProgress, onClose}:{id:string, vis
 								<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
 						}
 					</Col>
-					<TextArea placeholder={"分析结果"} value={answer} cols={3}/>
-					<TextArea placeholder={"检索结果"} value={answer} cols={3}/>
+				</Row>
+				<Row>
+					<Col span={24}>
+						<Button type={"primary"} style={{width:"100%", marginTop:15}} onClick={(e) => handleKnowledge(e)}>{t('do_summary')}</Button>
+					</Col>
+				</Row>
+				<Divider/>
+				<Row>
+					<h5>学到的知识</h5>
+					<TextArea placeholder={"学习成果"} value={summary} cols={8}/>
+				</Row>
+				<Divider/>
+				<Row align={"middle"}>
+					<Col span={6}>
+						<h5>想检索的细节</h5>
+					</Col>
+					<Col span={16}>
+						<Input placeholder={"问题"} value={query}/>
+					</Col>
+					<Col span={2} style={{textAlign:"end"}}>
+						{
+							stopped ?
+								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+								:
+								<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+						}
+					</Col>
+				</Row>
+				<Row>
+					<h5>检索到的结果</h5>
+					<TextArea placeholder={"检索结果"} value={queryResult} cols={8}/>
 				</Row>
 			</div>
 		</div>

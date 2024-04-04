@@ -15,6 +15,8 @@
     "taskDailyTips": "比特币的走势接下来会如何呢？"
   },
   "Task": {
+    "taskDailyTips": "比特币的走势接下来会如何呢？",
+    "taskDaily": "可以提问,可以表达,不许骂人",
     "taskPray": "定个小目标",
     "taskPrayTips": "我想成为马斯克一样富有的人",
     "taskUpgrade": "升级原力(上传论文,聊天记录,博文...)",
@@ -113,7 +115,11 @@
     "live": "AI直播",
     "start": "开始",
     "Upload": "选择文件",
-    "record": "录制内容"
+    "record": "录制内容",
+    "do_summary": "开始学习"
+  },
+  "discovery": {
+    "topicTips": "和小镇的居民聊些什么呢？"
   },
   "others": {
     "tipsAuthorize": "授权你和他/她的AI代理交谈",

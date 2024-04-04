@@ -122,11 +122,6 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 					<h5>{userInfo?.professionals.join(' ')}</h5>
 				</Col>
 			</Row>
-			<Row justify="space-between">
-				<Col span={24}>
-					<TaskPanel id={activeId} onShowProgress={onShowProgress} panelWidth={300}/>
-				</Col>
-			</Row>
 			<Row style={{padding:10}}>
 				<Col span={24}>
 					<Button style={{width: "100%"}} type={"primary"} onClick={() => onChangeId(false)}>切换账号</Button>

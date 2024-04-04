@@ -1,7 +1,9 @@
-import {Button, Col, Row, Timeline} from "antd";
-import React from "react";
+import {Button, Col, Divider, Row, Timeline} from "antd";
+import React, {useState} from "react";
 import {TimeLineItem} from "@/common";
 import styles from './UserFeedMobile.module.css'
+import TextArea from "antd/es/input/TextArea";
+import {useTranslations} from "next-intl";
 
 const towns =[
 	{label: '音乐小镇', value: 'music'},
@@ -12,19 +14,25 @@ const towns =[
 ]
 const UserFeedMobile = ({userFeed, mobile}:{userFeed: TimeLineItem[], mobile: boolean}) => {
 	const [town, setTown] = React.useState('')
+	const [townTopic, setTownTopic] = useState('');
+	const t = useTranslations('discovery');
+
 	const townChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		event.preventDefault()
 		setTown(event.target.value)
 	}
+	const topicInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+		event.preventDefault();
+		setTownTopic(event.target.value)
+	}
+
 	return (
 		<div className={styles.user_feed_container}>
 			{ mobile &&
+				<>
           <Row align={"middle"}>
-              <Col span={6} style={{textAlign:"center"}}>
-	              <label>小镇传送：</label>
-              </Col>
-              <Col span={12} style={{textAlign:"start"}}>
-                  <select style={{width: 180, padding:5}} id="town" name="town" onChange={(e) => townChange(e)}>
+              <Col span={24} style={{textAlign:"start"}}>
+                  <select style={{width: "100%", padding:5, marginBottom:10}} id="town" name="town" onChange={(e) => townChange(e)}>
 										{towns.map((option) => (
 											<option key={option.value} value={option.value}>
 												{option.label}
@@ -32,14 +40,23 @@ const UserFeedMobile = ({userFeed, mobile}:{userFeed: TimeLineItem[], mobile: bo
 										))}
                   </select>
               </Col>
-              <Col span={1}>
-	              <Button size={"small"} type={"primary"}>加入</Button>
-              </Col>
           </Row>
+          <Row>
+		          <Col span={24}>
+                  <TextArea placeholder={t('topicTips')} rows={3} onChange={(e) => topicInput(e)}/>
+		          </Col>
+          </Row>
+          <Row>
+	          <Col span={24}>
+	              <Button style={{marginTop:10,width:"100%"}} size={"small"} type={"primary"}>加入</Button>
+	          </Col>
+          </Row>
+						<Divider/>
+        </>
 			}
 			<Row>
 				<Col span={24}>
-					<div style={{marginTop: 20, height: 590, overflowY: "auto", padding: 15, border: "1px dotted blue"}}>
+					<div style={{marginTop: 20, height: 420, overflowY: "auto", padding: 15, border: "1px dotted blue"}}>
 						<Timeline
 							mode={"alternate"}
 							items={userFeed}

@@ -64,7 +64,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 				mobile &&
           <>
               <Row style={{padding: 10}}>
-                  <LeftOutlined size={30} onClick={() => onClose()}/>
+                  <LeftOutlined style={{fontSize: 20}} size={30} onClick={() => onClose()}/>
               </Row>
           </>
 			}
