@@ -101,7 +101,9 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 			return
 		}
 		const formData = new FormData();
-		formData.append('file', fileList[0] as FileType);
+		if (fileList.length > 0){
+			formData.append('file', fileList[0] as FileType);
+		}
 		formData.append('message', JSON.stringify({ id: activeId, link: knowledge, transcript: transcriptFile}));
 
 		onShowProgress(true);
