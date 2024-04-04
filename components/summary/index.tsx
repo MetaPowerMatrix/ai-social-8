@@ -11,6 +11,7 @@ import TextArea from "antd/es/input/TextArea";
 import {api_url, getApiServer, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
+import commandDataContainer from "@/container/command";
 
 const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
 	const [transcriptFile, setTranscriptFile] = useState<string>("");
@@ -22,8 +23,10 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	const [wsSocketRecorder, setWsSocketRecorder] = useState<WebSocketManager>();
 	const [knowledge, setKnowledge] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [summary, setSummary] = useState('');
+	const [summarys, setSummarys] = useState<string[]>([]);
 	const [isUploadRecord, setIsUploadRecord] = useState(true);
+	const [sigs, setSig] = useState<string[]>([]);
+	const command = commandDataContainer.useContainer()
 	const t = useTranslations('AIInstruct');
 
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -45,7 +48,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	const process_ws_message = (event: any) => {
 		console.log(event.data.toString())
 		setQuery(event.data.toString())
-		handleVoiceQueryCommand(event.data.toString())
+		handleQueryEmbeddings()
 	}
 	const process_recorder_message = (event: any) => {
 		console.log(event.data.toString())
@@ -91,33 +94,6 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 			setStopped(true)
 		}
 	}
-	const handleVoiceQueryCommand = (query: string) => {
-		onShowProgress(true);
-		const data = {id: activeId, message: query};
-		let url = getApiServer(80) + api_url.portal.interaction.instruct
-		fetch(url, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
-			},
-			body: JSON.stringify(data)
-		})
-			.then(response => response.json())
-			.then(data => {
-				if (data.code === "200") {
-					let answer = data.content
-					setQueryResult(answer)
-				}else{
-					alert(t('assist_fail'));
-				}
-				onShowProgress(false);
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-				alert(t('assist_fail'));
-				onShowProgress(false);
-			});
-	};
 	const handleKnowledge= (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
 		event.preventDefault(); // Prevent the default form submission
 		if (fileList.length <= 0){
@@ -129,16 +105,18 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 		formData.append('message', JSON.stringify({ id: activeId, link: knowledge, transcript: transcriptFile}));
 
 		onShowProgress(true);
-		let url = getApiServer(80) + api_url.portal.task.upgrade
+		let url = getApiServer(80) + api_url.portal.task.knowledge_embedding
 		fetch(url, {
 			method: 'POST',
 			body: formData,
 		})
 			.then(response => response.json())
 			.then(data => {
-				// console.log('Success:', data);
 				if (data.code === "200") {
+					let sigs: string[] = JSON.parse(data.content)
 					alert('文档上传成功，等待学习结果!');
+					setSig(sigs)
+					handleQuerySummary(sigs)
 				}else{
 					alert('文档上传失败.');
 				}
@@ -170,6 +148,27 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 		setKnowledge(event.target.value)
 	}
 
+	const handleQuerySummary = (query_sigs: string[]) => {
+		let newSummarys: string[] = []
+		query_sigs.forEach((sig) => {
+			command.query_summary(activeId, sig).then((res) => {
+				if (res !== undefined){
+					summarys.push(res)
+				}
+			})
+		})
+		setSummarys((prev) => {
+			prev = [...newSummarys]
+			return prev
+		})
+	}
+	const handleQueryEmbeddings = () => {
+		command.query_embedding(activeId, sigs[0], query).then((res) => {
+			if (res !== undefined){
+				setQueryResult(res)
+			}
+		})
+	}
 	return (
 		<div hidden={!visible} className={styles.summary_container_mobile}>
 			<div className={styles.summary_content_mobile}>
@@ -211,15 +210,18 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 				<Divider/>
 				<Row>
 					<h5>学到的知识</h5>
-					<TextArea placeholder={"学习成果"} value={summary} cols={8}/>
+						<TextArea placeholder={"学习成果"} value={summarys.join('\n')} cols={8}/>
 				</Row>
 				<Divider/>
 				<Row align={"middle"}>
 					<Col span={6}>
 						<h5>想检索的细节</h5>
 					</Col>
-					<Col span={16}>
+					<Col span={12}>
 						<Input placeholder={"问题"} value={query}/>
+					</Col>
+					<Col span={4}>
+						<Button onClick={handleQueryEmbeddings}>检索</Button>
 					</Col>
 					<Col span={2} style={{textAlign:"end"}}>
 						{

@@ -8,6 +8,7 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import mqtt from "mqtt";
 import {useTranslations} from "next-intl";
 import SummaryComponent from "@/components/summary";
+import commandDataContainer from "@/container/command";
 
 const DiscoveryComponent = ({id, onShowProgress, showLiveChat}:{id:string, onShowProgress: (s: boolean)=>void, showLiveChat:()=>void}) => {
 	const [question, setQuestion] = useState<string>("");

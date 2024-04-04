@@ -4,6 +4,7 @@ import {TimeLineItem} from "@/common";
 import styles from './UserFeedMobile.module.css'
 import TextArea from "antd/es/input/TextArea";
 import {useTranslations} from "next-intl";
+import commandDataContainer from "@/container/command";
 
 const towns =[
 	{label: '音乐小镇', value: 'music'},
@@ -12,9 +13,10 @@ const towns =[
 	{label: 'web3小镇', value: 'web3'},
 	{label: '科学小镇', value: 'science'},
 ]
-const UserFeedMobile = ({userFeed, mobile}:{userFeed: TimeLineItem[], mobile: boolean}) => {
+const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineItem[], mobile: boolean}) => {
 	const [town, setTown] = React.useState('')
 	const [townTopic, setTownTopic] = useState('');
+	const command = commandDataContainer.useContainer()
 	const t = useTranslations('discovery');
 
 	const townChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -24,6 +26,10 @@ const UserFeedMobile = ({userFeed, mobile}:{userFeed: TimeLineItem[], mobile: bo
 	const topicInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		event.preventDefault();
 		setTownTopic(event.target.value)
+	}
+
+	const handleJoin = () => {
+		command.goTown(id, town, townTopic).then((res) => {})
 	}
 
 	return (
@@ -48,7 +54,7 @@ const UserFeedMobile = ({userFeed, mobile}:{userFeed: TimeLineItem[], mobile: bo
           </Row>
           <Row>
 	          <Col span={24}>
-	              <Button style={{marginTop:10,width:"100%"}} size={"small"} type={"primary"}>加入</Button>
+	              <Button onClick={handleJoin} style={{marginTop:10,width:"100%"}} size={"small"} type={"primary"}>加入</Button>
 	          </Col>
           </Row>
 						<Divider/>

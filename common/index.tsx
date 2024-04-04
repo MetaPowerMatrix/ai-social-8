@@ -100,7 +100,10 @@ export const api_url = {
       'task': {
         'pray': '/api/pray',
         'upgrade': '/api/pro',
-        "event": "/api/event"
+        "event": "/api/event",
+        "knowledge_query": "/api/knowledge/query",
+        "knowledge_summary": "/api/knowledge/summary",
+        "knowledge_embedding": "/api/study/knowledge",
       },
       'interaction': {
         'call': '/api/call',
@@ -110,7 +113,8 @@ export const api_url = {
           'continue': '/api/live/continue',
           'end': '/api/live/end',
           'reload': '/api/live/reload',
-        }
+        },
+        "go_town": '/api/pato/go/town'
       },
       'character': {
         'iss': '/api/pato/iss',
