@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Divider, Input, List, Row} from "antd";
-import styles from "./SummaryComponent.module.css";
+import styles from "./QueryEmbeddingComponent.module.css";
 import {
 	AudioOutlined,
 	LeftOutlined,
@@ -11,7 +11,6 @@ import {Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
-import {id} from "postcss-selector-parser";
 
 const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{activeId:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
 	const [query, setQuery] = useState<string>("");
@@ -91,6 +90,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 		}
 	}
 	const handleQueryEmbeddings = () => {
+		alert(selectedIndex)
 		if (selectedIndex !== undefined){
 			command.query_embedding(activeId, knowledges[selectedIndex!].value, query).then((res) => {
 				console.log(res)

@@ -12,7 +12,7 @@ import {
 	Tag,
 	Tooltip
 } from "antd";
-import {DeleteOutlined, LeftOutlined, RedoOutlined, RightOutlined} from "@ant-design/icons";
+import {DeleteOutlined, LeftOutlined, RedoOutlined, RightOutlined, UploadOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, getMQTTBroker, SessionList} from "@/common";
 import {useTranslations} from 'next-intl';
@@ -351,9 +351,19 @@ export default function Home() {
 					<LeftOutlined onClick={() => setHideDetail(true)}/>
 				</Row>
 				<Divider/>
+				{ isMySeesion &&
+            <Row justify="space-between">
+                <Col span={8}>
+                    <Button onClick={handleEditMessages}>保存修改</Button>
+                </Col>
+                <Col span={8}>
+                    <Button onClick={() => handleContinueChat(true)}>继续聊天</Button>
+                </Col>
+            </Row>
+				}
 				<List
 					itemLayout="vertical"
-					header={summary}
+					header={<div style={{height:100,overflow:"scroll"}}>{summary}</div>}
 					size="small"
 					split={false}
 					dataSource={chatMessages}
@@ -380,21 +390,6 @@ export default function Home() {
 						}
 					}}
 				/>
-				{isMySeesion &&
-            <>
-                <Divider/>
-                <Row>
-                    <Col span={4} style={{marginTop: 10}}>
-                        <label>是否继续聊天?</label>
-                    </Col>
-                    <Col span={12} style={{marginTop: 10}}>
-                        <Button onClick={() => handleContinueChat(true)} disabled={!continueTalk} type={"primary"}
-                                style={{marginRight: 30}}>是</Button>
-                        <Button onClick={() => handleContinueChat(false)} disabled={!continueTalk}>否</Button>
-                    </Col>
-                </Row>
-            </>
-				}
 			</div>
 		</LayoutMobile>
 	)

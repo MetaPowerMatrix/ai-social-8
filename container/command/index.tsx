@@ -295,7 +295,7 @@ const useCommand = () => {
     }
   }
   const query_embedding = async (id: string, sig: string, query: String) => {
-    let data = {sender: id, sig: sig, query: query}
+    let data = {id: id, sig: sig, query: query}
     let url = getApiServer(80) + api_url.portal.task.knowledge_query
     let response = await fetch(
       `${url}`,
