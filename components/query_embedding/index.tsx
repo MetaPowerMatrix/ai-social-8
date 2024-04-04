@@ -20,6 +20,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [knowledges, setKnowledges] = useState<{ label: string, value: string }[]>([]);
 	const command = commandDataContainer.useContainer()
+	const [currentSig, setCurrentSig] = useState<string>("");
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const t = useTranslations('AIInstruct');
 
@@ -38,7 +39,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 			})
 			setKnowledges(kList)
 		})
-	}, [activeId])
+	}, [activeId, visible])
 
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
@@ -53,7 +54,6 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 	const process_ws_message = (event: any) => {
 		console.log(event.data.toString())
 		setQuery(event.data.toString())
-		handleQueryEmbeddings()
 	}
 
 	let chunks: BlobPart[] = [];
@@ -89,10 +89,9 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 			setStopped(true)
 		}
 	}
-	const handleQueryEmbeddings = () => {
-		alert(selectedIndex)
-		if (selectedIndex !== undefined){
-			command.query_embedding(activeId, knowledges[selectedIndex!].value, query).then((res) => {
+	const handleQueryEmbeddings = (sig: string, q: string) => {
+		if (sig !== ""){
+			command.query_embedding(activeId, sig, q).then((res) => {
 				console.log(res)
 				if (res !== undefined){
 					setQueryResult(res)
@@ -110,6 +109,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 				</>
 				<h5>知识列表</h5>
 				<List
+					style={{height: 280, overflow:"scroll"}}
 					itemLayout="horizontal"
 					size="small"
 					dataSource={knowledges}
@@ -120,6 +120,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 							defaultValue={item.value}
 							onClick={(e) => {
 								setSelectedIndex(index)
+								setCurrentSig(item.value)
 							}}
 						>
 							<Row align={"middle"} style={{width: "100%"}}>
@@ -138,7 +139,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 						<Input placeholder={"问题"} value={query}/>
 					</Col>
 					<Col span={4}>
-						<Button onClick={handleQueryEmbeddings}>检索</Button>
+						<Button onClick={() => handleQueryEmbeddings(currentSig, query)}>检索</Button>
 					</Col>
 					<Col span={2} style={{textAlign: "end"}}>
 						{
