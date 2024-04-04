@@ -15,11 +15,8 @@ import commandDataContainer from "@/container/command";
 
 const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
 	const [transcriptFile, setTranscriptFile] = useState<string>("");
-	const [query, setQuery] = useState<string>("");
-	const [queryResult, setQueryResult] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
-	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [wsSocketRecorder, setWsSocketRecorder] = useState<WebSocketManager>();
 	const [knowledge, setKnowledge] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -45,11 +42,6 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 		}
 	};
 
-	const process_ws_message = (event: any) => {
-		console.log(event.data.toString())
-		setQuery(event.data.toString())
-		handleQueryEmbeddings()
-	}
 	const process_recorder_message = (event: any) => {
 		console.log(event.data.toString())
 		setTranscriptFile(event.data.toString())
@@ -59,10 +51,8 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	const handleAudioStream = (stream: MediaStream) => {
 		const options = {mimeType: 'audio/webm;codecs=pcm'};
 		const mediaRecorder = new MediaRecorder(stream, options);
-		const socket = new WebSocketManager(Streaming_Server + "/up", process_ws_message);
-		const socketRecorder = new WebSocketManager(Streaming_Server + "/record", process_recorder_message);
+		const socketRecorder = new WebSocketManager(Streaming_Server + "/up2", process_recorder_message);
 
-		setWsSocket(socket)
 		setWsSocketRecorder(socketRecorder)
 		setRecorder(mediaRecorder)
 
@@ -77,7 +67,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 			if (isUploadRecord){
 				socketRecorder.send(new Blob(chunks, { 'type' : 'audio/webm' }));
 			}else{
-				socket.send(new Blob(chunks, { 'type' : 'audio/webm' }));
+				// socket.send(new Blob(chunks, { 'type' : 'audio/webm' }));
 			}
 			console.log("send")
 			chunks = [];
@@ -116,8 +106,10 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 			.then(data => {
 				if (data.code === "200") {
 					let sigs: string[] = JSON.parse(data.content)
+					sigs = sigs.filter((sig) => {return sig !== ''})
 					alert('文档上传成功，等待学习结果!');
 					setSig(sigs)
+					console.log(sigs)
 					handleQuerySummary(sigs)
 				}else{
 					alert('文档上传失败.');
@@ -154,21 +146,16 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 		let newSummarys: string[] = []
 		query_sigs.forEach((sig) => {
 			command.query_summary(activeId, sig).then((res) => {
+				console.log(res)
 				if (res !== undefined){
-					summarys.push(res)
+					newSummarys.push(res)
+					setSummarys((prev) => {
+						prev = [...newSummarys]
+						return prev
+					})
+					console.log(summarys)
 				}
 			})
-		})
-		setSummarys((prev) => {
-			prev = [...newSummarys]
-			return prev
-		})
-	}
-	const handleQueryEmbeddings = () => {
-		command.query_embedding(activeId, sigs[0], query).then((res) => {
-			if (res !== undefined){
-				setQueryResult(res)
-			}
 		})
 	}
 	return (
@@ -212,31 +199,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 				<Divider/>
 				<Row>
 					<h5>学到的知识</h5>
-						<TextArea placeholder={"学习成果"} value={summarys.join('\n')} cols={8}/>
-				</Row>
-				<Divider/>
-				<Row align={"middle"}>
-					<Col span={6}>
-						<h5>想检索的细节</h5>
-					</Col>
-					<Col span={12}>
-						<Input placeholder={"问题"} value={query}/>
-					</Col>
-					<Col span={4}>
-						<Button onClick={handleQueryEmbeddings}>检索</Button>
-					</Col>
-					<Col span={2} style={{textAlign:"end"}}>
-						{
-							stopped ?
-								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
-								:
-								<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
-						}
-					</Col>
-				</Row>
-				<Row>
-					<h5>检索到的结果</h5>
-					<TextArea placeholder={"检索结果"} value={queryResult} cols={8}/>
+						<TextArea placeholder={"学习成果"} value={summarys.join('\n')} rows={8}/>
 				</Row>
 			</div>
 		</div>

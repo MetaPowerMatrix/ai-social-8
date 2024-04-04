@@ -116,7 +116,8 @@
     "start": "开始",
     "Upload": "选择文件",
     "record": "录制内容",
-    "do_summary": "开始学习"
+    "do_summary": "开始学习",
+    "query": "检索"
   },
   "discovery": {
     "topicTips": "和小镇的居民聊些什么呢？"

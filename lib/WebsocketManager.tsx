@@ -22,7 +22,7 @@ export class WebSocketManager {
 		this.ws = new WebSocket(this.url);
 
 		this.ws.onopen = () => {
-			console.log('Live Chat WebSocket connected.');
+			console.log('Live Chat WebSocket connected to ', this.url);
 			this.startHeartbeat();
 		};
 

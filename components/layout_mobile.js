@@ -180,7 +180,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     <AIInstructMobileComponent id={activeId} onShowProgress={showProgressBar}/>
                 }
                 {key === 'feed' &&
-                    <UserFeedMobile mobile={true} userFeed={userFeed}/>
+                    <UserFeedMobile id={activeId} mobile={true} userFeed={userFeed}/>
                 }
                 {key === 'discovery' &&
                     <DiscoveryComponent id={activeId} onShowProgress={showProgressBar} showLiveChat={()=>setOpenLive(true)}/>

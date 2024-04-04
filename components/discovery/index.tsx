@@ -8,7 +8,7 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import mqtt from "mqtt";
 import {useTranslations} from "next-intl";
 import SummaryComponent from "@/components/summary";
-import commandDataContainer from "@/container/command";
+import QueryEmbeddingComponent from "@/components/query_embedding";
 
 const DiscoveryComponent = ({id, onShowProgress, showLiveChat}:{id:string, onShowProgress: (s: boolean)=>void, showLiveChat:()=>void}) => {
 	const [question, setQuestion] = useState<string>("");
@@ -18,6 +18,7 @@ const DiscoveryComponent = ({id, onShowProgress, showLiveChat}:{id:string, onSho
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const [showSummary, setShowSummary] = useState<boolean>(false);
+	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const t = useTranslations('AIInstruct');
 
 	useEffect(() => {
@@ -188,6 +189,14 @@ const DiscoveryComponent = ({id, onShowProgress, showLiveChat}:{id:string, onSho
 					<h5><RightOutlined/></h5>
 				</Col>
 			</Row>
+			<Row className={styles.header_meta} onClick={() => {setShowQuery(true)}}>
+				<Col className={styles.colorBar} span={12}>
+					<h5>{t("query")}</h5>
+				</Col>
+				<Col className={styles.colorBarEnd} span={12}>
+					<h5><RightOutlined/></h5>
+				</Col>
+			</Row>
 			<div className={styles.header_meta}>
 				<Row onClick={() => {}}>
 					<Col className={styles.colorBar} span={12}>
@@ -213,6 +222,7 @@ const DiscoveryComponent = ({id, onShowProgress, showLiveChat}:{id:string, onSho
 				</Row>
 			</div>
 			<SummaryComponent onClose={()=>setShowSummary(false)} activeId={id} visible={showSummary} onShowProgress={onShowProgress}/>
+			<QueryEmbeddingComponent activeId={id} visible={showQuery} onShowProgress={onShowProgress} onClose={()=>setShowQuery(false)}/>
 		</div>
 	)
 }

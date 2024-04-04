@@ -86,6 +86,7 @@ export const api_url = {
       'login': '/api/login',
       'register': '/api/register',
       'pato': '/api/pato/info',
+      'knowledges': '/api/pato/knowledge/all',
       'message':{
         'history': '/api/pato/messages',
         'archive': '/api/pato/archive',
