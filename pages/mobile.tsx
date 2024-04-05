@@ -318,7 +318,7 @@ export default function Home() {
 						</Col>
 					</Row>
 				</div>
-				<div style={{overflow: "scroll", height: 600, padding: 10}}>
+				<div style={{overflow: "scroll", height: 560, padding: 10}}>
 					<List
 						itemLayout="horizontal"
 						header={<MessageHeader queryDate={queryDate} onChangeDate={changeQueryDate}
