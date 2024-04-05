@@ -15,7 +15,6 @@ import {useTranslations} from 'next-intl';
 import {getCookie} from "@/lib/utils";
 import ProgressBarComponent from "@/components/ProgressBar";
 import MaskedHighlight from "@/components/MaskedHighlight";
-import commandDataContainer from "@/container/command";
 import Deposit from "@/components/deposit";
 import {getMQTTBroker, Streaming_Server} from "@/common";
 import HeaderPanelMobile from "./header_mobile";
@@ -37,8 +36,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const [guide, setGuide] = useState(false)
     const [loading, setLoading] = useState(false);
     const [userFeed, setUserFeed] = useState([{children:"新的一天开始了"}]);
-    const command = commandDataContainer.useContainer()
-    const [userISS, setUserISS] = useState();
     const [openLive, setOpenLive] = useState(false);
     const [client, setClient] = useState(null);
     const [activeTab, setActivTab] = useState('chat');
@@ -145,7 +142,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 }
             };
         }
-    }, [client]);
+    }, [client, activeId]);
 
     useEffect(() => {
         if (activeId !== ''){

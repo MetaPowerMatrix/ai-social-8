@@ -29,7 +29,9 @@ const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineIt
 	}
 
 	const handleJoin = () => {
-		command.goTown(id, town, townTopic).then((res) => {})
+		command.goTown(id, town, townTopic).then((res) => {
+			alert("加入成功")
+		})
 	}
 
 	return (

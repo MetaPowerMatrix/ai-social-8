@@ -86,10 +86,6 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	}
 	const handleKnowledge= (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
 		event.preventDefault(); // Prevent the default form submission
-		if (fileList.length <= 0){
-			alert(t('power'))
-			return
-		}
 		const formData = new FormData();
 		if (fileList.length > 0){
 			formData.append('file', fileList[0] as FileType);
