@@ -5,6 +5,7 @@ import styles from './UserFeedMobile.module.css'
 import TextArea from "antd/es/input/TextArea";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
+import HotAI from "@/components/HotAI";
 
 const towns =[
 	{label: '音乐小镇', value: 'music'},
@@ -16,6 +17,7 @@ const towns =[
 const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineItem[], mobile: boolean}) => {
 	const [town, setTown] = React.useState('')
 	const [townTopic, setTownTopic] = useState('');
+	const [showHot, setShowHot] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('discovery');
 
@@ -36,6 +38,7 @@ const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineIt
 
 	return (
 		<div className={styles.user_feed_container}>
+			<h4 style={{textAlign:"center"}}>小镇</h4>
 			{ mobile &&
 				<>
           <Row align={"middle"}>
@@ -55,16 +58,19 @@ const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineIt
 		          </Col>
           </Row>
           <Row>
-	          <Col span={24}>
+	          <Col span={18}>
 	              <Button onClick={handleJoin} style={{marginTop:10,width:"100%"}} size={"small"} type={"primary"}>加入</Button>
 	          </Col>
+              <Col span={6}>
+                  <Button onClick={()=>setShowHot(true)} style={{marginTop:10,width:"100%"}} size={"small"}>小镇社牛</Button>
+              </Col>
           </Row>
 						<Divider/>
         </>
 			}
 			<Row>
 				<Col span={24}>
-					<div style={{marginTop: 20, height: 420, overflowY: "auto", padding: 15, border: "1px dotted blue"}}>
+					<div style={{marginTop: 20, height: 363, overflowY: "auto", padding: 15, border: "1px dotted blue"}}>
 						<Timeline
 							mode={"alternate"}
 							items={userFeed}
@@ -72,6 +78,7 @@ const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineIt
 					</div>
 				</Col>
 			</Row>
+			<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>
 		</div>
 	)
 }

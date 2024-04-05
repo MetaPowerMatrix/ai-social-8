@@ -12,6 +12,7 @@ import {api_url, getApiServer, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
+import SharedKnowledges from "@/components/SharedKnowledges";
 
 const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
 	const [transcriptFile, setTranscriptFile] = useState<string>("");
@@ -23,6 +24,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	const [summarys, setSummarys] = useState<string[]>([]);
 	const [isUploadRecord, setIsUploadRecord] = useState(true);
 	const [sigs, setSig] = useState<string[]>([]);
+	const [showShared, setShowShared] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('AIInstruct');
 
@@ -169,11 +171,15 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 					</Col>
 				</Row>
 				<Row justify="space-between">
-					<Col span={24}>
+					<Col span={12}>
 						<h5>上传准备阅读的文章</h5>
 						<Upload {...props}>
 							<Button icon={<UploadOutlined/>}>{t('Upload')}</Button>
 						</Upload>
+					</Col>
+					<Col span={12}>
+						<h5>选取社区热门文章</h5>
+						<Button onClick={()=>setShowShared(true)}>社区知识</Button>
 					</Col>
 				</Row>
 				<Row align={"middle"} justify={"space-between"}>
@@ -198,6 +204,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 						<TextArea placeholder={"学习成果"} value={summarys.join('\n')} rows={8}/>
 				</Row>
 			</div>
+			<SharedKnowledges visible={showShared} canSelect={true} onSelectName={()=>{}} onClose={()=>setShowShared(false)}/>
 		</div>
 	)
 }

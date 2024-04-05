@@ -306,6 +306,7 @@ export default function Home() {
 				<title>{t('title')}</title>
 			</Head>
 			<div hidden={!hideDetail} style={{height: pageHeight, padding: 10}}>
+				<h4 style={{textAlign:"center"}}>消息</h4>
 				<div style={{padding: 10}}>
 					<Row align={"middle"}>
 						<Col span={5} style={{textAlign: "start"}}><label>{t('event')}</label></Col>
@@ -363,7 +364,7 @@ export default function Home() {
 				}
 				<List
 					itemLayout="vertical"
-					header={<div style={{height:100,overflow:"scroll"}}>{summary}</div>}
+					header={<div style={{maxHeight:100,overflow:"scroll"}}>{summary}</div>}
 					size="small"
 					split={false}
 					dataSource={chatMessages}

@@ -125,9 +125,9 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 	return (
 			<div className={styles.voice_instruct_container}>
 				<div className={styles.voice_instruct_content}>
-					<div hidden={!hideMessages} >
+					<h4 style={{textAlign:"center"}}>{t('pro')}</h4>
+					<div hidden={!hideMessages}>
 						<div style={{overflow: "scroll", padding: 15}}>
-							<h5>{t('pro')}</h5>
 							<List
 								itemLayout="horizontal"
 								size="small"
@@ -143,7 +143,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 											setCallid(item.value)
 										}}
 									>
-										<Row align={"middle"} style={{width:"100%"}}>
+										<Row align={"middle"} style={{width: "100%"}}>
 											<Col span={22}><h5>{item.label}</h5></Col>
 											<Col span={2} style={{textAlign: "end"}}><RightOutlined/></Col>
 										</Row>
@@ -180,7 +180,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 										</Col>
 									</Row>
 									<Row>
-										<Col span={24} style={{textAlign:"end"}}>
+										<Col span={24} style={{textAlign: "end"}}>
 											<h5>{item.answer} : {item.receiver.split('(')[0]}</h5>
 										</Col>
 									</Row>

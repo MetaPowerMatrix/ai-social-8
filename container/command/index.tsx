@@ -1,5 +1,14 @@
 import {createContainer} from "unstated-next"
-import {api_url, ChatMessage, getApiServer, PatoInfo, Persona, SessionMessages} from "@/common";
+import {
+  api_url,
+  ChatMessage,
+  getApiServer,
+  PatoInfo,
+  Persona,
+  PortalHotAi,
+  PortalKnowledge,
+  SessionMessages
+} from "@/common";
 
 const useCommand = () => {
   const create_pato = async (name: string): Promise<string> => {
@@ -333,6 +342,52 @@ const useCommand = () => {
     }
     return null
   }
+  const share_knowledge = async (id: string, sig: string, title: String) => {
+    let data = {id: id, sig: sig, title: title, shared: true}
+    let url = getApiServer(80) + api_url.portal.task.knowledge_share
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+    }
+  }
+  const getSharedKnowledges = async () => {
+    let url = getApiServer(80) + api_url.portal.message.shared
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        let books: PortalKnowledge[] = JSON.parse(dataJson.content)
+        return books
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return []
+  }
+  const getTownHots = async () => {
+    let url = getApiServer(80) + api_url.portal.message.hot
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        let hots: PortalHotAi[] = JSON.parse(dataJson.content)
+        return hots
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return []
+  }
   const genPatoAuthToken = async (id: string) => {
     if (id === "") return null
     let url = getApiServer(80) + api_url.portal.auth.gen + "/" + id
@@ -413,7 +468,7 @@ const useCommand = () => {
   return { login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages, getPatoISS, callPato,
     deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat,
     getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken, edit_session_messages, continue_session_chat,
-    goTown, query_embedding, query_summary, query_knowledges
+    goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge
   }
 }
 

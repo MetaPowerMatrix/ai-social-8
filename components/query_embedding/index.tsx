@@ -4,7 +4,7 @@ import styles from "./QueryEmbeddingComponent.module.css";
 import {
 	AudioOutlined,
 	LeftOutlined,
-	PauseOutlined, RightOutlined
+	PauseOutlined, RightOutlined, ShareAltOutlined
 } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import {Streaming_Server} from "@/common";
@@ -80,6 +80,11 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 		// mediaRecorder.start(2000); // Start recording, and emit data every 5s
 	};
 
+	const shareKnowledge = (sig: string, title:string) => {
+		command.share_knowledge(activeId, sig, title).then(() => {
+			alert("分享成功")
+		})
+	}
 	const stop_record = () => {
 		if (stopped){
 			recorder?.start()
@@ -125,7 +130,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 						>
 							<Row align={"middle"} style={{width: "100%"}}>
 								<Col span={22}><h5>{item.label}</h5></Col>
-								<Col span={2} style={{textAlign: "end"}}><RightOutlined/></Col>
+								<Col onClick={()=>shareKnowledge(item.value, item.label)} span={2} style={{textAlign: "end"}}><ShareAltOutlined /></Col>
 							</Row>
 						</List.Item>
 					)}

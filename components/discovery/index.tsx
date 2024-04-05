@@ -173,6 +173,7 @@ const DiscoveryComponent = ({id, onShowProgress, showLiveChat}:{id:string, onSho
 
 	return (
 		<div className={styles.container}>
+			<h4 style={{textAlign:"center"}}>发现</h4>
 			<Row className={styles.header_meta} onClick={() => showLiveChat()}>
 				<Col className={styles.colorBar} span={12}>
 					<h5>{t("live")}</h5>

@@ -1,0 +1,19 @@
+.hotai_container_mobile {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 640px;
+    background-color: white;
+}
+.hotai_content_mobile {
+    background-color: white;
+    padding: 10px;
+    height: 100%;
+    overflow-Y: scroll;
+    max-width: 100%;
+}
+.list_item {
+    background-color: lightblue;
+}

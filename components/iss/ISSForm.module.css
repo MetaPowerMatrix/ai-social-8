@@ -32,6 +32,6 @@
     background-color: white;
     padding: 10px;
     height: 100%;
-    overflow: scroll;
-    width: 100%;
+    overflow-Y: scroll;
+    max-width: 100%;
 }
