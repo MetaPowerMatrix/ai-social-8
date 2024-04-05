@@ -112,9 +112,8 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 						<LeftOutlined style={{fontSize: 20}} onClick={() => onClose()}/>
 					</Row>
 				</>
-				<h5>知识库</h5>
 				<List
-					style={{height: 120, overflow:"scroll"}}
+					style={{height: 120, overflow: "scroll"}}
 					itemLayout="horizontal"
 					size="small"
 					dataSource={knowledges}
@@ -130,12 +129,13 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 						>
 							<Row align={"middle"} style={{width: "100%"}}>
 								<Col span={22}><h5>{item.label}</h5></Col>
-								<Col onClick={()=>shareKnowledge(item.value, item.label)} span={2} style={{textAlign: "end"}}><ShareAltOutlined /></Col>
+								<Col onClick={() => shareKnowledge(item.value, item.label)} span={2}
+								     style={{textAlign: "end"}}><ShareAltOutlined/></Col>
 							</Row>
 						</List.Item>
 					)}
 				/>
-				<Divider/>
+				<h5>**从知识库选择需要询问的内容**</h5>
 				<Row align={"middle"}>
 					<Col span={2}>
 						{
@@ -149,7 +149,8 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 						<Input placeholder={"文章中的基金是什么意思"} value={query}/>
 					</Col>
 					<Col span={3}>
-						<Button type={"primary"} style={{marginLeft:5}} onClick={() => handleQueryEmbeddings(currentSig, query)}>发送</Button>
+						<Button type={"primary"} style={{marginLeft: 5}}
+						        onClick={() => handleQueryEmbeddings(currentSig, query)}>发送</Button>
 					</Col>
 				</Row>
 				<Row>

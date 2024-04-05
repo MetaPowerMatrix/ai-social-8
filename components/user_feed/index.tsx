@@ -58,19 +58,18 @@ const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineIt
 		          </Col>
           </Row>
           <Row>
-	          <Col span={18}>
-	              <Button onClick={handleJoin} style={{marginTop:10,width:"100%"}} size={"small"} type={"primary"}>加入</Button>
+	          <Col span={20}>
+	              <Button onClick={handleJoin} style={{marginTop:10,width:"90%"}} size={"small"} type={"primary"}>加入</Button>
 	          </Col>
-              <Col span={6}>
-                  <Button onClick={()=>setShowHot(true)} style={{marginTop:10,width:"100%"}} size={"small"}>小镇社牛</Button>
+              <Col span={4}>
+                  <Button onClick={()=>setShowHot(true)} style={{marginTop:10}} size={"small"}>小镇社牛</Button>
               </Col>
           </Row>
-						<Divider/>
         </>
 			}
 			<Row>
 				<Col span={24}>
-					<div style={{marginTop: 20, height: 363, overflowY: "auto", padding: 15, border: "1px dotted blue"}}>
+					<div style={{marginTop: 20, height: 412, overflowY: "auto", padding: 15, border: "1px dotted blue"}}>
 						<Timeline
 							mode={"alternate"}
 							items={userFeed}

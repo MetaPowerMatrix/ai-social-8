@@ -159,11 +159,9 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	return (
 		<div hidden={!visible} className={styles.summary_container_mobile}>
 			<div className={styles.summary_content_mobile}>
-				<>
 					<Row style={{padding: 10}}>
 						<LeftOutlined style={{fontSize: 20}} onClick={() => onClose()}/>
 					</Row>
-				</>
 				<Row align={"middle"}>
 					<Col span={2}>
 						{
@@ -175,7 +173,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 					</Col>
 					<Col span={3}>
 						<Upload {...props}>
-							<Button type={"primary"} icon={<UploadOutlined/>}></Button>
+							<Button icon={<UploadOutlined/>}></Button>
 						</Upload>
 					</Col>
 					<Col span={3}>
@@ -186,8 +184,11 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 					</Col>
 				</Row>
 				<Row align={"middle"} justify="space-between">
-					<Col span={24} style={{textAlign:"end"}}>
-						<Button type={"primary"} style={{marginTop: 10}} onClick={(e) => handleKnowledge(e)}>{t('do_summary')}</Button>
+					<Col span={8}>
+						<h5 style={{textAlign: "center"}}>**发送知识和专家探讨**</h5>
+					</Col>
+					<Col span={16} style={{textAlign: "end"}}>
+					<Button type={"primary"} style={{marginTop: 10}} onClick={(e) => handleKnowledge(e)}>{t('do_summary')}</Button>
 					</Col>
 				</Row>
 				<Row>
