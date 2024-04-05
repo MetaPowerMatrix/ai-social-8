@@ -132,14 +132,14 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 				/>
 				<Divider/>
 				<Row align={"middle"}>
-					<Col span={6}>
+					<Col span={5}>
 						<h5>想检索的细节</h5>
 					</Col>
 					<Col span={12}>
 						<Input placeholder={"问题"} value={query}/>
 					</Col>
 					<Col span={4}>
-						<Button onClick={() => handleQueryEmbeddings(currentSig, query)}>检索</Button>
+						<Button style={{marginLeft:5}} onClick={() => handleQueryEmbeddings(currentSig, query)}>检索</Button>
 					</Col>
 					<Col span={2} style={{textAlign: "end"}}>
 						{
