@@ -112,9 +112,9 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 						<LeftOutlined style={{fontSize: 20}} onClick={() => onClose()}/>
 					</Row>
 				</>
-				<h5>知识列表</h5>
+				<h5>知识库</h5>
 				<List
-					style={{height: 280, overflow:"scroll"}}
+					style={{height: 120, overflow:"scroll"}}
 					itemLayout="horizontal"
 					size="small"
 					dataSource={knowledges}
@@ -137,16 +137,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 				/>
 				<Divider/>
 				<Row align={"middle"}>
-					<Col span={5}>
-						<h5>想检索的细节</h5>
-					</Col>
-					<Col span={12}>
-						<Input placeholder={"问题"} value={query}/>
-					</Col>
-					<Col span={4}>
-						<Button style={{marginLeft:5}} onClick={() => handleQueryEmbeddings(currentSig, query)}>检索</Button>
-					</Col>
-					<Col span={2} style={{textAlign: "end"}}>
+					<Col span={2}>
 						{
 							stopped ?
 								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
@@ -154,10 +145,16 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 								<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
 						}
 					</Col>
+					<Col span={18}>
+						<Input placeholder={"文章中的基金是什么意思"} value={query}/>
+					</Col>
+					<Col span={3}>
+						<Button type={"primary"} style={{marginLeft:5}} onClick={() => handleQueryEmbeddings(currentSig, query)}>发送</Button>
+					</Col>
 				</Row>
 				<Row>
-					<h5>检索到的结果</h5>
-					<TextArea placeholder={"检索结果"} value={queryResult} rows={10}/>
+					<h5>专家回复:</h5>
+					<TextArea placeholder={"文中的基金是指xx基建基金"} value={queryResult} rows={12}/>
 				</Row>
 			</div>
 		</div>

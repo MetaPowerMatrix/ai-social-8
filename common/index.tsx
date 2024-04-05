@@ -120,7 +120,7 @@ export const api_url = {
         "knowledge_query": "/api/knowledge/query",
         "knowledge_summary": "/api/knowledge/summary",
         "knowledge_embedding": "/api/study/knowledge",
-        "knowledge_share": "/api/pato/knowledge/share",
+        "knowledge_share": "/api/pato/share/knowledge",
       },
       'interaction': {
         'call': '/api/call',

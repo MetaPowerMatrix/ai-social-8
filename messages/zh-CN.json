@@ -116,9 +116,9 @@
     "summary": "学习",
     "live": "AI直播",
     "start": "开始",
-    "Upload": "选择文件",
+    "Upload": "上传文章",
     "record": "录制内容",
-    "do_summary": "开始学习",
+    "do_summary": "发送",
     "query": "检索"
   },
   "discovery": {
