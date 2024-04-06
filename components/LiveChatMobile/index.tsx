@@ -105,7 +105,6 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 					let newMsg = {children: message.toString()}
 					setLyrics((prev)=>{
 						const newLyrics = [...prev]
-						newLyrics.shift()
 						newLyrics.push(newMsg)
 						return newLyrics
 					})
@@ -160,6 +159,7 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 		onClose()
 	}
 	const end_session = () => {
+		console.log(roleTwoId, roleOneId, "roleid")
 		command.end_live_chat([roleOneId, roleTwoId]).then((res) => {
 			console.log(res)
 			alert(t('end'))
@@ -270,12 +270,7 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 			.then(data => {
 				if (data.code === "200") {
 					let openInfo: LiveOpenResponse = JSON.parse(data.content)
-					// setSession(openInfo.session)
-					// form.setFieldsValue({session: openInfo.session})
-					setRoleOneId(values.role_1_id)
-					setRoleTwoId(values.role_2_id)
 					setRoleOnePortrait(openInfo.role_1_portarit)
-					// setRoleTwoPortrait(openInfo.role_2_portrait)
 					initAudioStream().then(() => {});
 					alert(t('started'));
 					setHideSettings(true)
@@ -334,10 +329,10 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 						</FloatButton.Group>
 						<Row align={"middle"} justify={"space-between"}>
 							<Col span={24} style={{textAlign: "center", height: 660}}>
-								<iframe style={{height: "100%", width: "100%"}} title="Let's Dance to Si Tinh by Mai Idol 💃🌟" allowFullScreen
-								        allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking="true"
-								        execution-while-out-of-viewport="true" execution-while-not-rendered="true"  web-share="true"
-								        src="https://sketchfab.com/models/84dc99fcc7c44f80b904d14fb0b05ec9/embed"></iframe>
+								<iframe title="Lady Deadpool (SUPALONELY TikTok Dance)" frameBorder="0" allowFullScreen
+								        allow="autoplay; fullscreen; xr-spatial-tracking" style={{height: "100%", width: "100%"}} xr-spatial-tracking="true"
+								        execution-while-out-of-viewport="true" execution-while-not-rendered="true" web-share="true"
+								        src="https://sketchfab.com/models/374788d2818947d292c75cbda71c5171/embed"></iframe>
 								{/*<Image src={roleOnePortrait} fill={true} alt={"role1"}/>*/}
 							</Col>
 						</Row>

@@ -15,7 +15,6 @@ function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
 		onClose(userid)
 	};
 	const handleRegister = async (event) => {
-		// document.cookie = "username=John Doe; path=/; max-age=3600; secure";
 		event.preventDefault();
 		if (username === "") {
 			alert(t("name_tips"))
@@ -24,9 +23,22 @@ function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
 		let userid = await command.create_pato(username)
 		if (userid !== "" || userid !== null) {
 			// alert("创建成功")
+			let localInfoStr = localStorage.getItem("local_patos")
+			if (localInfoStr === null){
+				const localInfo ={id: [`${userid}:${username}`], active_id: `${userid}`}
+				localStorage.setItem("local_patos", JSON.stringify(localInfo))
+			}else{
+				const localInfo = JSON.parse(localInfoStr)
+				const newlocalInfo = {id: localInfo.id.push(`${userid}:${username}`), active_id: `${userid}`}
+				localStorage.setItem("local_patos", JSON.stringify(localInfo))
+			}
 			let ids = getCookie('available-ids');
-			document.cookie = `active-id=${userid}`;
-			document.cookie = `available-ids=${ids},${userid}:${username}`;
+			document.cookie = `active-id=${userid}; path=/; max-age=31536000; secure`;
+			if (ids === ""){
+				document.cookie = `${userid}:${username}; path=/; max-age=31536000; secure`;
+			}else{
+				document.cookie = `available-ids=${ids},${userid}:${username}; path=/; max-age=31536000; secure`;
+			}
 			onClose(userid)
 		}
 	};

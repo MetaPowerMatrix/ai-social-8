@@ -272,12 +272,7 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 			.then(data => {
 				if (data.code === "200") {
 					let openInfo: LiveOpenResponse = JSON.parse(data.content)
-					// setSession(openInfo.session)
-					// form.setFieldsValue({session: openInfo.session})
-					setRoleOne(values.role_1_id)
-					setRoleTwo(values.role_2_id)
 					setRoleOnePortrait(openInfo.role_1_portarit)
-					// setRoleTwoPortrait(openInfo.role_2_portrait)
 					initAudioStream().then(() => {});
 					alert(t('started'));
 					setHideSettings(true)
@@ -335,11 +330,10 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 					</FloatButton.Group>
 					<Row style={{height:"100%"}} align={"middle"} justify={"space-between"}>
 						<Col span={24} style={{height: "100%"}}>
-							<iframe style={{height: "100%", width: "100%"}} title="Let's Dance to Si Tinh by Mai Idol 💃🌟"
-							        frameBorder="0" allowFullScreen
-							        allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking="true"
+							<iframe title="Daft Punk in End of Line Club" frameBorder="0" allowFullScreen allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking="true"
 							        execution-while-out-of-viewport="true" execution-while-not-rendered="true" web-share="true"
-							        src="https://sketchfab.com/models/84dc99fcc7c44f80b904d14fb0b05ec9/embed"></iframe>
+							        style={{height: "100%", width: "100%"}}
+							        src="https://sketchfab.com/models/a3c357d308004c6abed1abe2e0cf62b0/embed"></iframe>
 							{/*<Image src={roleOnePortrait} fill={true} alt={"role1"}/>*/}
 						</Col>
 					</Row>
