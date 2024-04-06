@@ -21,19 +21,12 @@ import {
 	UploadOutlined
 } from "@ant-design/icons";
 import {api_url, getApiServer, getMQTTBroker, LiveOpenResponse} from "@/common";
-import Image from "next/image";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import { v4 as uuidv4 } from 'uuid';
 import {SequentialAudioPlayer} from "@/lib/SequentialAudioPlayer";
 import mqtt from "mqtt";
 import {TimeLineItemProps} from "antd/lib/timeline/TimelineItem";
-import * as THREE from "three";
-import {Canvas, useLoader} from "@react-three/fiber";
-// import { ColladaLoader } from 'three/addons/loaders/ColladaLoader.js';
-// import { ColladaLoader } from 'three/addons/loaders/ColladaLoader.js';
-import { USDZLoader } from 'three/examples/jsm/loaders/USDZLoader';
-// import {ColladaLoader} from "three/examples/jsm/loaders/ColladaLoader";
 
 interface LiveChatPros {
 	id: string,
@@ -48,28 +41,6 @@ declare global {
 		webkitAudioContext: any;
 		AudioContext: any;
 	}
-}
-
-const ThreedScene = () => {
-	function Model() {
-		const usdz = useLoader(USDZLoader, 'https://xfiles.metapowermatrix.ai/toy-car-test.zip');
-		return (
-			<primitive object={usdz} />
-		);
-	}
-	function Scene() {
-		const ref = useRef<THREE.Group>(null);
-		return (
-			<group ref={ref}>
-				<Model />
-			</group>
-		);
-	}
-	return (
-		<Canvas style={{height:"100%", width:"100%"}}>
-			<Scene />
-		</Canvas>
-	);
 }
 
 const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onClose, onShowProgress}) => {

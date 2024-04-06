@@ -23,7 +23,6 @@ import {
 	UploadOutlined
 } from "@ant-design/icons";
 import {api_url, getApiServer, getMQTTBroker, LiveOpenResponse} from "@/common";
-import Image from "next/image";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import { v4 as uuidv4 } from 'uuid';
@@ -31,7 +30,6 @@ import {SequentialAudioPlayer} from "@/lib/SequentialAudioPlayer";
 import mqtt from "mqtt";
 import {TimeLineItemProps} from "antd/lib/timeline/TimelineItem";
 import HotAI from "@/components/HotAI";
-import {bail} from "bail";
 
 interface LiveChatPros {
 	id: string,
