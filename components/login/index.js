@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styles from './ModalLogin.module.css';
 import {Flex, Select} from "antd";
 import commandDataContainer from "../../container/command";
-import {getCookie} from "@/lib/utils";
 
 function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
 	const [username, setUsername] = useState('');
@@ -25,19 +24,13 @@ function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
 			// alert("创建成功")
 			let localInfoStr = localStorage.getItem("local_patos")
 			if (localInfoStr === null){
-				const localInfo ={id: [`${userid}:${username}`], active_id: `${userid}`}
+				const localInfo ={ids: [`${userid}:${username}`], active_id: `${userid}`}
 				localStorage.setItem("local_patos", JSON.stringify(localInfo))
 			}else{
 				const localInfo = JSON.parse(localInfoStr)
-				const newlocalInfo = {id: localInfo.id.push(`${userid}:${username}`), active_id: `${userid}`}
-				localStorage.setItem("local_patos", JSON.stringify(localInfo))
-			}
-			let ids = getCookie('available-ids');
-			document.cookie = `active-id=${userid}; path=/; max-age=31536000; secure`;
-			if (ids === ""){
-				document.cookie = `${userid}:${username}; path=/; max-age=31536000; secure`;
-			}else{
-				document.cookie = `available-ids=${ids},${userid}:${username}; path=/; max-age=31536000; secure`;
+				localInfo.ids.push(`${userid}:${username}`)
+				const newlocalInfo = {ids: localInfo.ids, active_id: `${userid}`}
+				localStorage.setItem("local_patos", JSON.stringify(newlocalInfo))
 			}
 			onClose(userid)
 		}

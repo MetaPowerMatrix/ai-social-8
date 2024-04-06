@@ -193,9 +193,10 @@ export default function Home() {
   }
 
   useEffect(()=> {
-    const cookie1 = getCookie('active-id');
-    if (cookie1 !== "" && cookie1 !== null) {
-      setActiveId(cookie1);
+    const localInfoStr = localStorage.getItem("local_patos")
+    if (localInfoStr !== null) {
+      const localInfo = JSON.parse(localInfoStr)
+      setActiveId(localInfo.active_id);
     }
     const mqttClient = mqtt.connect(getMQTTBroker());
     mqttClient.on("connect", () => {

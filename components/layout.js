@@ -11,7 +11,6 @@ import {
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
-import {getCookie, subscribe_topic} from "@/lib/utils";
 import TaskPanel from "@/components/taskPanel";
 import ProgressBarComponent from "@/components/ProgressBar";
 import HeaderPanel from "@/components/header";
@@ -79,38 +78,33 @@ export default function Layout({ children, title, description, onChangeId, onRef
     },[])
 
     useEffect(() => {
-        const cookie1 = getCookie('active-id');
-        if (cookie1 === "" || cookie1 === null) {
+        const localInfoStr = localStorage.getItem("local_patos")
+        if (localInfoStr === null) {
             setIsLogin(false);
         }else {
-            setActiveId(cookie1);
-            onChangeId(cookie1);
+            const localInfo = JSON.parse(localInfoStr)
+            setActiveId(localInfo.active_id);
+            onChangeId(localInfo.active_id);
             setIsLogin(true);
-        }
-        const cookie2 = getCookie('available-ids');
-        if (cookie2 !== "" || cookie2 !== null) {
-            const ids = cookie2.split(',');
+            const ids = localInfo.ids;
             const idsMap = ids.map((id) => {
-                return {label: id.split(":")[1], value: id.split(":")[0]};
+                const id_name = id.split(":")
+                if (id_name.length > 1){
+                    return {label: id.split(":")[1], value: id.split(":")[0]};
+                }
             });
             // console.log(idsMap)
             idsMap.forEach((item) => {
-                if (item.value !== '' && item.value === activeId) {
-                    // console.log(item.label)
+                if (item.value === activeId) {
                     setActiveName(item.label);
                     onRefresh(item.label)
                 }
             });
             setAvailableIds(idsMap);
+            command.getPatoISS(localInfo.active_id).then((res) => {
+                setUserISS(res)
+            })
         }
-        const cookie3 = getCookie('guide-completed');
-        if ((cookie3 === null || cookie3 === "" ) && isLogin){
-            setGuide(true)
-            // console.log("guide", guide)
-        }
-        command.getPatoISS(activeId).then((res) => {
-            setUserISS(res)
-        })
     },[activeId]);
 
     useEffect(() => {
@@ -193,7 +187,13 @@ export default function Layout({ children, title, description, onChangeId, onRef
                             setIsLogin(true)
                             if (id !== '') {
                                 setActiveId(id)
-                                document.cookie = `active-id=${id}`;
+                                const localInfoStr = localStorage.getItem("local_patos")
+                                if (localInfoStr !== null) {
+                                    let localInfo = JSON.parse(localInfoStr)
+                                    localInfo.active_id = id
+                                    localStorage.setItem("local_patos", JSON.stringify(localInfo))
+                                    setActiveId(localInfo.active_id);
+                                }
                             }
                         }}
             />

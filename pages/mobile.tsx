@@ -16,7 +16,7 @@ import {DeleteOutlined, LeftOutlined, RedoOutlined, RightOutlined, UploadOutline
 import commandDataContainer from "@/container/command"
 import {ChatMessage, getMQTTBroker, SessionList} from "@/common";
 import {useTranslations} from 'next-intl';
-import {formatDateTimeString, getCookie, getTodayDateString} from "@/lib/utils";
+import {formatDateTimeString, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 import LayoutMobile from "@/components/layout_mobile";
 import mqtt from "mqtt";
@@ -181,9 +181,10 @@ export default function Home() {
 	}
 
 	useEffect(()=> {
-		const cookie1 = getCookie('active-id');
-		if (cookie1 !== "" && cookie1 !== null) {
-			setActiveId(cookie1);
+		const localInfoStr = localStorage.getItem("local_patos")
+		if (localInfoStr !== null) {
+			const localInfo = JSON.parse(localInfoStr)
+			setActiveId(localInfo.active_id);
 		}
 		const mqttClient = mqtt.connect(getMQTTBroker());
 		mqttClient.on("connect", () => {

@@ -43,7 +43,7 @@ export interface PatoInfo {
   balance: number
 }
 export interface LocalPatos {
-  id: string[],
+  ids: string[],
   active_id: string
 }
 export interface ListItemInfo{
