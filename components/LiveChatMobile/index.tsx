@@ -334,9 +334,9 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 						</FloatButton.Group>
 						<Row align={"middle"} justify={"space-between"}>
 							<Col span={24} style={{textAlign: "center", height: 660}}>
-								<iframe style={{height: "100%", width: "100%"}} title="Let's Dance to Si Tinh by Mai Idol 💃🌟" frameBorder="0" allowFullScreen
-								        allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking
-								        execution-while-out-of-viewport execution-while-not-rendered web-share
+								<iframe style={{height: "100%", width: "100%"}} title="Let's Dance to Si Tinh by Mai Idol 💃🌟" allowFullScreen
+								        allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking="true"
+								        execution-while-out-of-viewport="true" execution-while-not-rendered="true"  web-share="true"
 								        src="https://sketchfab.com/models/84dc99fcc7c44f80b904d14fb0b05ec9/embed"></iframe>
 								{/*<Image src={roleOnePortrait} fill={true} alt={"role1"}/>*/}
 							</Col>
@@ -360,22 +360,27 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 									<Form.Item label={t("topic")} name="topic" rules={[{required: true, message: t('must')}]}>
 										<Input/>
 									</Form.Item>
-									<Form.Item label={t("role1")} name="role_1_id">
-										<Input value={roleOneName} style={{fontSize:15, width: 200, display: "inline"}}/><PlusOutlined style={{fontSize:20, marginLeft: 10}} onClick={()=>{
+									<Form.Item label={t("role1")}>
+										<>
+											<Input value={roleOneName} style={{fontSize:15, width: 200, display: "inline"}}/><PlusOutlined style={{fontSize:20, marginLeft: 10}} onClick={()=>{
 											setSelInx(1)
 											setShowHot(true)
 										}}/>
+										</>
 									</Form.Item>
 									<Form.Item label={t("role1_portrait")} name="role_1_dec"
 									           rules={[{required: true, message: t('must')}]}>
 										<Input/>
 									</Form.Item>
-									<Form.Item label={t("role2")} name="role_2_id">
-										<Input value={roleTwoName} style={{fontSize:15, width: 200, display: "inline"}}/><PlusOutlined style={{fontSize:20, marginLeft: 10}} onClick={
-											()=>{
-												setSelInx(2)
-												setShowHot(true)
-										}}/>
+									<Form.Item label={t("role2")}>
+										<>
+											<Input value={roleTwoName} style={{fontSize:15, width: 200, display: "inline"}}/>
+											<PlusOutlined style={{fontSize:20, marginLeft: 10}} onClick={
+												()=>{
+													setSelInx(2)
+													setShowHot(true)
+												}}/>
+										</>
 									</Form.Item>
 									<Form.Item label={t("role2_portrait")} name="role_2_dec"
 									           rules={[{required: true, message: t('must')}]}>

@@ -53,7 +53,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	const handleAudioStream = (stream: MediaStream) => {
 		const options = {mimeType: 'audio/webm;codecs=pcm'};
 		const mediaRecorder = new MediaRecorder(stream, options);
-		const socketRecorder = new WebSocketManager(Streaming_Server + "/up2", process_recorder_message);
+		const socketRecorder = new WebSocketManager(Streaming_Server + "/recorder", process_recorder_message);
 
 		setWsSocketRecorder(socketRecorder)
 		setRecorder(mediaRecorder)

@@ -337,8 +337,8 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 						<Col span={24} style={{height: "100%"}}>
 							<iframe style={{height: "100%", width: "100%"}} title="Let's Dance to Si Tinh by Mai Idol 💃🌟"
 							        frameBorder="0" allowFullScreen
-							        allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking
-							        execution-while-out-of-viewport execution-while-not-rendered web-share
+							        allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking="true"
+							        execution-while-out-of-viewport="true" execution-while-not-rendered="true" web-share="true"
 							        src="https://sketchfab.com/models/84dc99fcc7c44f80b904d14fb0b05ec9/embed"></iframe>
 							{/*<Image src={roleOnePortrait} fill={true} alt={"role1"}/>*/}
 						</Col>
