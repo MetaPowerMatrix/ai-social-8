@@ -24,9 +24,9 @@
 .live_chat_message {
     z-index: 3;
     position: absolute;
-    background-color: rgba(106, 120, 121, 0.3);
+    background-color: rgba(106, 120, 121, 0.6);
     padding: 10px;
-    width: 70%;
-    height: 50%;
+    width: 60%;
+    height: 40%;
     top: 50%;
 }

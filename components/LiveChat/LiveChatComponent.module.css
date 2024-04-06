@@ -11,7 +11,6 @@
 .live_chat_content {
     position: absolute;
     background-color: rgba(0,0,0,0.8);
-    padding: 20px;
     width: 80%;
     height: 80%;
     top: 50%;
@@ -39,14 +38,9 @@
 .live_chat_message {
     z-index: 3;
     position: absolute;
-    background-color: rgba(106, 120, 121, 0.3);
-    padding: 20px;
-    width: 78%;
-    height: 40%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow:
-            6px 6px 10px rgba(106, 120, 121, 0.5),
-            -6px -6px 10px rgba(106, 120, 121, 0.5);
+    background-color: rgba(106, 120, 121, 0.8);
+    padding: 10px;
+    width: 35%;
+    height: 30%;
+    top: 70%;
 }

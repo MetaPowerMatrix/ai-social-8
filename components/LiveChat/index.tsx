@@ -1,10 +1,23 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from "@/components/LiveChat/LiveChatComponent.module.css";
-import {Button, Col, Divider, Form, GetProp, Input, Row, Upload, UploadFile, UploadProps} from "antd";
+import {
+	Button,
+	Col,
+	Divider,
+	FloatButton,
+	Form,
+	GetProp,
+	Input,
+	Row,
+	Timeline,
+	Upload,
+	UploadFile,
+	UploadProps
+} from "antd";
 import {useTranslations} from "next-intl";
 import {
 	AudioOutlined, CloseOutlined,
-	FormOutlined, LoginOutlined, LogoutOutlined, PauseOutlined,
+	FormOutlined, LoginOutlined, LogoutOutlined, MenuOutlined, PauseOutlined, PoweroffOutlined,
 	UploadOutlined
 } from "@ant-design/icons";
 import {api_url, getApiServer, getMQTTBroker, LiveOpenResponse} from "@/common";
@@ -14,6 +27,13 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import { v4 as uuidv4 } from 'uuid';
 import {SequentialAudioPlayer} from "@/lib/SequentialAudioPlayer";
 import mqtt from "mqtt";
+import {TimeLineItemProps} from "antd/lib/timeline/TimelineItem";
+import * as THREE from "three";
+import {Canvas, useLoader} from "@react-three/fiber";
+// import { ColladaLoader } from 'three/addons/loaders/ColladaLoader.js';
+// import { ColladaLoader } from 'three/addons/loaders/ColladaLoader.js';
+import { USDZLoader } from 'three/examples/jsm/loaders/USDZLoader';
+// import {ColladaLoader} from "three/examples/jsm/loaders/ColladaLoader";
 
 interface LiveChatPros {
 	id: string,
@@ -30,6 +50,28 @@ declare global {
 	}
 }
 
+const ThreedScene = () => {
+	function Model() {
+		const usdz = useLoader(USDZLoader, 'https://xfiles.metapowermatrix.ai/toy-car-test.zip');
+		return (
+			<primitive object={usdz} />
+		);
+	}
+	function Scene() {
+		const ref = useRef<THREE.Group>(null);
+		return (
+			<group ref={ref}>
+				<Model />
+			</group>
+		);
+	}
+	return (
+		<Canvas style={{height:"100%", width:"100%"}}>
+			<Scene />
+		</Canvas>
+	);
+}
+
 const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onClose, onShowProgress}) => {
 	const [form] = Form.useForm();
 	const t = useTranslations('LiveChat');
@@ -38,7 +80,7 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [hideSettings, setHideSettings] = useState<boolean>(true);
 	const [stopped, setStopped] = useState<boolean>(true);
-	const [lyrics, setLyrics] = useState<string[]>([".","."]);
+	const [lyrics, setLyrics] = useState<TimeLineItemProps[]>([]);
 	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/placeholder2.png");
 	const [roleTwoPortrait, setRoleTwoPortrait] = useState<string>("/images/placeholder2.png");
 	const [roleOne, setRoleOne] = useState<string>("");
@@ -48,6 +90,7 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 	const [startPlay, setStartPlay] = useState<boolean>(false);
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const [player, setPlayer] = useState<SequentialAudioPlayer | undefined>(undefined);
+	const [open, setOpen] = useState(true);
 	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
@@ -77,10 +120,11 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 			const onMessage = async (topic: string, message: Buffer) => {
 				console.log("receive ", topic, " ", message.toString())
 				if (topic === topic_text){
+					let newMsg = {children: message.toString()}
 					setLyrics((prev)=>{
 						const newLyrics = [...prev]
 						newLyrics.shift()
-						newLyrics.push(message.toString())
+						newLyrics.push(newMsg)
 						return newLyrics
 					})
 				}else{
@@ -163,7 +207,6 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 			.then((res) => {
 				setLyrics((prev)=>{
 					const newLyrics = [...prev]
-					newLyrics.shift()
 					newLyrics.push(message)
 					return newLyrics
 				})
@@ -293,46 +336,50 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 		},
 		fileList,
 	};
+	const onChange = () => {
+		setOpen(!open);
+	};
 
 	return (
 		<div hidden={!visible}>
 			<div className={styles.live_chat_container}>
 				<div className={styles.live_chat_content}>
-					<Row>
-						<Col span={8}>
-							<CloseOutlined style={{color: "white", fontSize: 20}} onClick={() => close_clean()}/>
-							<Divider type={"vertical"}/>
-							<FormOutlined style={{color: "white", fontSize: 20}} onClick={() => hide_settings()}/>
-							<Divider type={"vertical"}/>
-							{
-								stopped?
-									<AudioOutlined  style={{color: "white", fontSize: 20}} onClick={() => stop_record()}/>
-									:
-									<PauseOutlined style={{color: "white", fontSize: 20}} onClick={() => stop_record()}/>
-							}
-							<Divider type={"vertical"}/>
-							<LogoutOutlined style={{color: "white", fontSize: 20}} onClick={()=>end_session()} />
-							<Divider type={"vertical"}/>
-							<LoginOutlined style={{color: "white", fontSize: 20}} onClick={()=>reload_session()}/>
+					<FloatButton.Group open={open} trigger="click" style={{right: 25, bottom: 40}} onClick={onChange}
+					                   icon={<MenuOutlined/>}>
+						<FloatButton onClick={() => {
+							close_clean()
+						}} icon={<PoweroffOutlined/>}/>
+						<FloatButton onClick={() => {
+							hide_settings()
+						}} icon={<FormOutlined/>}/>
+						<FloatButton onClick={() => {
+							stop_record()
+						}} icon={stopped ? <AudioOutlined/> : <PauseOutlined/>}/>
+						<FloatButton onClick={() => {
+							end_session()
+						}} icon={<LogoutOutlined/>}/>
+						<FloatButton onClick={() => {
+							reload_session()
+						}} icon={<LoginOutlined/>}/>
+					</FloatButton.Group>
+					<Row style={{height:"100%"}} align={"middle"} justify={"space-between"}>
+						<Col span={24} style={{height: "100%"}}>
+								<iframe style={{height: "100%", width: "100%"}} title="Dungeon Dude Running" frameBorder="0" allowFullScreen allow="autoplay; fullscreen; xr-spatial-tracking"
+								        xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
+								        src="https://sketchfab.com/models/47d79f7f634a4afa937b512e800a7409/embed"></iframe>
+							{/*<Image src={roleOnePortrait} fill={true} alt={"role1"}/>*/}
 						</Col>
 					</Row>
-					<Divider type={"horizontal"}/>
-					<Row align={"middle"} justify={"space-between"}>
-						<Col span={12} style={{textAlign: "center", height: 500}}>
-							<Image src={roleOnePortrait} fill={true} alt={"role1"}/>
+					<Row className={styles.live_chat_message}>
+						<Col span={24} style={{height: 100, color: "white", overflow: "scroll"}}>
+							<Timeline
+								style={{color: "white"}}
+								pending="..."
+								reverse={true}
+								items={lyrics}
+							/>
 						</Col>
-						<Col span={11} style={{textAlign: "center", height: 400, color:"white"}}>
-							<AudioOutlined style={{fontSize: 40, marginBottom: 30}} spin={!stopped}/>
-							<h4>{lyrics[0]}</h4>
-							<h4>{lyrics[1]}</h4>
-						</Col>
-						{/*<Col span={8} style={{textAlign: "center", height: 500}}>*/}
-						{/*	<Image fill={true} src={roleTwoPortrait} alt={"role1"}/>*/}
-						{/*</Col>*/}
 					</Row>
-				</div>
-				<div hidden={true} className={styles.live_chat_message}>
-						<Row><span>xxxxxxxxx</span></Row>
 				</div>
 				<div hidden={hideSettings} className={styles.live_chat_settings}>
 					<Row>
@@ -341,17 +388,17 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 								<Form.Item label={t("topic")} name="topic" rules={[{required: true, message: t("must")}]}>
 									<Input/>
 								</Form.Item>
-								<Form.Item label={t("role1")} name="role_1_id" rules={[{required: true, message:  t("must")}]}>
-									<Input onChange={(event)=>{
+								<Form.Item label={t("role1")} name="role_1_id" rules={[{required: true, message: t("must")}]}>
+									<Input onChange={(event) => {
 										let id = event.target.value
 										setRoleOne(id)
 									}}/>
 								</Form.Item>
-								<Form.Item label={t("role1_portrait")} name="role_1_dec" rules={[{required: true, message:  t("must")}]}>
+								<Form.Item label={t("role1_portrait")} name="role_1_dec" rules={[{required: true, message: t("must")}]}>
 									<Input/>
 								</Form.Item>
-								<Form.Item label={t("role2")} name="role_2_id" rules={[{required: true, message:  t("must")}]}>
-									<Input onChange={(event)=>{
+								<Form.Item label={t("role2")} name="role_2_id" rules={[{required: true, message: t("must")}]}>
+									<Input onChange={(event) => {
 										let id = event.target.value
 										setRoleTwo(id)
 									}}/>

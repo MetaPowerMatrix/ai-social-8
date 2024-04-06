@@ -65,7 +65,7 @@ const HotAIComponent: React.FC<HotAIPros>  = ({visible, canSelect, onSelectName,
 										</Col>
 										{
 											canSelect &&
-                        <Col span={2} style={{textAlign: "end"}}><PlusOutlined/></Col>
+                        <Col span={2} style={{textAlign: "end"}}><PlusOutlined onClick={()=> onSelectName(item.name, item.id)}/></Col>
 										}
 									</Row>
 								</List.Item>
