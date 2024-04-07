@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Col, Row} from "antd";
 import styles from "./DiscoveryComponent.module.css";
-import {DownOutlined, RightOutlined} from "@ant-design/icons";
+import {RightOutlined} from "@ant-design/icons";
 import {useTranslations} from "next-intl";
 import SummaryComponent from "@/components/summary";
 import QueryEmbeddingComponent from "@/components/query_embedding";
@@ -38,16 +38,6 @@ const DiscoveryComponent = ({id, onShowProgress, showLiveChat}:{id:string, onSho
 					<h5><RightOutlined/></h5>
 				</Col>
 			</Row>
-			<div className={styles.header_meta}>
-				<Row onClick={() => {}}>
-					<Col className={styles.colorBar} span={12}>
-						<h5>{t("talk")}</h5>
-					</Col>
-					<Col className={styles.colorBarEnd} span={12}>
-						<h5><DownOutlined /></h5>
-					</Col>
-				</Row>
-			</div>
 			<SummaryComponent onClose={()=>setShowSummary(false)} activeId={id} visible={showSummary} onShowProgress={onShowProgress}/>
 			<QueryEmbeddingComponent activeId={id} visible={showQuery} onShowProgress={onShowProgress} onClose={()=>setShowQuery(false)}/>
 		</div>
