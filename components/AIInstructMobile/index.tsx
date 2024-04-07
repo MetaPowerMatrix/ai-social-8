@@ -295,33 +295,41 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 						>
 							{
 								activeTabPro === 'mine' &&
-                  <div style={{height: tabHeight, overflow: "scroll", padding: 15}}>
+                  <div style={{height: tabHeight, overflow: "scroll"}}>
                       <List
                           itemLayout="horizontal"
                           size="small"
+                          split={false}
                           dataSource={authorisedIds}
                           renderItem={(item, index) => (
-														<List.Item
-															key={index}
-															className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
-															defaultValue={item.value}
-															onClick={(e) => {
-																setHideMessages(false)
-																setSelectedIndex(index)
-															}}
-														>
-															<Row align={"middle"} style={{width: "100%"}}>
-																<Col span={22}><h5>{item.label}</h5></Col>
-																<Col span={2} style={{textAlign: "end"}}>
-																	<Button>自动聊</Button>
-																	<Button onClick={() => {
-																		setAccessAssitant(item.value)
-																		stop_record()
-																	}}>发问</Button>
-																</Col>
-															</Row>
-														</List.Item>
-													)}
+					                  <List.Item
+						                  key={index}
+						                  className={styles.small_list_item}
+						                  defaultValue={item.value}
+					                  >
+						                  <Row align={"middle"} style={{width: "100%"}}>
+							                  <Col span={16}><h4>{item.label}</h4></Col>
+							                  {/*<Col span={10}><h5>{item.subjects.join(',')}</h5></Col>*/}
+							                  <Col span={6}>
+								                  <AndroidOutlined style={{marginRight:10,fontSize:18}} onClick={()=>handleAutoChat(item.value)}/>
+								                  {
+									                  stopped ?
+										                  <AudioOutlined style={{marginRight:10,fontSize:18}}  onClick={
+											                  () => {
+												                  setAccessAssitant(item.value)
+												                  stop_record()
+											                  }}/>
+										                  :
+										                  <PauseOutlined style={{marginRight:10,fontSize:18}} onClick={() => stop_record()}/>
+								                  }
+								                  <UnorderedListOutlined style={{fontSize:18}} onClick={()=>{
+									                  getProHistory(id, item.value)
+									                  setHideMessages(false)
+								                  }}/>
+							                  </Col>
+						                  </Row>
+					                  </List.Item>
+				                  )}
                       />
                   </div>
 							}
@@ -336,25 +344,25 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
                           renderItem={(item, index) => (
 														<List.Item
 															key={index}
-															className={selectedIndex != undefined && selectedIndex === index ? styles.active_list_item : styles.small_list_item}
+															className={styles.small_list_item}
 															defaultValue={item.id}
 														>
 															<Row align={"middle"} style={{width: "100%"}}>
-																<Col span={9}><h5>{item.name}</h5></Col>
-																<Col span={10}><h5>{item.subjects.join(',')}</h5></Col>
-																<Col span={5}>
-																	<AndroidOutlined style={{marginRight:6}} onClick={()=>handleAutoChat(item.id)}/>
+																<Col span={9}><h4>{item.name}</h4></Col>
+																<Col span={9}><h5>{item.subjects.join(',')}</h5></Col>
+																<Col span={6}>
+																	<AndroidOutlined style={{marginRight:10,fontSize:18}} onClick={()=>handleAutoChat(item.id)}/>
 																	{
 																		stopped ?
-																			<AudioOutlined style={{marginRight:8}}  onClick={
+																			<AudioOutlined style={{marginRight:10,fontSize:18}}  onClick={
 																				() => {
 																					setAccessAssitant(item.id)
 																					stop_record()
 																				}}/>
 																			:
-																			<PauseOutlined style={{marginRight:8}} onClick={() => stop_record()}/>
+																			<PauseOutlined style={{marginRight:10,fontSize:18}} onClick={() => stop_record()}/>
 																	}
-																	<UnorderedListOutlined onClick={()=>{
+																	<UnorderedListOutlined style={{fontSize:18}} onClick={()=>{
 																		getProHistory(id, item.id)
 																		setHideMessages(false)
 																	}}/>
