@@ -1,25 +1,25 @@
 import React, {useEffect, useState} from 'react';
 import styles from "@/components/AIInstructMobile/AIInstructMobileComponent.module.css";
 import {
-	Button,
+	Button, Card,
 	Col, DatePicker,
 	DatePickerProps, Divider,
-	List, Row, UploadFile,
-	UploadProps
+	List, Row,
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
-	AudioOutlined, CloseOutlined, LeftOutlined,
-	PauseOutlined, RightOutlined
+	AndroidOutlined,
+	AudioOutlined, LeftOutlined, OpenAIOutlined,
+	PauseOutlined, RightOutlined, UnorderedListOutlined
 } from "@ant-design/icons";
-import {api_url, ChatMessage, getApiServer, getMQTTBroker} from "@/common";
+import {api_url, ChatMessage, getApiServer, getMQTTBroker, HotPro, Streaming_Server} from "@/common";
 import Image from "next/image";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import TextArea from "antd/es/input/TextArea";
 import mqtt from "mqtt";
 import SubscriptionsComponent from "@/components/Subscriptions";
-import {getCookie, getTodayDateString} from "@/lib/utils";
+import {getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 
 interface AIInstructPros {
@@ -39,41 +39,201 @@ declare global {
 
 const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgress}) => {
 	const t = useTranslations('AIInstruct');
-	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/two-boy.png");
 	const [activeAgentKey, setActiveAgentKey] = useState<string>("qa");
 	const [openSub, setOpenSub] = useState<boolean>(false);
 	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
-	const [callid, setCallid] = useState<string>("");
 	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [summary, setSummary] = useState<string>("");
 	const [hideMessages, setHideMessages] = useState<boolean>(true);
+	const [question, setQuestion] = useState<string>("");
+	const [stopped, setStopped] = useState<boolean>(true);
+	const [answer, setAnswer] = useState<string>("");
+	const [hotPros, setHotPros] = useState<HotPro[]>([])
+	const [recorder, setRecorder] = useState<MediaRecorder>();
+	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
+	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
+	const [accessAssitant, setAccessAssitant] = useState<string>()
+	const [activeTabPro, setActiveTabPro] = useState<string>('mine');
+	const [tabHeight, setTabHeight] = useState<number>(180)
 	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
-		const cookie2 = getCookie('authorized-ids');
-		if (cookie2 !== "" || cookie2 !== null) {
-			const ids = cookie2.split(',');
-			const idsMap = ids.filter((element)=> {return (element !== '')} )
-				.map((id) => {
+		initAudioStream().then(()=>{})
+		let asInfoStr = localStorage.getItem("assistants")
+		if (asInfoStr !== null) {
+			const asInfo = JSON.parse(asInfoStr)
+			const idsMap = asInfo.ids.map((id: string) => {
+				const id_name = id.split(":")
+				if (id_name.length > 1){
 					return {label: id.split(":")[1], value: id.split(":")[0]};
-				});
-			// console.log(idsMap)
+				}
+			});
 			setAuthorisedIds(idsMap);
 		}
-	},[]);
+
+		// Initialize MQTT client and connect
+		const mqttClient = mqtt.connect(getMQTTBroker());
+		mqttClient.on("connect", () => {
+			console.log("Instruct Connected to MQTT broker");
+		});
+		mqttClient.on("error", (err) => {
+			console.error("Error connecting to MQTT broker:", err);
+		});
+		setClient(mqttClient);
+
+		return () => {
+			mqttClient.end(); // Clean up the connection on component unmount
+		};
+	}, []);
+
+	useEffect(() => {
+		if (client) {
+			const topic_instruct_voice = id+"/instruct/voice";
+			const topic_instruct = id+"/instruct";
+
+			// Handler for incoming messages
+			const onMessage = (topic: string, message: Buffer) => {
+				if (topic === topic_instruct){
+					console.log("receive answer: ", message.toString())
+					setAnswer(message.toString())
+				}else{
+					console.log("receive audio: ", message.toString())
+					playAudioWithWebAudioApi(message.toString())
+				}
+			};
+
+			// Subscribe to the topic
+			client.subscribe([topic_instruct,topic_instruct_voice], (err) => {
+				if (!err) {
+					console.log("Subscribed to topic: ", [topic_instruct,topic_instruct_voice]);
+					client.on('message', onMessage);
+				}
+			});
+			// Return a cleanup function to unsubscribe and remove the message handler
+			return () => {
+				if (client) {
+					client.unsubscribe([topic_instruct,topic_instruct_voice]);
+					client.removeListener('message', onMessage);
+				}
+			};
+		}
+	}, [client]); // Re-run this effect if the `client` state changes
+
+	useEffect(()=>{
+		command.getProHots().then((resp)=>{
+			setHotPros(resp)
+		})
+	},[])
+	// Function to initialize audio recording and streaming
+	const initAudioStream = async () => {
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+			handleAudioStream(stream);
+		} catch (error) {
+			console.error('Error accessing the microphone:', error);
+		}
+	};
+
+	const process_ws_message = (event: any) => {
+		console.log(event.data.toString())
+		setQuestion(event.data.toString())
+		console.log("assist {}", accessAssitant)
+		if (accessAssitant === undefined){
+			handleVoiceCommand(event.data.toString(), id)
+		}else{
+			handleVoiceCommand(event.data.toString(), accessAssitant)
+		}
+	}
+
+	let chunks: BlobPart[] = [];
+	const handleAudioStream = (stream: MediaStream) => {
+		const options = {mimeType: 'audio/webm;codecs=pcm'};
+		const mediaRecorder = new MediaRecorder(stream, options);
+		const socket = new WebSocketManager(Streaming_Server + "/up", process_ws_message);
+
+		setWsSocket(socket)
+		setRecorder(mediaRecorder)
+
+		mediaRecorder.ondataavailable = (event) => {
+			console.log(event)
+			if (event.data.size > 0) {
+				chunks.push(event.data);
+				// socket.send(event.data);
+			}
+		};
+		mediaRecorder.onstop = () => {
+			socket.send(new Blob(chunks, { 'type' : 'audio/webm' }));
+			console.log("send")
+			chunks = [];
+		};
+		// mediaRecorder.start(2000); // Start recording, and emit data every 5s
+	};
+
+	const stop_record = () => {
+		if (stopped){
+			recorder?.start()
+			setStopped(false)
+		}else{
+			recorder?.stop()
+			setStopped(true)
+		}
+	}
+
+	const handleVoiceCommand = (topic: string, pro: string) => {
+		const data = {id: id, message: topic, pro: pro};
+		let url = getApiServer(80) + api_url.portal.interaction.instruct
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json;charset=utf-8'
+			},
+			body: JSON.stringify(data)
+		})
+			.then(response => response.json())
+			.then(data => {
+				if (data.code === "200") {
+					// let answer = data.content
+					// setAnswer(answer)
+					// setRoleOnePortrait(openInfo.role_1_portarit)
+					// alert('等待助手执行任务');
+				}else{
+					alert(t('assist_fail'));
+				}
+				onShowProgress(false);
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+				alert(t('assist_fail'));
+				onShowProgress(false);
+			});
+	};
+
+	async function playAudioWithWebAudioApi(url: string): Promise<void> {
+		try {
+			const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+			const response = await fetch(url);
+			const arrayBuffer = await response.arrayBuffer();
+			const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+			const source = audioContext.createBufferSource();
+			source.buffer = audioBuffer;
+			source.connect(audioContext.destination);
+			source.start();
+
+		} catch (error) {
+			console.error('Error playing audio with Web Audio API:', error);
+		}
+	}
 
 	const callPato = (id: string, callid: string) => {
 		command.callPato(id, callid).then((res) => {
 			alert(t("waitingCall"))
 		})
 	}
-	useEffect(()=> {
-		if (id !== '' && callid !== '')
-		{
-			command.getProHistoryMessages(id, callid, queryDate).then((response) => {
+	const getProHistory = (id: string, callid: string) => {
+		command.getProHistoryMessages(id, callid, queryDate).then((response) => {
 				let messages: ChatMessage[] = []
 				if (response !== null) {
 					let session_messages = response
@@ -88,9 +248,8 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 					setSummary(summary)
 					setChatMessages(messages)
 				}
-			})
-		}
-	},[id, callid, queryDate])
+		})
+	}
 
 	const onChange: DatePickerProps['onChange'] = (_, dateString) => {
 		changeQueryDate(dateString as string)
@@ -101,60 +260,118 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 		setQueryDate(datestring);
 	}
 
-	const handleAutoChat = () => {
+	const handleAutoChat = (callid: string) => {
 		if (callid === ""){
 			alert(t(t("requireId")))
+		}else{
+			callPato(id, callid)
 		}
-		callPato(id, callid)
 	};
 
-	const props: UploadProps = {
-		onRemove: (file) => {
-			const index = fileList.indexOf(file);
-			const newFileList = fileList.slice();
-			newFileList.splice(index, 1);
-			setFileList(newFileList);
+	const pro_tabs = [
+		{
+			key: 'mine',
+			label: t('mine'),
 		},
-		beforeUpload: (file) => {
-			setFileList([...fileList, file]);
-			return false;
-		},
-		fileList,
+		{
+			key: 'system',
+			label: t('system'),
+		}
+	];
+	const onProTabChange = (key: string) => {
+		setActiveTabPro(key);
 	};
-
 	return (
 			<div className={styles.voice_instruct_container}>
 				<div className={styles.voice_instruct_content}>
-					<h4 style={{textAlign:"center"}}>{t('pro')}</h4>
+					<h4 style={{textAlign:"center"}}>{t('title')}</h4>
 					<div hidden={!hideMessages}>
-						<div style={{overflow: "scroll", padding: 15}}>
-							<List
-								itemLayout="horizontal"
-								size="small"
-								dataSource={authorisedIds}
-								renderItem={(item, index) => (
-									<List.Item
-										key={index}
-										className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
-										defaultValue={item.value}
-										onClick={(e) => {
-											setHideMessages(false)
-											setSelectedIndex(index)
-											setCallid(item.value)
-										}}
-									>
-										<Row align={"middle"} style={{width: "100%"}}>
-											<Col span={22}><h5>{item.label}</h5></Col>
-											<Col span={2} style={{textAlign: "end"}}><RightOutlined/></Col>
-										</Row>
-									</List.Item>
-								)}
-							/>
-							<Row style={{padding: 10}}>
+						<Card
+							style={{ width: '100%', marginBottom:15 }}
+							tabList={pro_tabs}
+							activeTabKey={activeTabPro}
+							onTabChange={onProTabChange}
+							tabProps={{ size: 'small'}}
+						>
+							{
+								activeTabPro === 'mine' &&
+                  <div style={{height: tabHeight, overflow: "scroll", padding: 15}}>
+                      <List
+                          itemLayout="horizontal"
+                          size="small"
+                          dataSource={authorisedIds}
+                          renderItem={(item, index) => (
+														<List.Item
+															key={index}
+															className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
+															defaultValue={item.value}
+															onClick={(e) => {
+																setHideMessages(false)
+																setSelectedIndex(index)
+															}}
+														>
+															<Row align={"middle"} style={{width: "100%"}}>
+																<Col span={22}><h5>{item.label}</h5></Col>
+																<Col span={2} style={{textAlign: "end"}}>
+																	<Button>自动聊</Button>
+																	<Button onClick={() => {
+																		setAccessAssitant(item.value)
+																		stop_record()
+																	}}>发问</Button>
+																</Col>
+															</Row>
+														</List.Item>
+													)}
+                      />
+                  </div>
+							}
+							{
+								activeTabPro === 'system' &&
+                  <div style={{height: tabHeight, overflow: "scroll"}}>
+                      <List
+                          itemLayout="horizontal"
+                          size="small"
+                          split={false}
+                          dataSource={hotPros}
+                          renderItem={(item, index) => (
+														<List.Item
+															key={index}
+															className={selectedIndex != undefined && selectedIndex === index ? styles.active_list_item : styles.small_list_item}
+															defaultValue={item.id}
+														>
+															<Row align={"middle"} style={{width: "100%"}}>
+																<Col span={9}><h5>{item.name}</h5></Col>
+																<Col span={10}><h5>{item.subjects.join(',')}</h5></Col>
+																<Col span={5}>
+																	<AndroidOutlined style={{marginRight:6}} onClick={()=>handleAutoChat(item.id)}/>
+																	{
+																		stopped ?
+																			<AudioOutlined style={{marginRight:8}}  onClick={
+																				() => {
+																					setAccessAssitant(item.id)
+																					stop_record()
+																				}}/>
+																			:
+																			<PauseOutlined style={{marginRight:8}} onClick={() => stop_record()}/>
+																	}
+																	<UnorderedListOutlined onClick={()=>{
+																		getProHistory(id, item.id)
+																		setHideMessages(false)
+																	}}/>
+																</Col>
+															</Row>
+														</List.Item>
+													)}
+                      />
+                  </div>
+							}
+						</Card>
+						<div>
+							<Row align={"middle"} justify={"space-between"}>
 								<Col span={24}>
-									<Button style={{width: "100%", marginTop: 20}} type={"primary"}
-									        onClick={handleAutoChat}>{t('automatic_comm')}</Button>
+									<TextArea placeholder={t('command')} value={question} rows={1}/>
 								</Col>
+								<TextArea placeholder={"回复"} style={{marginTop: 10}} value={answer} rows={11}/>
 							</Row>
 						</div>
 					</div>

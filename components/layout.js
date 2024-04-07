@@ -30,7 +30,6 @@ export default function Layout({ children, title, description, onChangeId, onRef
     const [openCode, setOpenCode] = useState(false);
     const [openLive, setOpenLive] = useState(false);
     const [openInstruct, setOpenInstruct] = useState(false);
-    const [openCall, setOpenCall] = useState(false);
     const [openDeposit, setOpenDeposit] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);

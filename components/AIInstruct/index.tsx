@@ -22,9 +22,8 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import TextArea from "antd/es/input/TextArea";
 import mqtt from "mqtt";
 import SubscriptionsComponent from "@/components/Subscriptions";
-import {formatDateTimeString, getCookie, getTodayDateString} from "@/lib/utils";
+import {formatDateTimeString, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
-import ms from "ms";
 
 interface AIInstructPros {
 	id: string,
@@ -125,15 +124,15 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 	}, [visible])
 
 	useEffect(() => {
-		const cookie2 = getCookie('authorized-ids');
-		if (cookie2 !== "" || cookie2 !== null) {
-			const ids = cookie2.split(',');
-			const idsMap = ids.filter((element)=> {return (element !== '')} )
-				.map((id) => {
-					// console.log(id)
+		let asInfoStr = localStorage.getItem("assistants")
+		if (asInfoStr !== null) {
+			const asInfo = JSON.parse(asInfoStr)
+			const idsMap = asInfo.ids.map((id: string) => {
+				const id_name = id.split(":")
+				if (id_name.length > 1){
 					return {label: id.split(":")[1], value: id.split(":")[0]};
+				}
 			});
-			// console.log(idsMap)
 			setAuthorisedIds(idsMap);
 		}
 	},[]);

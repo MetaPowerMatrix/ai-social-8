@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import {useTranslations} from "next-intl";
 import styles from "./AuthorizeComponent.module.css"
 import commandDataContainer from "@/container/command";
-import {getCookie} from "@/lib/utils";
 import {Button, Col, Row} from "antd";
 
 interface AuthorizeComponentProps {
@@ -42,8 +41,16 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 	},[jumpUrl])
 
 	const handleAccept = (values: any) => {
-		let ids = getCookie('authorized-ids');
-		document.cookie = `authorized-ids=${ids},${id}:${name}`;
+		let asInfoStr = localStorage.getItem("assistants")
+		if (asInfoStr === null){
+			const asInfo ={ids: [`${id}:${name}`]}
+			localStorage.setItem("local_patos", JSON.stringify(asInfo))
+		}else{
+			const asInfo = JSON.parse(asInfoStr)
+			asInfo.ids.push(`${id}:${name}`)
+			const newAsInfo = {ids: asInfo.ids}
+			localStorage.setItem("assistants", JSON.stringify(newAsInfo))
+		}
 		alert(t('acceptOK'))
 		setJumpUrl('https://social.metapowermatrix.ai/mobile?to=instruct')
 	};

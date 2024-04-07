@@ -25,6 +25,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	const [isUploadRecord, setIsUploadRecord] = useState(true);
 	const [sigs, setSig] = useState<string[]>([]);
 	const [showShared, setShowShared] = useState<boolean>(false)
+	const [sharedSig, setSharedSig] = useState<string>('')
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('AIInstruct');
 
@@ -92,7 +93,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 		if (fileList.length > 0){
 			formData.append('file', fileList[0] as FileType);
 		}
-		formData.append('message', JSON.stringify({ id: activeId, link: knowledge, transcript: transcriptFile}));
+		formData.append('message', JSON.stringify({ id: activeId, link: knowledge, transcript: transcriptFile, shared: sharedSig}));
 
 		onShowProgress(true);
 		let url = getApiServer(80) + api_url.portal.task.knowledge_embedding
@@ -196,7 +197,10 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 						<TextArea value={summarys.join('\n')} rows={18}/>
 				</Row>
 			</div>
-			<SharedKnowledges visible={showShared} canSelect={true} onSelectName={()=>{}} onClose={()=>setShowShared(false)}/>
+			<SharedKnowledges visible={showShared} canSelect={true} onSelectName={(title, sig)=>{
+				setSharedSig(sig)
+				setShowShared(false)
+			}} onClose={()=>setShowShared(false)}/>
 		</div>
 	)
 }

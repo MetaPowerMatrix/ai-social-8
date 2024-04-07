@@ -12,7 +12,6 @@ import {
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
-import {getCookie} from "@/lib/utils";
 import ProgressBarComponent from "@/components/ProgressBar";
 import MaskedHighlight from "@/components/MaskedHighlight";
 import Deposit from "@/components/deposit";
@@ -154,7 +153,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
 
     const tabs =[
         {label: t('messages'), key:"chat", icon: <CommentOutlined/>},
-        {label: t('task'), key:"pro", icon: <SolutionOutlined />},
+        {label: t('assistant'), key:"pro", icon: <SolutionOutlined />},
         {label: t("town"), key:"feed", icon: <ShopOutlined />},
         {label: t("discovery"), key:"discovery", icon: <BarsOutlined />},
         {label: t("mine"), key:"mine", icon: <UserOutlined />}

@@ -12,7 +12,8 @@
     "waiting": "等一等，马上会有人来和你聊天了",
     "submit": "发送",
     "taskDaily": "可以提问,可以表达,不许骂人",
-    "taskDailyTips": "比特币的走势接下来会如何呢？"
+    "taskDailyTips": "比特币的走势接下来会如何呢？",
+    "chatTitle": "我的AI在做什么？"
   },
   "Task": {
     "taskDailyTips": "比特币的走势接下来会如何呢？",
@@ -43,8 +44,8 @@
     "Balance": "原力余额",
     "pro": "专业",
     "name_tips": "给你的Pato起一个响亮的名字吧！",
-    "task": "专家",
-    "messages": "消息",
+    "assistant": "专属",
+    "messages": "信息",
     "town": "小镇",
     "discovery": "发现",
     "mine": "我的",
@@ -112,7 +113,7 @@
     "talk": "交谈",
     "search": "搜索",
     "mail": "邮件",
-    "command": "你的问题",
+    "command": "咨询",
     "paper": "论文",
     "payment": "支付&投资",
     "summary": "学习",
@@ -121,7 +122,10 @@
     "Upload": "上传文章",
     "record": "录制内容",
     "do_summary": "发送",
-    "query": "检索"
+    "query": "检索",
+    "title": "专属顾问,顾得上就问",
+    "mine": "我的专属",
+    "system": "系统推荐"
   },
   "discovery": {
     "topicTips": "和小镇的居民聊些什么呢？"

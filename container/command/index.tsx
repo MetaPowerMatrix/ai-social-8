@@ -2,7 +2,7 @@ import {createContainer} from "unstated-next"
 import {
   api_url,
   ChatMessage,
-  getApiServer,
+  getApiServer, HotPro,
   PatoInfo,
   Persona,
   PortalHotAi,
@@ -48,6 +48,20 @@ const useCommand = () => {
     }catch (e) {
       console.log(e)
     }
+  }
+  const getProHots = async () => {
+    let url = getApiServer(80) + api_url.portal.message.hotpros
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        let pros: HotPro[] = JSON.parse(dataJson.content)
+        return pros
+      }
+    }catch (e) {
+      console.log(e)
+    }
+    return []
   }
   const getPatoInfo = async (id: string) => {
     if (id === "") return null
@@ -468,7 +482,8 @@ const useCommand = () => {
   return { login, create_pato, getPatoInfo, pray, create_today_event, getPatoHistoryMessages, getPatoISS, callPato,
     deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat,
     getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken, edit_session_messages, continue_session_chat,
-    goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge
+    goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge,
+    getProHots
   }
 }
 

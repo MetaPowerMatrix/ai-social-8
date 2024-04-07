@@ -14,11 +14,11 @@ import {
   Tag,
   notification
 } from "antd";
-import {CloseOutlined, DeleteOutlined, FormOutlined, RedoOutlined, UploadOutlined} from "@ant-design/icons";
+import {DeleteOutlined, RedoOutlined, UploadOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, getMQTTBroker, SessionMessages} from "@/common";
 import {useTranslations} from 'next-intl';
-import {formatDateTimeString, getCookie, getTodayDateString} from "@/lib/utils";
+import {formatDateTimeString, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 import mqtt from "mqtt";
 

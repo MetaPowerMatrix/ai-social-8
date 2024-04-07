@@ -11,6 +11,17 @@
     height: 100%;
     overflow: scroll;
 }
-.list_item {
+.active_list_item {
+    height: 30px;
+    line-height: 30px;
+    padding: 5px;
     background-color: lightblue;
+}
+.small_list_item {
+    height: 36px;
+    line-height: 36px;
+    padding: 0px 0px;
+}
+.small_h5{
+    padding: 0px 0px;
 }
