@@ -4,7 +4,7 @@ export class WebSocketManager {
 	private ws: WebSocket | null = null;
 	private url: string;
 	private reconnectInterval: number = 5000; // Reconnect every 5 seconds, if needed
-	private heartbeatInterval: number = 10000; // Send heartbeat every 30 seconds
+	private heartbeatInterval: number = 3000; // Send heartbeat every 30 seconds
 	private heartbeatMsg: string = 'ping'; // Heartbeat message content
 	private heartbeatTimer: any = null;
 	private callback: (event: any) => void;

@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import styles from "./SharedKnowledgesComponentComponent.module.css";
 import {
-	Col, List, Row
+	Col, List, Popover, Row
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
-	LeftOutlined,
+	LeftOutlined, OrderedListOutlined,
 	PlusOutlined
 } from "@ant-design/icons";
 import {PortalKnowledge} from "@/common";
@@ -32,7 +32,15 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({visible, canSelect, on
 			})
 		}
 	},[visible])
+	const [open, setOpen] = useState(false);
 
+	const hide = () => {
+		setOpen(false);
+	};
+
+	const handleOpenChange = (newOpen: boolean) => {
+		setOpen(newOpen);
+	};
 	return (
 		<div hidden={!visible} className={styles.sharedKnowledges_container_mobile}>
 			{
@@ -50,19 +58,23 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({visible, canSelect, on
 							renderItem={(item, index) => (
 								<List.Item
 									key={index}
-									className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
 									defaultValue={item.sig}
-									onClick={(e) => {
-										setSelectedIndex(index)
-										onSelectName(item.title, item.sig)
-									}}
 								>
 									<Row align={"middle"} style={{width:"100%"}}>
-										<Col span={22}><h5>{item.title}</h5></Col>
+										<Col span={18}><h5 style={{overflow:"scroll"}}>{item.title}</h5></Col>
 										{
 											canSelect &&
-                        <Col span={2} style={{textAlign: "end"}}><PlusOutlined/></Col>
+                        <Col span={2} style={{textAlign: "end",marginLeft:10}}>
+		                        <PlusOutlined onClick={()=>{
+			                        onSelectName(item.title, item.sig)
+		                        }}/>
+												</Col>
 										}
+										<Col span={2} style={{textAlign: "end"}}>
+												<OrderedListOutlined onClick={()=>{
+													alert(item.summary)
+												}}/>
+										</Col>
 									</Row>
 								</List.Item>
 							)}

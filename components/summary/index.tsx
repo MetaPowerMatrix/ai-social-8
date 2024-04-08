@@ -198,6 +198,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 				</Row>
 			</div>
 			<SharedKnowledges visible={showShared} canSelect={true} onSelectName={(title, sig)=>{
+				// alert(title)
 				setSharedSig(sig)
 				setShowShared(false)
 			}} onClose={()=>setShowShared(false)}/>

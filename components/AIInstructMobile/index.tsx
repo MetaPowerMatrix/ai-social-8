@@ -136,9 +136,9 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 
 	const process_ws_message = (event: any) => {
 		console.log(event.data.toString())
-		setQuestion(event.data.toString())
-		console.log("assist {}", accessAssitant)
+		console.log("assist: ", accessAssitant)
 		if (event.data.toString() !== 'pong'){
+			setQuestion(event.data.toString())
 			if (accessAssitant === undefined){
 				handleVoiceCommand(event.data.toString(), id)
 			}else{
@@ -151,7 +151,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 		let options = {mimeType: 'audio/webm;codecs=pcm'};
 		let OS = getOS()
 		if (OS === 'iphone'|| OS === 'macosx'){
-			options = {mimeType: 'audio/mp4; codecs=mp4a'}
+			options = {mimeType: 'audio/mp4;codecs=mp4a'}
 		}
 		const mediaRecorder = new MediaRecorder(stream, options);
 		const socket = new WebSocketManager(Streaming_Server + "/up", process_ws_message);

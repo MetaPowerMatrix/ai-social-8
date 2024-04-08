@@ -28,6 +28,7 @@ export interface PortalKnowledge{
   sig: string,
   title: string,
   owner: string,
+  summary: string,
 }
 
 export interface LiveOpenResponse {
