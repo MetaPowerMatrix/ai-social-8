@@ -44,7 +44,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 		let asInfoStr = localStorage.getItem("assistants")
 		if (asInfoStr === null){
 			const asInfo ={ids: [`${id}:${name}`]}
-			localStorage.setItem("local_patos", JSON.stringify(asInfo))
+			localStorage.setItem("assistants", JSON.stringify(asInfo))
 		}else{
 			const asInfo = JSON.parse(asInfoStr)
 			asInfo.ids.push(`${id}:${name}`)
@@ -62,7 +62,6 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 					<Col span={24} style={{textAlign: "center"}}>
 						<div><h5>{name}{t("tipsAuthorize")}</h5></div>
 						<Button onClick={handleAccept}>{t('accept')}</Button>
-						<a href="https://social.metapowermatrix.ai/mobile?to=instruct">{t('go_talk')}</a>
 					</Col>
 				</Row>
 			</div>
