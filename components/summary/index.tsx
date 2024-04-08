@@ -13,6 +13,7 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import SharedKnowledges from "@/components/SharedKnowledges";
+import {getOS} from "@/lib/utils";
 
 const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
 	const [transcriptFile, setTranscriptFile] = useState<string>("");
@@ -52,7 +53,11 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 
 	let chunks: BlobPart[] = [];
 	const handleAudioStream = (stream: MediaStream) => {
-		const options = {mimeType: 'audio/webm;codecs=pcm'};
+		let options = {mimeType: 'audio/webm;codecs=pcm'};
+		let OS = getOS()
+		if (OS === 'iphone'|| OS === 'macosx'){
+			options = {mimeType: 'audio/mp4;codecs=mp4a'}
+		}
 		const mediaRecorder = new MediaRecorder(stream, options);
 		const socketRecorder = new WebSocketManager(Streaming_Server + "/recorder", process_recorder_message);
 
@@ -80,7 +85,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 
 	const stop_record = () => {
 		if (stopped){
-			recorder?.start()
+			recorder?.start(1000)
 			setStopped(false)
 		}else{
 			recorder?.stop()

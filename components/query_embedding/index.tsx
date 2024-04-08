@@ -11,6 +11,7 @@ import {Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
+import {getOS} from "@/lib/utils";
 
 const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{activeId:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
 	const [query, setQuery] = useState<string>("");
@@ -58,7 +59,11 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 
 	let chunks: BlobPart[] = [];
 	const handleAudioStream = (stream: MediaStream) => {
-		const options = {mimeType: 'audio/webm;codecs=pcm'};
+		let options = {mimeType: 'audio/webm;codecs=pcm'};
+		let OS = getOS()
+		if (OS === 'iphone'|| OS === 'macosx'){
+			options = {mimeType: 'audio/mp4;codecs=mp4a'}
+		}
 		const mediaRecorder = new MediaRecorder(stream, options);
 		const socket = new WebSocketManager(Streaming_Server + "/up", process_ws_message);
 
@@ -87,7 +92,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 	}
 	const stop_record = () => {
 		if (stopped){
-			recorder?.start()
+			recorder?.start(1000)
 			setStopped(false)
 		}else{
 			recorder?.stop()

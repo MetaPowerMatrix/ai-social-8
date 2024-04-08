@@ -30,6 +30,7 @@ import {SequentialAudioPlayer} from "@/lib/SequentialAudioPlayer";
 import mqtt from "mqtt";
 import {TimeLineItemProps} from "antd/lib/timeline/TimelineItem";
 import HotAI from "@/components/HotAI";
+import {getOS} from "@/lib/utils";
 
 interface LiveChatPros {
 	id: string,
@@ -207,7 +208,11 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 
 	let chunks: BlobPart[] = [];
 	const handleAudioStream = (stream: MediaStream) => {
-		const options = {mimeType: 'audio/webm;codecs=pcm'};
+		let options = {mimeType: 'audio/webm;codecs=pcm'};
+		let OS = getOS()
+		if (OS === 'iphone'|| OS === 'macosx'){
+			options = {mimeType: 'audio/mp4;codecs=mp4a'}
+		}
 		const mediaRecorder = new MediaRecorder(stream, options);
 		// const socket = new WebSocket(serverUrl + "/up");
 		const socket = new WebSocketManager(serverUrl + "/up", process_ws_message);
@@ -232,7 +237,7 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 
 	const stop_record = () => {
 		if (stopped){
-			recorder?.start()
+			recorder?.start(1000)
 			setStopped(false)
 		}else{
 			recorder?.stop()
