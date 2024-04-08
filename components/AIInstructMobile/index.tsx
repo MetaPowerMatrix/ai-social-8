@@ -290,6 +290,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 					<h4 style={{textAlign:"center"}}>{t('title')}</h4>
 					<div hidden={!hideMessages}>
 						<Card
+							bodyStyle={{padding: "0"}}
 							style={{ width: '100%', marginBottom:15 }}
 							tabList={pro_tabs}
 							activeTabKey={activeTabPro}
