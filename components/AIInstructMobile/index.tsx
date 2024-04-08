@@ -176,7 +176,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 
 	const stop_record = () => {
 		if (stopped){
-			recorder?.start()
+			recorder?.start(1000)
 			setStopped(false)
 		}else{
 			recorder?.stop()
