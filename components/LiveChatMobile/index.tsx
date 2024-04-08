@@ -196,14 +196,16 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 	const process_ws_message = (event: any) => {
 		console.log('Received message:', event.data);
 		let message = event.data.toString()
-		command.continue_live_chat(id, [roleOneId, roleTwoId], message, session)
-			.then((res) => {
-				setLyrics((prev)=>{
-					const newLyrics = [...prev]
-					newLyrics.push(message)
-					return newLyrics
+		if (message !== 'pong') {
+			command.continue_live_chat(id, [roleOneId, roleTwoId], message, session)
+				.then((res) => {
+					setLyrics((prev) => {
+						const newLyrics = [...prev]
+						newLyrics.push(message)
+						return newLyrics
+					})
 				})
-			})
+		}
 	}
 
 	let chunks: BlobPart[] = [];

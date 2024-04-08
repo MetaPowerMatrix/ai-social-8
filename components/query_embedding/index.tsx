@@ -54,7 +54,9 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 
 	const process_ws_message = (event: any) => {
 		console.log(event.data.toString())
-		setQuery(event.data.toString())
+		if (event.data.toString() !== 'pong') {
+			setQuery(event.data.toString())
+		}
 	}
 
 	let chunks: BlobPart[] = [];

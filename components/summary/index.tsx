@@ -48,7 +48,9 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 
 	const process_recorder_message = (event: any) => {
 		console.log(event.data.toString())
-		setTranscriptFile(event.data.toString())
+		if (event.data.toString() !== 'pong') {
+			setTranscriptFile(event.data.toString())
+		}
 	}
 
 	let chunks: BlobPart[] = [];
