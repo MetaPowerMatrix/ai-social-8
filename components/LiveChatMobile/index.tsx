@@ -80,10 +80,10 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 		// Initialize MQTT client and connect
 		const mqttClient = mqtt.connect(getMQTTBroker());
 		mqttClient.on("connect", () => {
-			console.log("Instruct Connected to MQTT broker");
+			console.log("LiveChat Connected to MQTT broker");
 		});
 		mqttClient.on("error", (err) => {
-			console.error("Error connecting to MQTT broker:", err);
+			// console.error("Error connecting to MQTT broker:", err);
 		});
 		setClient(mqttClient);
 

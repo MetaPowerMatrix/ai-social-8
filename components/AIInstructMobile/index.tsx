@@ -13,13 +13,12 @@ import {
 	PauseOutlined, RightOutlined, UnorderedListOutlined
 } from "@ant-design/icons";
 import {api_url, ChatMessage, getApiServer, getMQTTBroker, HotPro, Streaming_Server} from "@/common";
-import Image from "next/image";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import TextArea from "antd/es/input/TextArea";
 import mqtt from "mqtt";
 import SubscriptionsComponent from "@/components/Subscriptions";
-import {getTodayDateString} from "@/lib/utils";
+import {getOS, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 
 interface AIInstructPros {
@@ -39,10 +38,8 @@ declare global {
 
 const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgress}) => {
 	const t = useTranslations('AIInstruct');
-	const [activeAgentKey, setActiveAgentKey] = useState<string>("qa");
 	const [openSub, setOpenSub] = useState<boolean>(false);
 	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
-	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [summary, setSummary] = useState<string>("");
@@ -56,8 +53,9 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const [accessAssitant, setAccessAssitant] = useState<string>()
 	const [activeTabPro, setActiveTabPro] = useState<string>('mine');
-	const [tabHeight, setTabHeight] = useState<number>(180)
+	const tabHeight: number = 180
 	const command = commandDataContainer.useContainer()
+	let chunks: BlobPart[] = [];
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
@@ -79,7 +77,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 			console.log("Instruct Connected to MQTT broker");
 		});
 		mqttClient.on("error", (err) => {
-			console.error("Error connecting to MQTT broker:", err);
+			// console.error("Error connecting to MQTT broker:", err);
 		});
 		setClient(mqttClient);
 
@@ -140,16 +138,21 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 		console.log(event.data.toString())
 		setQuestion(event.data.toString())
 		console.log("assist {}", accessAssitant)
-		if (accessAssitant === undefined){
-			handleVoiceCommand(event.data.toString(), id)
-		}else{
-			handleVoiceCommand(event.data.toString(), accessAssitant)
+		if (event.data.toString() !== 'pong'){
+			if (accessAssitant === undefined){
+				handleVoiceCommand(event.data.toString(), id)
+			}else{
+				handleVoiceCommand(event.data.toString(), accessAssitant)
+			}
 		}
 	}
 
-	let chunks: BlobPart[] = [];
 	const handleAudioStream = (stream: MediaStream) => {
-		const options = {mimeType: 'audio/webm;codecs=pcm'};
+		let options = {mimeType: 'audio/webm;codecs=pcm'};
+		let OS = getOS()
+		if (OS === 'iphone'|| OS === 'macosx'){
+			options = {mimeType: 'audio/mp4; codecs=mp4a'}
+		}
 		const mediaRecorder = new MediaRecorder(stream, options);
 		const socket = new WebSocketManager(Streaming_Server + "/up", process_ws_message);
 
@@ -413,15 +416,6 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 							)}
 						/>
 					</div>
-					{activeAgentKey !== "qa" &&
-              <Row align={"middle"} justify={"space-between"} style={{marginTop: 20}}>
-                  <Col span={7}/>
-                  <Col span={10} style={{textAlign: "center", height: 360}}>
-                      <Image onClick={() => setOpenSub(true)} src={"/images/lock.png"} fill={true} alt={"lock"}/>
-                  </Col>
-                  <Col span={7}/>
-              </Row>
-					}
 					<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub}
 					                        onShowProgress={onShowProgress}/>
 				</div>
