@@ -116,7 +116,8 @@ export const api_url = {
         'continue': '/api/pato/continue/chat',
         "shared": '/api/knowledge/shared',
         "hot": '/api/town/hots',
-        "hotpros": '/api/pro/hots'
+        "hotpros": '/api/pro/hots',
+        "hot_topics": '/api/town/hot/topics'
       },
       'auth':{
         'gen': '/api/pato/pro/auth/gen',

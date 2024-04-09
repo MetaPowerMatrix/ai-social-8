@@ -9,7 +9,6 @@ import {
 	LeftOutlined,
 	PlusOutlined
 } from "@ant-design/icons";
-import {PortalHotAi} from "@/common";
 import commandDataContainer from "@/container/command";
 import TextArea from "antd/es/input/TextArea";
 
@@ -24,15 +23,15 @@ interface HotAIPros {
 const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect, onSelectName, onClose}) => {
 	const t = useTranslations('discovery');
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
-	const [HotAis, setHotAis] = useState<PortalHotAi[]>([])
+	const [hotTopics, setHotTopics] = useState<string[]>([])
 	const [townTopic, setTownTopic] = useState('');
 	const command = commandDataContainer.useContainer()
 
 	useEffect(()=> {
 		if (visible)
 		{
-			command.getTownHots().then((response) => {
-				setHotAis(response)
+			command.getTopicHots().then((response) => {
+				setHotTopics(response)
 			})
 		}
 	},[visible])
@@ -84,20 +83,20 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect,
 						<List
 							itemLayout="horizontal"
 							size="small"
-							dataSource={HotAis}
+							dataSource={hotTopics}
 							renderItem={(item, index) => (
 								<List.Item
 									key={index}
-									defaultValue={item.id}
+									defaultValue={item}
 								>
 									<Row align={"middle"} style={{width:"100%"}}>
-										<Col span={10}><h5>{item.name}</h5></Col>
+										<Col span={10}><h5>{item}</h5></Col>
 										<Col span={12}>
-											<h5>讨论次数: {item.talks}</h5>
+											<h5>讨论次数: {10}</h5>
 										</Col>
 										{
 											canSelect &&
-                        <Col span={2} style={{textAlign: "end"}}><PlusOutlined onClick={()=> addHotTopic(item.name, item.id)}/></Col>
+                        <Col span={2} style={{textAlign: "end"}}><PlusOutlined onClick={()=> addHotTopic(item, item)}/></Col>
 										}
 									</Row>
 								</List.Item>

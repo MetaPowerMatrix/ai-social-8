@@ -63,6 +63,20 @@ const useCommand = () => {
     }
     return []
   }
+  const getTopicHots = async () => {
+    let url = getApiServer(80) + api_url.portal.message.hot_topics
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        let topics: string[] = JSON.parse(dataJson.content)
+        return topics
+      }
+    }catch (e) {
+      console.log(e)
+    }
+    return []
+  }
   const getPatoInfo = async (id: string) => {
     if (id === "") return null
     let url = getApiServer(80) + api_url.portal.pato + "/" + id
@@ -501,7 +515,7 @@ const useCommand = () => {
     deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat,
     getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken, edit_session_messages, continue_session_chat,
     goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge,
-    getProHots, add_shared_knowledge
+    getProHots, add_shared_knowledge, getTopicHots
   }
 }
 
