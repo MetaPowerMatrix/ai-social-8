@@ -377,7 +377,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 														>
 															<Row align={"middle"} style={{width: "100%"}}>
 																<Col span={9}><h4>{item.name}</h4></Col>
-																<Col span={9}><h5 style={{overflow:"scroll"}}>{item.subjects.join(',')}</h5></Col>
+																<Col span={9}><h5 style={{overflow:"hidden"}}>{item.subjects.join(',').substring(0,18)}</h5></Col>
 																<Col span={6}>
 																	<AndroidOutlined style={{marginLeft:10,fontSize:18}} onClick={()=>{
 																		confirm({
