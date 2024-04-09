@@ -146,7 +146,7 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
             </div>
         </>
 			}
-			<SharedKnowledges visible={showShared} canSelect={true} onSelectName={(title, sig)=>{
+			<SharedKnowledges activeId={id} visible={showShared} canSelect={true} onSelectName={(title, sig)=>{
 				// alert(title)
 				setSharedSig(sig)
 				setShowShared(false)
