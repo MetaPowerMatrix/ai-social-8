@@ -127,6 +127,7 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 	            {activeTown === 'study' &&
                   <Tabs
                       centered
+                      tabBarGutter={100}
                       size={"middle"}
                       type={"line"}
                       animated={true}

@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import styles from './ModalLogin.module.css';
-import {Flex, Select} from "antd";
+import {Flex, Modal, Select} from "antd";
 import commandDataContainer from "../../container/command";
+import {ExclamationCircleFilled} from "@ant-design/icons";
+import {useTranslations} from "next-intl";
 
 function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
 	const [username, setUsername] = useState('');
 	const [userid, setUserid] = useState('');
 	const command = commandDataContainer.useContainer()
+	const t = useTranslations('Login');
+	const {confirm} = Modal;
 
 	const handleLogin = (event) => {
 		event.preventDefault();
@@ -32,7 +36,15 @@ function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
 				const newlocalInfo = {ids: localInfo.ids, active_id: `${userid}`}
 				localStorage.setItem("local_patos", JSON.stringify(newlocalInfo))
 			}
-			onClose(userid)
+			confirm({
+				icon: <ExclamationCircleFilled />,
+				content: t('login_tips'),
+				okText: t('confirm'),
+				cancelText: t('cancel'),
+				onOk() {
+					onClose(userid)
+				}
+			})
 		}
 	};
 	const userIdChange = (event) => {

@@ -59,7 +59,8 @@
     "discovery": "发现",
     "mine": "我的",
     "live": "AI直播",
-    "stake": "质押量"
+    "stake": "质押量",
+    "login_tips": "你已经加入了AI原力小镇，稍后你就能看到你的AI和小镇居民的聊天记录了！"
   },
   "ISSForm": {
     "id": "ID",

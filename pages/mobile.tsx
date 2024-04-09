@@ -443,6 +443,7 @@ export default function Home() {
 				<Tabs
 					centered
 					size={"middle"}
+					tabBarGutter={100}
 					type={"line"}
 					animated={true}
 					tabPosition="top"
