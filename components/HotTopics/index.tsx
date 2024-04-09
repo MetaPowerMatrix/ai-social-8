@@ -49,6 +49,13 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect,
 			})
 		})
 	};
+	const addHotTopic= async (topic:string, subject:string) => {
+		command.create_today_event(activeId, topic).then((response) => {
+			Modal.success({
+				content: t('waiting')
+			})
+		})
+	};
 	const topicInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		event.preventDefault();
 		setTownTopic(event.target.value)
@@ -81,12 +88,7 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect,
 							renderItem={(item, index) => (
 								<List.Item
 									key={index}
-									className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
 									defaultValue={item.id}
-									onClick={(e) => {
-										setSelectedIndex(index)
-										onSelectName(item.name, item.id)
-									}}
 								>
 									<Row align={"middle"} style={{width:"100%"}}>
 										<Col span={10}><h5>{item.name}</h5></Col>
@@ -95,7 +97,7 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect,
 										</Col>
 										{
 											canSelect &&
-                        <Col span={2} style={{textAlign: "end"}}><PlusOutlined onClick={()=> onSelectName(item.name, item.id)}/></Col>
+                        <Col span={2} style={{textAlign: "end"}}><PlusOutlined onClick={()=> addHotTopic(item.name, item.id)}/></Col>
 										}
 									</Row>
 								</List.Item>

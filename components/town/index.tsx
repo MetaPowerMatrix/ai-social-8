@@ -152,7 +152,7 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 				setShowShared(false)
 			}} onClose={()=>setShowShared(false)}/>
 			<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>
-			<HotTopics activeId={id} onClose={()=>setShowTopics(false)} visible={showTopics} canSelect={false} onSelectName={()=>{}}/>
+			<HotTopics activeId={id} onClose={()=>setShowTopics(false)} visible={showTopics} canSelect={true} onSelectName={()=>{}}/>
 		</div>
 	)
 }
