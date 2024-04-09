@@ -1,4 +1,4 @@
-import {Button, Col, Divider, Row, Timeline} from "antd";
+import {Button, Col, Modal, Row, Timeline} from "antd";
 import React, {useState} from "react";
 import {TimeLineItem} from "@/common";
 import styles from './UserFeedMobile.module.css'
@@ -6,6 +6,7 @@ import TextArea from "antd/es/input/TextArea";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import HotAI from "@/components/HotAI";
+import {ExclamationCircleFilled} from "@ant-design/icons";
 
 const towns =[
 	{label: '音乐小镇', value: 'music'},
@@ -20,9 +21,13 @@ const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineIt
 	const [showHot, setShowHot] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('discovery');
+	const {confirm} = Modal;
 
 	const townChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		event.preventDefault()
+		Modal.info({
+			content: t('select_town_tips')
+		})
 		setTown(event.target.value)
 	}
 	const topicInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -31,9 +36,20 @@ const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineIt
 	}
 
 	const handleJoin = () => {
-		command.goTown(id, town, townTopic).then((res) => {
-			alert("加入成功")
+		confirm({
+			icon: <ExclamationCircleFilled />,
+			content: t('join_tips'),
+			okText: t('confirm'),
+			cancelText: t('cancel'),
+			onOk() {
+				command.goTown(id, town, townTopic).then((res) => {
+					Modal.success({
+						content: t("join_ok"),
+					});
+				})
+			}
 		})
+
 	}
 
 	return (
@@ -62,7 +78,12 @@ const UserFeedMobile = ({id, userFeed, mobile}:{id: string, userFeed: TimeLineIt
 	              <Button onClick={handleJoin} style={{marginTop:10,width:"90%"}} size={"small"} type={"primary"}>加入</Button>
 	          </Col>
               <Col span={4}>
-                  <Button onClick={()=>setShowHot(true)} style={{marginTop:10}} size={"small"}>小镇社牛</Button>
+                  <Button onClick={()=>{
+	                  Modal.info({
+		                  content: t('sheniu_tips'),
+		                  onOk() { setShowHot(true) },
+	                  });
+                  }} style={{marginTop:10}} size={"small"}>小镇社牛</Button>
               </Col>
           </Row>
         </>

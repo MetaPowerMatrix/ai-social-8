@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, Divider, Input, List, Row} from "antd";
+import {Button, Col, Divider, Input, List, Modal, Row} from "antd";
 import styles from "./QueryEmbeddingComponent.module.css";
 import {
-	AudioOutlined,
+	AudioOutlined, ExclamationCircleFilled,
 	LeftOutlined,
 	PauseOutlined, RightOutlined, ShareAltOutlined
 } from "@ant-design/icons";
@@ -24,6 +24,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 	const [currentSig, setCurrentSig] = useState<string>("");
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const t = useTranslations('AIInstruct');
+	const {confirm} = Modal;
 
 	useEffect(() => {
 			initAudioStream().then(()=>{})
@@ -88,8 +89,18 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 	};
 
 	const shareKnowledge = (sig: string, title:string) => {
-		command.share_knowledge(activeId, sig, title).then(() => {
-			alert("分享成功")
+		confirm({
+			icon: <ExclamationCircleFilled />,
+			content: t('share_tips'),
+			okText: t('confirm'),
+			cancelText: t('cancel'),
+			onOk() {
+				command.share_knowledge(activeId, sig, title).then(() => {
+					Modal.success({
+						content: t('share_ok')
+					})
+				})
+			}
 		})
 	}
 	const stop_record = () => {
@@ -147,7 +158,17 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 					<Col span={2}>
 						{
 							stopped ?
-								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => {
+									confirm({
+										icon: <ExclamationCircleFilled />,
+										content: t('startAsk'),
+										okText: t('confirm'),
+										cancelText: t('cancel'),
+										onOk() {
+											stop_record()
+										}
+									})
+								}}/>
 								:
 								<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
 						}
@@ -157,7 +178,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 					</Col>
 					<Col span={3}>
 						<Button type={"primary"} style={{marginLeft: 5}}
-						        onClick={() => handleQueryEmbeddings(currentSig, query)}>发送</Button>
+						        onClick={() => handleQueryEmbeddings(currentSig, query)}>{t('ask')}</Button>
 					</Col>
 				</Row>
 				<Row>

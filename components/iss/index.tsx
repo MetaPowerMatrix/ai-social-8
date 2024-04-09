@@ -61,6 +61,7 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 			<div className={mobile ? styles.iss_form_content_mobile : styles.iss_form_content}>
 				<Row>
 					<Col span={24}>
+						<div style={{marginBottom: 10}}>{t("tips")}</div>
 						<Form
 							variant="filled"
 							form={form} onFinish={handleSubmit}
@@ -116,8 +117,6 @@ const ISSForm: React.FC<ISSFormProps> = ({visible, id, onClose, userISS, mobile}
 							>
 								<Input.TextArea/>
 							</Form.Item>
-							<div style={{marginBottom: 10}}>{t("tips")}</div>
-
 							<Form.Item>
 								<Button type="primary" htmlType="submit">
 									{t("Submit")}

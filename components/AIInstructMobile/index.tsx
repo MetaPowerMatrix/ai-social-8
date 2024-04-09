@@ -4,12 +4,12 @@ import {
 	Button, Card,
 	Col, DatePicker,
 	DatePickerProps, Divider,
-	List, Row,
+	List, Row, Modal
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
 	AndroidOutlined,
-	AudioOutlined, LeftOutlined, OpenAIOutlined,
+	AudioOutlined, ExclamationCircleFilled, LeftOutlined, OpenAIOutlined,
 	PauseOutlined, RightOutlined, UnorderedListOutlined
 } from "@ant-design/icons";
 import {api_url, ChatMessage, getApiServer, getMQTTBroker, HotPro, Streaming_Server} from "@/common";
@@ -56,6 +56,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 	const tabHeight: number = 180
 	const command = commandDataContainer.useContainer()
 	let chunks: BlobPart[] = [];
+	const {confirm} = Modal;
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
@@ -232,7 +233,9 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 
 	const callPato = (id: string, callid: string) => {
 		command.callPato(id, callid).then((res) => {
-			alert(t("waitingCall"))
+			Modal.success({
+				content: t("waitingCall"),
+			});
 		})
 	}
 	const getProHistory = (id: string, callid: string) => {
@@ -265,7 +268,9 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 
 	const handleAutoChat = (callid: string) => {
 		if (callid === ""){
-			alert(t(t("requireId")))
+			Modal.warning({
+				content: t("requireId"),
+			});
 		}else{
 			callPato(id, callid)
 		}
@@ -315,20 +320,42 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 							                  <Col span={16}><h4>{item.label}</h4></Col>
 							                  {/*<Col span={10}><h5>{item.subjects.join(',')}</h5></Col>*/}
 							                  <Col span={6}>
-								                  <AndroidOutlined style={{marginRight:10,fontSize:18}} onClick={()=>handleAutoChat(item.value)}/>
+								                  <AndroidOutlined style={{marginRight:10,fontSize:18}} onClick={()=> {
+																		confirm({
+																			icon: <ExclamationCircleFilled />,
+																			content: t('startTalkWithPro'),
+																			okText: t('confirm'),
+																			cancelText: t('cancel'),
+																			onOk() {
+																				handleAutoChat(item.value)
+																			}
+																		})
+																	}}/>
 								                  {
 									                  stopped ?
-										                  <AudioOutlined style={{marginRight:10,fontSize:18}}  onClick={
-											                  () => {
-												                  setAccessAssitant(item.value)
-												                  stop_record()
-											                  }}/>
+										                  <AudioOutlined style={{marginRight:10,fontSize:18}}  onClick={()=>{
+											                  confirm({
+												                  icon: <ExclamationCircleFilled />,
+												                  content: t('startAskPro'),
+												                  okText: t('confirm'),
+												                  cancelText: t('cancel'),
+												                  onOk() {
+													                  setAccessAssitant(item.value)
+													                  stop_record()
+												                  }
+											                  })
+																			}}/>
 										                  :
 										                  <PauseOutlined style={{marginRight:10,fontSize:18}} onClick={() => stop_record()}/>
 								                  }
 								                  <UnorderedListOutlined style={{fontSize:18}} onClick={()=>{
-									                  getProHistory(id, item.value)
-									                  setHideMessages(false)
+									                  Modal.info({
+										                  content: t('show_pro_messages'),
+										                  onOk() {
+											                  getProHistory(id, item.value)
+											                  setHideMessages(false)
+										                  },
+									                  });
 								                  }}/>
 							                  </Col>
 						                  </Row>
@@ -353,22 +380,46 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 														>
 															<Row align={"middle"} style={{width: "100%"}}>
 																<Col span={9}><h4>{item.name}</h4></Col>
-																<Col span={9}><h5>{item.subjects.join(',')}</h5></Col>
+																<Col span={9}><h5 style={{overflow:"scroll"}}>{item.subjects.join(',')}</h5></Col>
 																<Col span={6}>
-																	<AndroidOutlined style={{marginRight:10,fontSize:18}} onClick={()=>handleAutoChat(item.id)}/>
+																	<AndroidOutlined style={{marginLeft:10,fontSize:18}} onClick={()=>{
+																		confirm({
+																			icon: <ExclamationCircleFilled />,
+																			content: t('startTalkWithPro'),
+																			okText: t('confirm'),
+																			cancelText: t('cancel'),
+																			onOk() {
+																				handleAutoChat(item.id)
+																			}
+																		})
+																	}}/>
 																	{
 																		stopped ?
-																			<AudioOutlined style={{marginRight:10,fontSize:18}}  onClick={
-																				() => {
-																					setAccessAssitant(item.id)
-																					stop_record()
-																				}}/>
+																			<AudioOutlined style={{marginLeft:10,fontSize:18}}  onClick={()=> {
+																				confirm({
+																					icon: <ExclamationCircleFilled />,
+																					content: t('startAskPro'),
+																					okText: t('confirm'),
+																					cancelText: t('cancel'),
+																					onOk() {
+																						setAccessAssitant(item.id)
+																						stop_record()
+																					}
+																				})
+																			}}/>
 																			:
-																			<PauseOutlined style={{marginRight:10,fontSize:18}} onClick={() => stop_record()}/>
+																			<PauseOutlined style={{marginLeft:10,fontSize:18}} onClick={
+																				() => stop_record()
+																			}/>
 																	}
-																	<UnorderedListOutlined style={{fontSize:18}} onClick={()=>{
-																		getProHistory(id, item.id)
-																		setHideMessages(false)
+																	<UnorderedListOutlined style={{marginLeft:10,fontSize:18}} onClick={()=>{
+																		Modal.info({
+																			content: t('show_pro_messages'),
+																			onOk() {
+																				getProHistory(id, item.id)
+																				setHideMessages(false)
+																			},
+																		});
 																	}}/>
 																</Col>
 															</Row>

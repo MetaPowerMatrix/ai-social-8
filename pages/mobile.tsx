@@ -7,12 +7,19 @@ import {
 	DatePickerProps,
 	Divider,
 	Input,
-	List, notification,
+	List, Modal, notification,
 	Row,
 	Tag,
 	Tooltip
 } from "antd";
-import {DeleteOutlined, LeftOutlined, RedoOutlined, RightOutlined, UploadOutlined} from "@ant-design/icons";
+import {
+	DeleteOutlined,
+	ExclamationCircleFilled,
+	LeftOutlined,
+	RedoOutlined,
+	RightOutlined,
+	UploadOutlined
+} from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, getMQTTBroker, SessionList} from "@/common";
 import {useTranslations} from 'next-intl';
@@ -51,9 +58,10 @@ const MessageHeader = ({onChangeDate, onClickReload, queryDate}:{
 interface EditableListItemProps {
 	initialValue: ChatMessage;
 	onSave: (value: ChatMessage) => void;
+	t: any
 }
 
-const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSave }) => {
+const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSave, t }) => {
 	const [editing, setEditing] = useState(false);
 	const [value, setValue] = useState(initialValue);
 
@@ -93,8 +101,8 @@ const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSav
 			<List.Item>
 				<div>{initialValue.sender}: <input style={{width:"100%"}} autoFocus={true} value={value.question} onChange={handleChangeQuestion} /></div>
 				<div>{initialValue.receiver}: <input style={{width:"100%"}} autoFocus={true} value={value.answer} onChange={handleChangeAnswer} /></div>
-				<button style={{marginTop:10, marginRight: 10}} onClick={handleSave}>Save</button>
-				<button onClick={handleCancel}>Cancel</button>
+				<button style={{marginTop:10, marginRight: 10}} onClick={handleSave}>{t('confirm')}</button>
+				<button onClick={handleCancel}>{t('cancel')}</button>
 			</List.Item>
 		);
 	}
@@ -139,6 +147,7 @@ export default function Home() {
 	const [currentSession, setCurrentSession] = useState<string>("")
 	const [hideDetail, setHideDetail] = useState<boolean>(true)
 	const [summary, setSummary] = useState<string>("")
+	const {confirm} = Modal;
 
 	const t = useTranslations('Index');
 
@@ -330,7 +339,17 @@ export default function Home() {
 							<List.Item
 								key={item.session}
 								actions={[
-									<DeleteOutlined key={"delete"} onClick={() => archiveSession(item.session)}/>,
+									<DeleteOutlined key={"delete"} onClick={() => {
+										confirm({
+											icon: <ExclamationCircleFilled />,
+											content: t('delete_confirm'),
+											okText: t('confirm'),
+											cancelText: t('cancel'),
+											onOk() {
+												archiveSession(item.session)
+											}
+										})
+									}}/>,
 									<RightOutlined key={"detail"} onClick={() => showSessionDetail(item.session)}/>
 								]}
 							>
@@ -356,10 +375,30 @@ export default function Home() {
 				{ isMySeesion &&
             <Row justify="space-between">
                 <Col span={8}>
-                    <Button onClick={handleEditMessages}>保存修改</Button>
+                    <Button onClick={() =>
+	                    confirm({
+		                    icon: <ExclamationCircleFilled />,
+		                    content: t('save_tips'),
+		                    okText: t('confirm'),
+		                    cancelText: t('cancel'),
+		                    onOk() {
+			                    handleEditMessages()
+		                    }
+	                    })
+										}>{t('save')}</Button>
                 </Col>
                 <Col span={8}>
-                    <Button onClick={() => handleContinueChat(true)}>继续聊天</Button>
+                    <Button onClick={() =>
+	                    confirm({
+		                    icon: <ExclamationCircleFilled />,
+		                    content: t('continue_tips'),
+		                    okText: t('confirm'),
+		                    cancelText: t('cancel'),
+		                    onOk() {
+			                    handleContinueChat(true)
+		                    }
+	                    })
+										}>{t('continue')}</Button>
                 </Col>
             </Row>
 				}
@@ -371,7 +410,7 @@ export default function Home() {
 					dataSource={chatMessages}
 					renderItem={(item, index) => {
 						if (isMySeesion) {
-							return <EditableListItem initialValue={item} onSave={(value) => handleSave(index, value)}/>
+							return <EditableListItem t={t} initialValue={item} onSave={(value) => handleSave(index, value)}/>
 						} else {
 							return (
 								<List.Item

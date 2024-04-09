@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import styles from "./SharedKnowledgesComponentComponent.module.css";
 import {
-	Col, List, Popover, Row
+	Col, List, Modal, Row
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
+	ExclamationCircleFilled,
 	LeftOutlined, OrderedListOutlined,
 	PlusOutlined
 } from "@ant-design/icons";
@@ -23,6 +24,7 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({visible, canSelect, on
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const [knowledges, setKnowledges] = useState<PortalKnowledge[]>([])
 	const command = commandDataContainer.useContainer()
+	const {confirm} = Modal;
 
 	useEffect(()=> {
 		if (visible)
@@ -66,13 +68,24 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({visible, canSelect, on
 											canSelect &&
                         <Col span={2} style={{textAlign: "end",marginLeft:10}}>
 		                        <PlusOutlined onClick={()=>{
-			                        onSelectName(item.title, item.sig)
+			                        confirm({
+				                        icon: <ExclamationCircleFilled />,
+				                        content: t('addSharedKnowledge'),
+				                        okText: t('confirm'),
+				                        cancelText: t('cancel'),
+				                        onOk() {
+					                        onSelectName(item.title, item.sig)
+				                        }
+			                        })
 		                        }}/>
 												</Col>
 										}
 										<Col span={2} style={{textAlign: "end"}}>
 												<OrderedListOutlined onClick={()=>{
-													alert(item.summary)
+													Modal.info({
+														title: t('digest'),
+														content: item.summary,
+													})
 												}}/>
 										</Col>
 									</Row>

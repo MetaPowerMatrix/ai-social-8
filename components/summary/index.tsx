@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, Divider, GetProp, Input, Row, Upload, UploadFile, UploadProps} from "antd";
+import {Button, Col, Modal, GetProp, Input, Row, Upload, UploadFile, UploadProps} from "antd";
 import styles from "./SummaryComponent.module.css";
 import {
-	AudioOutlined,
+	AudioOutlined, CheckOutlined, ExclamationCircleFilled,
 	LeftOutlined,
 	PauseOutlined, ShareAltOutlined,
 	UploadOutlined
@@ -27,8 +27,11 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	const [sigs, setSig] = useState<string[]>([]);
 	const [showShared, setShowShared] = useState<boolean>(false)
 	const [sharedSig, setSharedSig] = useState<string>('')
+	const [uploaded, setUploaded] = useState<boolean>(false)
+	const [addShared, setAddShared] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('AIInstruct');
+	const {confirm} = Modal;
 
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -113,18 +116,24 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 				if (data.code === "200") {
 					let sigs: string[] = JSON.parse(data.content)
 					sigs = sigs.filter((sig) => {return sig !== ''})
-					alert('文档上传成功，等待学习结果!');
+					Modal.success({
+						content: '文档上传成功，等待学习结果!'
+					})
 					setSig(sigs)
 					console.log(sigs)
 					handleQuerySummary(sigs)
 				}else{
-					alert('文档上传失败.');
+					Modal.warning({
+						content: '文档上传失败.'
+					})
 				}
 				onShowProgress(false);
 			})
 			.catch((error) => {
 				console.error('Error:', error);
-				alert('文档上传失败');
+				Modal.warning({
+					content: '文档上传失败.'
+				})
 				onShowProgress(false);
 			});
 	};
@@ -138,7 +147,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 		},
 		beforeUpload: (file) => {
 			setFileList([...fileList, file]);
-
+			setUploaded(true)
 			return false;
 		},
 		fileList,
@@ -174,21 +183,48 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 					<Col span={2}>
 						{
 							stopped ?
-								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() =>{
+									confirm({
+										icon: <ExclamationCircleFilled />,
+										content: t('startRecordingKnowledge'),
+										okText: t('confirm'),
+										cancelText: t('cancel'),
+										onOk() {
+											stop_record()
+										}
+									})
+								}}/>
 								:
 								<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
 						}
 					</Col>
 					<Col span={3}>
-						<Upload {...props}>
-							<Button icon={<UploadOutlined/>}></Button>
-						</Upload>
+						<>
+							<Button icon={uploaded ? <CheckOutlined /> : <UploadOutlined/>} onClick={(e)=>{
+								Modal.info({
+									content: t('uploadKnowledge'),
+									onOk(){
+										document.getElementById('upload-input')?.click();
+									}
+								})
+							}}></Button>
+							<Upload id="upload-input" maxCount={1} showUploadList={false} {...props}>
+								<Button style={{display: "none"}}  icon={<UploadOutlined/>}></Button>
+							</Upload>
+						</>
 					</Col>
 					<Col span={3}>
-						<Button icon={<ShareAltOutlined/>} onClick={()=>setShowShared(true)}></Button>
+						<Button icon={addShared ? <CheckOutlined /> :<ShareAltOutlined/>} onClick={()=>{
+							Modal.info({
+								content: t('sharedKnowledge'),
+								onOk(){
+									setShowShared(true)
+								}
+							})
+						}}></Button>
 					</Col>
 					<Col span={16}>
-						<Input placeholder={"https://zh.wikipedia.org/wiki/Web3"} value={knowledge} onChange={knowledgeInput}/>
+						<Input placeholder={t('linkKnowledge')} value={knowledge} onChange={knowledgeInput}/>
 					</Col>
 				</Row>
 				<Row align={"middle"} justify="space-between">
@@ -208,6 +244,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 				// alert(title)
 				setSharedSig(sig)
 				setShowShared(false)
+				setAddShared(true)
 			}} onClose={()=>setShowShared(false)}/>
 		</div>
 	)
