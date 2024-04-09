@@ -183,7 +183,9 @@
     "upgrade": "升级",
     "scan": "扫码支付",
     "scan_btn": "扫码支付",
-    "go_talk": "去聊天"
+    "go_talk": "去聊天",
+    "copy": "点击复制链接",
+    "copied": "已复制链接"
   },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"

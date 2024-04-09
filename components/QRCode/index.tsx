@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {useTranslations} from "next-intl";
 import styles from "./QRCodeComponent.module.css"
 import QRCode from 'qrcode.react';
-import {Col, Row} from "antd";
+import {Col, Modal, Row} from "antd";
 import {CloseOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command";
 
@@ -24,6 +24,15 @@ const QRCodeComponent: React.FC<QRCodeProps> = ({visible, id, onClose, mobile}) 
 		})
 	},[visible])
 
+	const copyToClipboard = async (text: string) => {
+		try {
+			await navigator.clipboard.writeText(text);
+			console.log('Text copied to clipboard');
+		} catch (err) {
+			console.error('Failed to copy text to clipboard: ', err);
+		}
+	};
+
 	return (
 		<div hidden={!visible} className={styles.qrcode_container}>
 			<div className={ mobile ? styles.qrcode_content_mobile : styles.qrcode_content}>
@@ -36,6 +45,16 @@ const QRCodeComponent: React.FC<QRCodeProps> = ({visible, id, onClose, mobile}) 
 					<Col span={24} style={{textAlign: "center"}}>
 						<div><h5>{t("tipsQRCode")}</h5></div>
 						<QRCode value={"https://social.metapowermatrix.ai/authorize?owner=" + token}/>
+						<div><a>
+							<span onClick={() => {
+								copyToClipboard("https://social.metapowermatrix.ai/authorize?owner=" + token)
+								Modal.success({
+									content: (t('copied'))
+								})
+							}}>{t('copy')}
+							</span>
+						</a>
+						</div>
 					</Col>
 				</Row>
 			</div>

@@ -179,7 +179,9 @@
     "sub_fail":  "订阅失败",
     "upgrade": "升级",
     "scan": "扫码支付，备注小镇id或者编号",
-    "scan_btn": "扫码支付"
+    "scan_btn": "扫码支付",
+    "copy": "点击复制链接",
+    "copied": "已复制链接"
   },
   "LocaleSwitcher": {
     "switchLocale": "切换语言 {locale, select, cn {中文} en {English}}"

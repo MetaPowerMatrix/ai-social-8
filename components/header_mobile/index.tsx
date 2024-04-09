@@ -1,4 +1,4 @@
-import {Button, Col, Descriptions, Divider, Flex, Row, Timeline} from "antd";
+import {Button, Col, Descriptions, Divider, Flex, Modal, Row, Timeline} from "antd";
 import Image from "next/image";
 import utilStyles from "@/styles/utils.module.css";
 import {EditOutlined, QrcodeOutlined, RightOutlined} from "@ant-design/icons";
@@ -69,7 +69,9 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 					</h5>
 					<a onClick={() => {
 						copyToClipboard(userInfo?.id ?? '')
-						alert("已复制ID")
+						Modal.success({
+							content: ("已复制ID")
+						})
 					}}>{userInfo?.id === undefined ? '' : userInfo?.id.substring(0, 14) + '...' + userInfo?.id.substring(28, 36)}</a>
 				</Col>
 			</Row>
