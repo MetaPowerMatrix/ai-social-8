@@ -137,6 +137,46 @@ const useCommand = () => {
       // let data = JSON.parse(dataJson.content)
     }
   }
+  const init_topic_chat = async (id: string, topic: string, town: string) => {
+    let data = {id: id, topic: topic, town: town}
+    let url = getApiServer(80) + api_url.portal.task.topic_chat
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      // console.log(dataJson)
+      // let data = JSON.parse(dataJson.content)
+    }
+  }
+  const get_topic_chat_his = async (id: string, topic: string, town: string) => {
+    let data = {id: id, topic: topic, town: town}
+    let url = getApiServer(80) + api_url.portal.message.topic_chat_his
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+      let data: string[] = JSON.parse(dataJson.content)
+      return data
+    }
+    return []
+  }
   const archive_session = async (id: string, session: string, date: string) => {
     let data = {id: id, session: session, date: date}
     let url = getApiServer(80) + api_url.portal.message.archive
@@ -515,7 +555,7 @@ const useCommand = () => {
     deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat,
     getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken, edit_session_messages, continue_session_chat,
     goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge,
-    getProHots, add_shared_knowledge, getTopicHots
+    getProHots, add_shared_knowledge, getTopicHots, init_topic_chat, get_topic_chat_his
   }
 }
 

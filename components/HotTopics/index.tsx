@@ -7,7 +7,7 @@ import {
 import {useTranslations} from "next-intl";
 import {
 	LeftOutlined,
-	PlusOutlined
+	PlusOutlined, SearchOutlined
 } from "@ant-design/icons";
 import commandDataContainer from "@/container/command";
 import TextArea from "antd/es/input/TextArea";
@@ -22,7 +22,6 @@ interface HotAIPros {
 
 const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect, onSelectName, onClose}) => {
 	const t = useTranslations('discovery');
-	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const [hotTopics, setHotTopics] = useState<string[]>([])
 	const [townTopic, setTownTopic] = useState('');
 	const command = commandDataContainer.useContainer()
@@ -91,12 +90,19 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect,
 								>
 									<Row align={"middle"} style={{width:"100%"}}>
 										<Col span={10}><h5>{item}</h5></Col>
-										<Col span={12}>
+										<Col span={8}>
 											<h5>讨论次数: {10}</h5>
 										</Col>
 										{
 											canSelect &&
-                        <Col span={2} style={{textAlign: "end"}}><PlusOutlined onClick={()=> addHotTopic(item, item)}/></Col>
+                        <Col span={2}><PlusOutlined onClick={()=> addHotTopic(item, item)}/></Col>
+										}
+										{
+											canSelect &&
+                        <Col span={2} style={{textAlign: "end"}}><SearchOutlined onClick={()=> {
+													onSelectName(item, item)
+	                        onClose()
+                        }}/></Col>
 										}
 									</Row>
 								</List.Item>

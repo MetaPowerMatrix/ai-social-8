@@ -1,20 +1,19 @@
-import {Button, Col, Modal, Row, Tabs, Timeline} from "antd";
-import React, {useState} from "react";
+import {Button, Col, List, Modal, Row, Tabs, Timeline} from "antd";
+import React, {useEffect, useState} from "react";
 import styles from './UserFeedMobile.module.css'
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import HotAI from "@/components/HotAI";
 import {
-	CheckOutlined,
 	CommentOutlined,
-	ExclamationCircleFilled,
-	RedditOutlined,
-	ShareAltOutlined
+	ExclamationCircleFilled, ExperimentOutlined,
+	RedditOutlined, SearchOutlined,
 } from "@ant-design/icons";
 import SummaryComponent from "@/components/summary";
 import QueryEmbeddingComponent from "@/components/query_embedding";
 import SharedKnowledges from "@/components/SharedKnowledges";
 import HotTopics from "@/components/HotTopics";
+import TextArea from "antd/es/input/TextArea";
 
 const towns =[
 	{label: '学习小镇', value: 'study'},
@@ -30,6 +29,8 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 	const [showTopics, setShowTopics] = useState<boolean>(false)
 	const [sharedSig, setSharedSig] = useState<string>('')
 	const [activeTab, setActivTab] = useState('summary');
+	const [topic, setTopic] = useState<string>('')
+	const [topicChatHis, setTopicChatHis] = useState<string[]>([])
 	const [activeTown, setActivTown] = useState('study');
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('discovery');
@@ -41,6 +42,20 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 			content: t('select_town_tips')
 		})
 		setActivTown(event.target.value)
+	}
+	const onSelectTopic = (name:string, id:string) =>{
+		setTopic(name)
+	}
+	const queryTopicChatHis = () => {
+		if (topic === ''){
+			Modal.warning({
+				content: "请选择一个话题查询!"
+			})
+		}else{
+			command.get_topic_chat_his(id, topic, activeTown).then((res) => {
+				setTopicChatHis(res)
+			})
+		}
 	}
 	const handleJoin = () => {
 		confirm({
@@ -67,12 +82,45 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 				{key === 'query' &&
 					<QueryEmbeddingComponent activeId={id} onShowProgress={onShowProgress} />
 				}
+				{key === 'topic' &&
+					<div>
+						<TextArea style={{marginBottom: 10}} value={topic} rows={4}/>
+							<Row>
+									<Col span={6}>
+                      <Button onClick={()=>setShowTopics(true)}>选择话题</Button>
+									</Col>
+                  <Col span={6}>
+                      <Button onClick={()=>queryTopicChatHis()}>查询</Button>
+                  </Col>
+							</Row>
+            <List
+              itemLayout="vertical"
+              size="small"
+              split={false}
+              dataSource={topicChatHis}
+              renderItem={(item, index) => {
+								return (
+									<List.Item
+										key={index}
+									>
+										<Row>
+											<Col span={24}>
+												<h5>{item}</h5>
+											</Col>
+										</Row>
+									</List.Item>
+								)
+							}}
+            />
+					</div>
+				}
 			</>
 		)
 	}
 	const tabs =[
-		{label: t('summary'), key:"summary", icon: <RedditOutlined />},
-		{label: t('query'), key:"query", icon: <CommentOutlined/>},
+		{label: t('summary'), key:"summary", icon: <ExperimentOutlined />},
+		{label: t('query'), key:"query", icon: <SearchOutlined />},
+		{label: t('topic'), key:"topic", icon: <CommentOutlined/>},
 	]
 	return (
 		<div className={styles.user_feed_container}>
@@ -127,7 +175,7 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 	            {activeTown === 'study' &&
                   <Tabs
                       centered
-                      tabBarGutter={100}
+                      tabBarGutter={80}
                       size={"middle"}
                       type={"line"}
                       animated={true}
@@ -153,7 +201,7 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 				setShowShared(false)
 			}} onClose={()=>setShowShared(false)}/>
 			<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>
-			<HotTopics activeId={id} onClose={()=>setShowTopics(false)} visible={showTopics} canSelect={true} onSelectName={()=>{}}/>
+			<HotTopics activeId={id} onClose={()=>setShowTopics(false)} visible={showTopics} canSelect={true} onSelectName={onSelectTopic}/>
 		</div>
 	)
 }

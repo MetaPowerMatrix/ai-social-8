@@ -117,7 +117,8 @@ export const api_url = {
         "shared": '/api/knowledge/shared',
         "hot": '/api/town/hots',
         "hotpros": '/api/pro/hots',
-        "hot_topics": '/api/town/hot/topics'
+        "hot_topics": '/api/town/hot/topics',
+        "topic_chat_his": '/api/topic/chat/history'
       },
       'auth':{
         'gen': '/api/pato/pro/auth/gen',
@@ -127,6 +128,7 @@ export const api_url = {
         'pray': '/api/pray',
         'upgrade': '/api/pro',
         "event": "/api/event",
+        "topic_chat": '/api/pato/topic/chat',
         "knowledge_query": "/api/knowledge/query",
         "knowledge_summary": "/api/knowledge/summary",
         "knowledge_embedding": "/api/study/knowledge",
