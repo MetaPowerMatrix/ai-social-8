@@ -9,6 +9,7 @@ import {PatoInfo, Persona, StatsInfo, TimeLineItem} from "@/common";
 import TaskPanel from "@/components/taskPanel";
 import styles from './HeaderPanelMobile.module.css'
 import ISSForm from "@/components/iss";
+import SubscriptionsComponent from "@/components/Subscriptions";
 
 const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, showDeposit}:
    {activeId:string,
@@ -20,6 +21,7 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 	const [userInfo, setUserInfo] = useState<PatoInfo>();
 	const command = commandDataContainer.useContainer()
 	const [editISS, setEditISS] = useState(false);
+	const [showSubscription, setShowSubscription] = useState<boolean>(false)
 	const [userISS, setUserISS] = useState<Persona>();
 	const t = useTranslations('Login');
 
@@ -92,6 +94,14 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 					<h5>{userInfo?.balance.toString()}<RightOutlined /></h5>
 				</Col>
 			</Row>
+			<Row className={styles.header_meta} onClick={()=>setShowSubscription(true)}>
+				<Col className={styles.colorBar} span={12}>
+					<h5>{t("stake")}</h5>
+				</Col>
+				<Col  className={styles.colorBarEnd} span={12}>
+					<h5>0 PAB<RightOutlined /></h5>
+				</Col>
+			</Row>
 			<Row className={styles.header_meta}>
 				<Col  className={styles.colorBar} span={12}>
 					<h5>{t("MatrixTime")}</h5>
@@ -131,6 +141,7 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 			</Row>
 			</div>
 			<ISSForm mobile={true} userISS={userISS!} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
+			<SubscriptionsComponent mobile={false} id={activeId} onClose={() => setShowSubscription(false)} visible={showSubscription} onShowProgress={onShowProgress}/>
 		</header>
 	)
 }

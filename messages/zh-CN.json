@@ -57,7 +57,8 @@
     "messages": "AIs",
     "town": "小镇",
     "discovery": "发现",
-    "mine": "我的"
+    "mine": "我的",
+    "stake": "质押量"
   },
   "ISSForm": {
     "id": "ID",

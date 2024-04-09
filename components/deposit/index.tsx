@@ -2,13 +2,12 @@ import React from 'react';
 import {
 	Button, Divider,
 	Form,
-	Input, InputNumber, Row,
+	Input, InputNumber, Modal, Row,
 } from 'antd';
 import {useTranslations} from "next-intl";
 import styles from "./Deposit.module.css"
 import commandDataContainer from "@/container/command";
 import Web3 from 'web3';
-import Image from "next/image";
 import {recipientAddress, tokenAbi, tokenContractAddress} from "@/common";
 import {CloseOutlined, LeftOutlined} from "@ant-design/icons";
 
@@ -29,10 +28,9 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 	const t = useTranslations('ISSForm');
 	const [form] = Form.useForm();
 	const [formDonation] = Form.useForm();
-	const [formDao] = Form.useForm();
 	const command = commandDataContainer.useContainer()
 
-	const transferToken = async (id: string, amount: number) => {
+	const transferToken = async (id: string, amount: number, is_donation: boolean) => {
 		const web3 = new Web3(window.ethereum)
 		const accounts = await web3.eth.getAccounts();
 		const myAddress = accounts[0];
@@ -50,10 +48,12 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 			})
 			.on('receipt', function(receipt){
 				console.log('Transaction was confirmed.');
-				command.stake_metapower(id, amount, true).then((res) => {
+				command.deposit_metapower(id, amount, is_donation).then((res) => {
 					console.log(res)
 				})
-				alert("stake成功")
+				Modal.success({
+					content: "充值成功"
+				})
 			})
 			.on('error', console.error); // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
 	};
@@ -147,7 +147,7 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 	}
 
 	const deposit = (id: string, amount: string, is_donation:boolean) => {
-		sendBNB(id, amount, is_donation).then((res) => {
+		transferToken(id, parseFloat(amount), is_donation).then((res) => {
 			console.log(res)
 		})
 	}
@@ -158,13 +158,6 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 			alert(t("requireAmount"))
 		}
 		deposit(id, values.amount, false)
-	};
-	const handleSubmitDAO = (values: any) => {
-		console.log(values);
-		if (values.DAOAmount === 0 || values.DAOAmount === undefined){
-			alert(t("requireAmount"))
-		}
-		transferToken(id, values.DAOAmount).then(()=>{})
 	};
 	const handleSubmitDonation = (values: any) => {
 		console.log(values);
@@ -213,20 +206,6 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 					<Form.Item>
 						<Button type="primary" htmlType="submit" >
 							{t("donation")}
-						</Button>
-					</Form.Item>
-				</Form>
-				<Divider type={"horizontal"}/>
-				<div>
-					<h5 style={{display: 'inline-block'}}>{t("daoTips")}</h5>
-				</div>
-				<Form layout="inline" form={formDao} variant="filled" onFinish={handleSubmitDAO}>
-					<Form.Item initialValue={100000} label={t("DAOAmount")} name="DAOAmount" rules={[{required: true, message: t('must')}]}>
-						<InputNumber style={{width: 300}} />
-					</Form.Item>
-					<Form.Item>
-						<Button type="primary" htmlType="submit">
-							{t("dao")}
 						</Button>
 					</Form.Item>
 				</Form>

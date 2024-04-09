@@ -58,7 +58,8 @@
     "town": "小镇",
     "discovery": "发现",
     "mine": "我的",
-    "live": "AI直播"
+    "live": "AI直播",
+    "stake": "质押量"
   },
   "ISSForm": {
     "id": "ID",

@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from "@/components/Subscriptions/SubscriptionsComponent.module.css";
-import {Button, Col, Divider, Popover, Row} from "antd";
+import {Button, Col, Divider, Modal, Popover, Row} from "antd";
 import {useTranslations} from "next-intl";
 import {
 	CheckOutlined,
@@ -26,7 +26,6 @@ declare global {
 
 const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onClose, onShowProgress, mobile}) => {
 	const t = useTranslations('others');
-	const command = commandDataContainer.useContainer()
 
 	const transferToken = async (id: string, amount: number, type: string, web3: Web3) => {
 		// const web3 = new Web3(window.ethereum)
@@ -87,18 +86,18 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 
 	const handleSubmitBasic = () => {
 		connectToBsc().then((web3) => {
-			transferToken(id, 100000, 'basic', web3).then(() => {
+			transferToken(id, 200000, 'basic', web3).then(() => {
 			})
 		});
 	};
 	const handleSubmitPlus = () => {
 		connectToBsc().then((web3) => {
-			transferToken(id, 10000000, 'plus', web3).then(()=>{})
+			transferToken(id, 2000000, 'plus', web3).then(()=>{})
 		});
 	};
 	const handleSubmitPro = () => {
 		connectToBsc().then((web3) => {
-			transferToken(id, 1000000000, 'pro', web3).then(()=>{})
+			transferToken(id, 200000000, 'pro', web3).then(()=>{})
 		});
 	};
 
@@ -115,9 +114,13 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 			.then(response => response.json())
 			.then(data => {
 				if (data.code === "200") {
-					alert(t('sub_ok'));
+					Modal.success({
+						content: t('sub_ok')
+					})
 				}else{
-					alert(t('sub_fail'));
+					Modal.warning({
+						content: t('sub_fail')
+					})
 				}
 			})
 			.catch((error) => {
@@ -136,27 +139,34 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 						</Col>
 					</Row>
 					<Divider type={"horizontal"}/>
-          <Row align={"middle"} justify={"space-between"} style={{marginTop:20}}>
-	          <Col span={8} style={{textAlign: "center", height: 300, border: "1px dotted cyan"}}>
+					<div style={{height: 560, overflow:"scroll"}}>
+          <Row align={"middle"} justify={"space-between"} >
+	          <Col span={24} style={{textAlign: "center", marginBottom:10, border: "1px dotted cyan"}}>
 		          <h1>Basic</h1>
-		          <h2>PAB 100000/Month</h2>
+		          <h2>PAB Staking 200,000/12Months</h2>
 		          <Button type={"primary"} onClick={handleSubmitBasic}>{t('upgrade')}</Button>
-		          <h4><CheckOutlined /> 对话100</h4>
-		          <h4><CheckOutlined /> 角色3</h4>
+		          <h4><CheckOutlined /> Force 10,000</h4>
+		          <h4><CheckOutlined /> Earn Force Value</h4>
 	          </Col>
-	          <Col span={8} style={{textAlign: "center", height: 300, border: "1px dotted cyan"}}>
+          </Row>
+					<Row>
+	          <Col span={24} style={{textAlign: "center", marginBottom:10, border: "1px dotted cyan"}}>
 		          <h1>Plus</h1>
-		          <h2>PAB 10000000/Month</h2>
+		          <h2>PAB Staking 2,000,000/12Months</h2>
 		          <Button type={"primary"} onClick={handleSubmitPlus}>{t('upgrade')}</Button>
-		          <h4><CheckOutlined /> 对话1000</h4>
-		          <h4><CheckOutlined /> 角色10</h4>
+		          <h4><CheckOutlined/> Force 120,000</h4>
+		          <h4><CheckOutlined/> create 1 Town</h4>
+		          <h4><CheckOutlined/> Earn Force Value and redeem rewards</h4>
 	          </Col>
-	          <Col span={8} style={{textAlign: "center", height: 300, border: "1px dotted cyan"}}>
+					</Row>
+					<Row>
+	          <Col span={24} style={{textAlign: "center", border: "1px dotted cyan"}}>
 		          <h1>Pro</h1>
-		          <h2>PAB 1000000000/Month</h2>
+		          <h2>PAB Staking 200,000,000/12Months</h2>
 		          <Button type={"primary"} onClick={handleSubmitPro}>{t('upgrade')}</Button>
-		          <h4><CheckOutlined /> 对话10000</h4>
-		          <h4><CheckOutlined /> 角色50</h4>
+		          <h4><CheckOutlined/> Force 1,500,000</h4>
+		          <h4><CheckOutlined/> create 3 Towns</h4>
+		          <h4><CheckOutlined/> Earn Force Value and redeem rewards</h4>
 	          </Col>
           </Row>
 					<Divider type={"horizontal"}/>
@@ -174,6 +184,7 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 							<a target={"_blank"} href={"https://bscscan.com/address/0xd6311f9a6bd3a802263f4cd92e2729bc2c31ed23"}>PAB合约地址</a>
 						</Col>
 					</Row>
+					</div>
 				</div>
 			</div>
 		</div>
