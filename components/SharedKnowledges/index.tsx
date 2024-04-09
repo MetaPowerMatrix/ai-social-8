@@ -13,19 +13,27 @@ import {PortalKnowledge} from "@/common";
 import commandDataContainer from "@/container/command";
 
 interface HotAIPros {
+	activeId: string,
 	visible: boolean,
 	canSelect: boolean,
 	onSelectName: (name: string, id: string)=>void,
 	onClose: ()=>void,
 }
 
-const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({visible, canSelect, onSelectName, onClose}) => {
+const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect, onSelectName, onClose}) => {
 	const t = useTranslations('AIInstruct');
 	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
 	const [knowledges, setKnowledges] = useState<PortalKnowledge[]>([])
 	const command = commandDataContainer.useContainer()
 	const {confirm} = Modal;
 
+	const handleAddSharedKnowledge = (name:string, sig:string) => {
+		command.add_shared_knowledge(activeId, sig, name).then(()=>{
+			Modal.success({
+				content: "添加成功"
+			})
+		})
+	}
 	useEffect(()=> {
 		if (visible)
 		{
@@ -36,13 +44,6 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({visible, canSelect, on
 	},[visible])
 	const [open, setOpen] = useState(false);
 
-	const hide = () => {
-		setOpen(false);
-	};
-
-	const handleOpenChange = (newOpen: boolean) => {
-		setOpen(newOpen);
-	};
 	return (
 		<div hidden={!visible} className={styles.sharedKnowledges_container_mobile}>
 			{
@@ -67,17 +68,7 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({visible, canSelect, on
 										{
 											canSelect &&
                         <Col span={2} style={{textAlign: "end",marginLeft:10}}>
-		                        <PlusOutlined onClick={()=>{
-			                        confirm({
-				                        icon: <ExclamationCircleFilled />,
-				                        content: t('addSharedKnowledge'),
-				                        okText: t('confirm'),
-				                        cancelText: t('cancel'),
-				                        onOk() {
-					                        onSelectName(item.title, item.sig)
-				                        }
-			                        })
-		                        }}/>
+		                        <PlusOutlined onClick={()=> handleAddSharedKnowledge(item.title, item.sig)}/>
 												</Col>
 										}
 										<Col span={2} style={{textAlign: "end"}}>

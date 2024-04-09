@@ -374,6 +374,24 @@ const useCommand = () => {
       console.log(dataJson)
     }
   }
+  const add_shared_knowledge = async (id: string, sig: string, title: String) => {
+    let data = {id: id, sig: sig, title: title, shared: false}
+    let url = getApiServer(80) + api_url.portal.task.knowledge_add
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+    }
+  }
   const getSharedKnowledges = async () => {
     let url = getApiServer(80) + api_url.portal.message.shared
     try {
@@ -483,7 +501,7 @@ const useCommand = () => {
     deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat,
     getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken, edit_session_messages, continue_session_chat,
     goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge,
-    getProHots
+    getProHots, add_shared_knowledge
   }
 }
 

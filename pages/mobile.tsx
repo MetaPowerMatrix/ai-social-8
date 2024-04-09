@@ -6,19 +6,20 @@ import {
 	DatePicker,
 	DatePickerProps,
 	Divider,
-	Input,
 	List, Modal, notification,
-	Row,
-	Tag,
+	Row, Tabs,
+	Tag, Timeline,
 	Tooltip
 } from "antd";
 import {
+	BarsOutlined,
+	CommentOutlined,
 	DeleteOutlined,
 	ExclamationCircleFilled,
-	LeftOutlined,
+	LeftOutlined, RedditOutlined,
 	RedoOutlined,
-	RightOutlined,
-	UploadOutlined
+	RightOutlined, ShopOutlined, SolutionOutlined,
+	UploadOutlined, UserOutlined
 } from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, getMQTTBroker, SessionList} from "@/common";
@@ -147,6 +148,8 @@ export default function Home() {
 	const [currentSession, setCurrentSession] = useState<string>("")
 	const [hideDetail, setHideDetail] = useState<boolean>(true)
 	const [summary, setSummary] = useState<string>("")
+	const [activeTab, setActivTab] = useState('feed');
+	const [userFeed, setUserFeed] = useState([{children:"新的一天开始了"}]);
 	const {confirm} = Modal;
 
 	const t = useTranslations('Index');
@@ -230,30 +233,69 @@ export default function Home() {
 			}
 		})
 	},[activeId, queryDate, reloadTimes])
-	useEffect(() => {
-		if (client && currentSession !== '') {
-			const msg_refresh = activeId+"/refresh";
-			const chat_continue = activeId+"/continue";
 
+	// useEffect(() => {
+	// 	if (client && currentSession !== '') {
+	// 		const msg_refresh = activeId+"/refresh";
+	// 		const chat_continue = activeId+"/continue";
+	//
+	// 		// Handler for incoming messages
+	// 		const onMessage = async (topic: string, message: Buffer) => {
+	// 			console.log("receive ", topic, " ", message.toString())
+	// 			if (topic === msg_refresh){
+	// 				increaseReloadTimes()
+	// 			}else{
+	// 				console.log("set continue session: ", currentSession)
+	// 				if ( currentSession === message.toString()){
+	// 					setContinueTalk(true)
+	// 				}else{
+	// 					setContinueTalk(false)
+	// 				}
+	// 			}
+	// 		};
+	//
+	// 		// Subscribe to the topic
+	// 		client.subscribe([msg_refresh, chat_continue], (err) => {
+	// 			if (!err) {
+	// 				console.log("Messages Subscribed to topic: ", [msg_refresh, chat_continue]);
+	// 				client.on('message', onMessage);
+	// 			}
+	// 		});
+	//
+	// 		// Return a cleanup function to unsubscribe and remove the message handler
+	// 		return () => {
+	// 			if (client) {
+	// 				console.log("Messages unsubscribe from ", [msg_refresh, chat_continue])
+	// 				client.unsubscribe([msg_refresh, chat_continue]);
+	// 				client.removeListener('message', onMessage);
+	// 			}
+	// 		};
+	// 	}
+	// }, [client, currentSession]);
+
+	useEffect(() => {
+		if (client) {
+			const msg_feed = activeId;
 			// Handler for incoming messages
-			const onMessage = async (topic: string, message: Buffer) => {
+			const onMessage = async (topic: string, message: any) => {
 				console.log("receive ", topic, " ", message.toString())
-				if (topic === msg_refresh){
-					increaseReloadTimes()
-				}else{
-					console.log("set continue session: ", currentSession)
-					if ( currentSession === message.toString()){
-						setContinueTalk(true)
-					}else{
-						setContinueTalk(false)
-					}
+				if (topic === msg_feed){
+					let item = {children: message.toString()}
+					setUserFeed((prevFeed)=>{
+						const newFeed = [...prevFeed]
+						if (newFeed.length >= 10){
+							newFeed.shift()
+						}
+						newFeed.push(item)
+						return newFeed
+					})
 				}
 			};
 
 			// Subscribe to the topic
-			client.subscribe([msg_refresh, chat_continue], (err) => {
+			client.subscribe([msg_feed], (err) => {
 				if (!err) {
-					console.log("Messages Subscribed to topic: ", [msg_refresh, chat_continue]);
+					console.log("Feed Subscribed to topic: ", [msg_feed]);
 					client.on('message', onMessage);
 				}
 			});
@@ -261,13 +303,13 @@ export default function Home() {
 			// Return a cleanup function to unsubscribe and remove the message handler
 			return () => {
 				if (client) {
-					console.log("Messages unsubscribe from ", [msg_refresh, chat_continue])
-					client.unsubscribe([msg_refresh, chat_continue]);
+					client.unsubscribe([msg_feed]);
 					client.removeListener('message', onMessage);
 				}
 			};
 		}
-	}, [client, currentSession]);
+	}, [client, activeId]);
+
 
 	const showSessionDetail = (session: string) => {
 		let session_message = sessionList.filter((item) => item.session === session)
@@ -306,7 +348,77 @@ export default function Home() {
 			}
 		})
 	}
+	const tabContent = (key: string) => {
+		return(
+			<>
+				{key === 'messages' &&
+            <div style={{overflow: "scroll", height: 560}}>
+                <List
+                    itemLayout="horizontal"
+                    header={<MessageHeader queryDate={queryDate} onChangeDate={changeQueryDate}
+										                       onClickReload={increaseReloadTimes}/>}
+                    size="small"
+                    dataSource={sessionList}
+                    renderItem={(item) => (
+											<List.Item
+												key={item.session}
+												actions={[
+													<DeleteOutlined key={"delete"} onClick={() => {
+														confirm({
+															icon: <ExclamationCircleFilled/>,
+															content: t('delete_confirm'),
+															okText: t('confirm'),
+															cancelText: t('cancel'),
+															onOk() {
+																archiveSession(item.session)
+															}
+														})
+													}}/>,
+													<RightOutlined key={"detail"} onClick={() => showSessionDetail(item.session)}/>
+												]}
+											>
+												<List.Item.Meta
+													avatar={<Avatar src={"/images/notlogin.png"}/>}
+													title={item.receiver.split('(')[0]}
+													description={<><Tag color="green">{item.place}</Tag><Tag
+														color="green">{item.subject}</Tag>{formatDateTimeString(item.created_at)}</>}
+												/>
+												<Tooltip title={item.summary} color={"cyan"} key={"cyan"}>
+													<h5>{item.summary.substring(0, 8)}</h5>
+												</Tooltip>
+											</List.Item>
+										)}
+                />
+            </div>
+				}
+				{key === 'feed' &&
+            <div style={{overflow: "scroll", height: 560}}>
+                <Row>
+                    <Col span={24}>
+                        <div style={{
+													marginTop: 20,
+													height: 540,
+													overflowY: "auto",
+													padding: 15,
+													border: "1px dotted blue"
+												}}>
+                            <Timeline
+                                mode={"alternate"}
+                                items={userFeed}
+                            />
+                        </div>
+                    </Col>
+                </Row>
+            </div>
+				}
+			</>
+		)
+	}
 
+	const tabs =[
+		{label: t('feed'), key:"feed", icon: <RedditOutlined />},
+		{label: t('messages'), key:"messages", icon: <CommentOutlined/>},
+	]
 	return (
 		<LayoutMobile onRefresh={(name: string) => setActiveName(name)} onChangeId={(newId: string) => setActiveId(newId)}
 		              title={t('title')}
@@ -316,56 +428,35 @@ export default function Home() {
 				<title>{t('title')}</title>
 			</Head>
 			<div hidden={!hideDetail} style={{height: pageHeight, padding: 10}}>
-				<h4 style={{textAlign:"center"}}>{t('chatTitle')}</h4>
-				<div style={{padding: 10}}>
-					<Row align={"middle"}>
-						<Col span={5} style={{textAlign: "start"}}><label>{t('event')}</label></Col>
-						<Col span={15} style={{textAlign: "center"}}>
-							<Input placeholder={t('taskDailyTips')} onChange={(e) => dailyInput(e)}/>
-						</Col>
-						<Col span={4} style={{textAlign: "center"}}>
-							<button onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>
-						</Col>
-					</Row>
-				</div>
-				<div style={{overflow: "scroll", height: 560, padding: 10}}>
-					<List
-						itemLayout="horizontal"
-						header={<MessageHeader queryDate={queryDate} onChangeDate={changeQueryDate}
-						                       onClickReload={increaseReloadTimes}/>}
-						size="small"
-						dataSource={sessionList}
-						renderItem={(item) => (
-							<List.Item
-								key={item.session}
-								actions={[
-									<DeleteOutlined key={"delete"} onClick={() => {
-										confirm({
-											icon: <ExclamationCircleFilled />,
-											content: t('delete_confirm'),
-											okText: t('confirm'),
-											cancelText: t('cancel'),
-											onOk() {
-												archiveSession(item.session)
-											}
-										})
-									}}/>,
-									<RightOutlined key={"detail"} onClick={() => showSessionDetail(item.session)}/>
-								]}
-							>
-								<List.Item.Meta
-									avatar={<Avatar src={"/images/notlogin.png"}/>}
-									title={item.receiver.split('(')[0]}
-									description={<><Tag color="green">{item.place}</Tag><Tag
-										color="green">{item.subject}</Tag>{formatDateTimeString(item.created_at)}</>}
-								/>
-								<Tooltip title={item.summary} color={"cyan"} key={"cyan"}>
-									<h5>{item.summary.substring(0, 8)}</h5>
-								</Tooltip>
-							</List.Item>
-						)}
-					/>
-				</div>
+				{/*<h4 style={{textAlign: "center"}}>{t('chatTitle')}</h4>*/}
+				{/*<div style={{padding: 10}}>*/}
+				{/*	<Row align={"middle"}>*/}
+				{/*		<Col span={5} style={{textAlign: "start"}}><label>{t('event')}</label></Col>*/}
+				{/*		<Col span={15} style={{textAlign: "center"}}>*/}
+				{/*			<Input placeholder={t('taskDailyTips')} onChange={(e) => dailyInput(e)}/>*/}
+				{/*		</Col>*/}
+				{/*		<Col span={4} style={{textAlign: "center"}}>*/}
+				{/*			<button onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>*/}
+				{/*		</Col>*/}
+				{/*	</Row>*/}
+				{/*</div>*/}
+				<Tabs
+					centered
+					size={"middle"}
+					type={"line"}
+					animated={true}
+					tabPosition="top"
+					activeKey={activeTab}
+					onChange={(key) => setActivTab(key)}
+					items={tabs.map((tab, i) => {
+						return {
+							label: tab.label,
+							key: tab.key,
+							children: tabContent(tab.key),
+							icon: tab.icon
+						};
+					})}
+				/>
 			</div>
 			<div hidden={hideDetail} style={{overflow: "scroll", height: pageHeight, padding: 15}}>
 				<Row>
@@ -437,9 +528,7 @@ export default function Home() {
 		;
 }
 
-export async function getStaticProps({
-	                                     locale
-                                     }: {
+export async function getStaticProps({locale}: {
 	locale: string
 }) {
 	return {

@@ -11,7 +11,7 @@ import styles from './HeaderPanelMobile.module.css'
 import ISSForm from "@/components/iss";
 
 const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, showDeposit}:
-   {activeName: string, activeId:string,
+   {activeId:string,
 	   onShowProgress: (s: boolean)=>void, onChangeId: (s: boolean)=>void,
 	   showQRCode: ()=>void,
 	   showDeposit: ()=>void,

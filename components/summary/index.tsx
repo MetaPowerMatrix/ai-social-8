@@ -3,8 +3,7 @@ import {Button, Col, Modal, GetProp, Input, Row, Upload, UploadFile, UploadProps
 import styles from "./SummaryComponent.module.css";
 import {
 	AudioOutlined, CheckOutlined, ExclamationCircleFilled,
-	LeftOutlined,
-	PauseOutlined, ShareAltOutlined,
+	PauseOutlined,
 	UploadOutlined
 } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
@@ -12,10 +11,9 @@ import {api_url, getApiServer, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
-import SharedKnowledges from "@/components/SharedKnowledges";
 import {getOS} from "@/lib/utils";
 
-const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
+const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowProgress: (s: boolean)=>void}) => {
 	const [transcriptFile, setTranscriptFile] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
@@ -25,8 +23,6 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 	const [summarys, setSummarys] = useState<string[]>([]);
 	const [isUploadRecord, setIsUploadRecord] = useState(true);
 	const [sigs, setSig] = useState<string[]>([]);
-	const [showShared, setShowShared] = useState<boolean>(false)
-	const [sharedSig, setSharedSig] = useState<string>('')
 	const [uploaded, setUploaded] = useState<boolean>(false)
 	const [addShared, setAddShared] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
@@ -103,7 +99,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 		if (fileList.length > 0){
 			formData.append('file', fileList[0] as FileType);
 		}
-		formData.append('message', JSON.stringify({ id: activeId, link: knowledge, transcript: transcriptFile, shared: sharedSig}));
+		formData.append('message', JSON.stringify({ id: activeId, link: knowledge, transcript: transcriptFile, shared: ''}));
 
 		onShowProgress(true);
 		let url = getApiServer(80) + api_url.portal.task.knowledge_embedding
@@ -174,16 +170,13 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 		})
 	}
 	return (
-		<div hidden={!visible} className={styles.summary_container_mobile}>
+		<div className={styles.summary_container_mobile}>
 			<div className={styles.summary_content_mobile}>
-					<Row style={{padding: 10}}>
-						<LeftOutlined style={{fontSize: 20}} onClick={() => onClose()}/>
-					</Row>
 				<Row align={"middle"}>
 					<Col span={2}>
 						{
 							stopped ?
-								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() =>{
+								<AudioOutlined style={{color: "black", fontSize: 18}} onClick={() =>{
 									confirm({
 										icon: <ExclamationCircleFilled />,
 										content: t('startRecordingKnowledge'),
@@ -195,7 +188,7 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 									})
 								}}/>
 								:
-								<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+								<PauseOutlined style={{color: "black", fontSize: 18}} onClick={() => stop_record()}/>
 						}
 					</Col>
 					<Col span={3}>
@@ -213,39 +206,17 @@ const SummaryComponent = ({activeId, visible, onShowProgress, onClose}:{activeId
 							</Upload>
 						</>
 					</Col>
-					<Col span={3}>
-						<Button icon={addShared ? <CheckOutlined /> :<ShareAltOutlined/>} onClick={()=>{
-							Modal.info({
-								content: t('sharedKnowledge'),
-								onOk(){
-									setShowShared(true)
-								}
-							})
-						}}></Button>
-					</Col>
-					<Col span={16}>
+					<Col span={14}>
 						<Input placeholder={t('linkKnowledge')} value={knowledge} onChange={knowledgeInput}/>
 					</Col>
-				</Row>
-				<Row align={"middle"} justify="space-between">
-					<Col span={8}>
-						<h5 style={{textAlign: "center"}}>**发送知识和专家探讨**</h5>
-					</Col>
-					<Col span={16} style={{textAlign: "end"}}>
-					<Button type={"primary"} style={{marginTop: 10}} onClick={(e) => handleKnowledge(e)}>{t('do_summary')}</Button>
+					<Col span={3} style={{textAlign: "end"}}>
+						<Button type={"primary"} style={{marginLeft: 10}} onClick={(e) => handleKnowledge(e)}>{t('do_summary')}</Button>
 					</Col>
 				</Row>
 				<Row>
-					<h5>专家回复：</h5>
-						<TextArea value={summarys.join('\n')} rows={18}/>
+						<TextArea style={{marginTop: 10}} placeholder={t('digest')} value={summarys.join('\n')} rows={14}/>
 				</Row>
 			</div>
-			<SharedKnowledges visible={showShared} canSelect={true} onSelectName={(title, sig)=>{
-				// alert(title)
-				setSharedSig(sig)
-				setShowShared(false)
-				setAddShared(true)
-			}} onClose={()=>setShowShared(false)}/>
 		</div>
 	)
 }

@@ -130,6 +130,7 @@ export const api_url = {
         "knowledge_summary": "/api/knowledge/summary",
         "knowledge_embedding": "/api/study/knowledge",
         "knowledge_share": "/api/pato/share/knowledge",
+        "knowledge_add": "/api/pato/add/shared/knowledge",
       },
       'interaction': {
         'call': '/api/call',

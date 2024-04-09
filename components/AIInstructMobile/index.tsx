@@ -23,9 +23,6 @@ import dayjs from "dayjs";
 
 interface AIInstructPros {
 	id: string,
-	serverUrl: string;
-	onClose: ()=>void;
-	visible: boolean;
 	onShowProgress: (s: boolean)=>void;
 }
 

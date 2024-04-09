@@ -20,9 +20,10 @@ import HeaderPanelMobile from "./header_mobile";
 import AIInstructMobileComponent from "@/components/AIInstructMobile";
 import QRCodeComponent from "@/components/QRCode";
 import mqtt from "mqtt";
-import UserFeedMobile from "@/components/user_feed";
+import TwonMobile from "@/components/town";
 import LiveChatMobile from "@/components/LiveChatMobile";
 import DiscoveryComponent from "@/components/discovery";
+import {red} from "next/dist/lib/picocolors";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(false);
@@ -102,43 +103,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     },[activeId]);
 
     useEffect(() => {
-        if (client) {
-            const msg_feed = activeId;
-            // Handler for incoming messages
-            const onMessage = async (topic, message) => {
-                console.log("receive ", topic, " ", message.toString())
-                if (topic === msg_feed){
-                    let item = {children: message.toString()}
-                    setUserFeed((prevFeed)=>{
-                        const newFeed = [...prevFeed]
-                        if (newFeed.length >= 10){
-                            newFeed.shift()
-                        }
-                        newFeed.push(item)
-                        return newFeed
-                    })
-                }
-            };
-
-            // Subscribe to the topic
-            client.subscribe([msg_feed], (err) => {
-                if (!err) {
-                    console.log("Feed Subscribed to topic: ", [msg_feed]);
-                    client.on('message', onMessage);
-                }
-            });
-
-            // Return a cleanup function to unsubscribe and remove the message handler
-            return () => {
-                if (client) {
-                    client.unsubscribe([msg_feed]);
-                    client.removeListener('message', onMessage);
-                }
-            };
-        }
-    }, [client, activeId]);
-
-    useEffect(() => {
         if (activeId !== ''){
             const currentUrl = window.location.search;
             const searchParams = new URLSearchParams(currentUrl);
@@ -154,7 +118,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const tabs =[
         {label: t('messages'), key:"chat", icon: <CommentOutlined/>},
         {label: t('assistant'), key:"pro", icon: <SolutionOutlined />},
-        {label: t("town"), key:"feed", icon: <ShopOutlined />},
+        {label: t("town"), key:"feed", icon: <ShopOutlined style={{fontSize:18,color:"goldenrod"}} />},
         {label: t("discovery"), key:"discovery", icon: <BarsOutlined />},
         {label: t("mine"), key:"mine", icon: <UserOutlined />}
     ]
@@ -171,10 +135,10 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     <AIInstructMobileComponent id={activeId} onShowProgress={showProgressBar}/>
                 }
                 {key === 'feed' &&
-                    <UserFeedMobile id={activeId} mobile={true} userFeed={userFeed}/>
+                    <TwonMobile id={activeId} mobile={true} userFeed={userFeed} onShowProgress={showProgressBar} />
                 }
                 {key === 'discovery' &&
-                    <DiscoveryComponent id={activeId} onShowProgress={showProgressBar} showLiveChat={()=>setOpenLive(true)}/>
+                    <DiscoveryComponent showLiveChat={()=>setOpenLive(true)}/>
                 }
                 {key === 'mine' &&
                     <HeaderPanelMobile

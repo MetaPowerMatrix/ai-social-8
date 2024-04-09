@@ -4,7 +4,7 @@ import styles from "./QueryEmbeddingComponent.module.css";
 import {
 	AudioOutlined, ExclamationCircleFilled,
 	LeftOutlined,
-	PauseOutlined, RightOutlined, ShareAltOutlined
+	PauseOutlined, PlusOutlined, RightOutlined, ShareAltOutlined
 } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import {Streaming_Server} from "@/common";
@@ -12,17 +12,19 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import {getOS} from "@/lib/utils";
+import MyKnowledges from "@/components/MyKnowledges";
 
-const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{activeId:string, visible: boolean, onShowProgress: (s: boolean)=>void, onClose:()=>void}) => {
+const QueryEmbeddingComponent = ({activeId, onShowProgress}:{activeId:string, onShowProgress: (s: boolean)=>void}) => {
 	const [query, setQuery] = useState<string>("");
 	const [queryResult, setQueryResult] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
-	const [knowledges, setKnowledges] = useState<{ label: string, value: string }[]>([]);
+	const [bookName, setBookName] = useState<string>('')
+	const [bookSig, setBookSig] = useState<string>('')
 	const command = commandDataContainer.useContainer()
-	const [currentSig, setCurrentSig] = useState<string>("");
-	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
+	const [showMyKnowledges, setShowMyKnowledges] = useState<boolean>(false)
+	const [knowledges, setKnowledges] = useState<{ label: string; value: string; }[]>([])
 	const t = useTranslations('AIInstruct');
 	const {confirm} = Modal;
 
@@ -41,7 +43,7 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 			})
 			setKnowledges(kList)
 		})
-	}, [activeId, visible])
+	}, [activeId])
 
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
@@ -88,21 +90,6 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 		// mediaRecorder.start(2000); // Start recording, and emit data every 5s
 	};
 
-	const shareKnowledge = (sig: string, title:string) => {
-		confirm({
-			icon: <ExclamationCircleFilled />,
-			content: t('share_tips'),
-			okText: t('confirm'),
-			cancelText: t('cancel'),
-			onOk() {
-				command.share_knowledge(activeId, sig, title).then(() => {
-					Modal.success({
-						content: t('share_ok')
-					})
-				})
-			}
-		})
-	}
 	const stop_record = () => {
 		if (stopped){
 			recorder?.start(1000)
@@ -122,45 +109,33 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 			})
 		}
 	}
+	const selectMyKnowledge = (name:string, sig:string) => {
+		setBookName(name)
+		setBookSig(sig)
+	}
 	return (
-		<div hidden={!visible} className={styles.summary_container_mobile}>
+		<div className={styles.summary_container_mobile}>
 			<div className={styles.summary_content_mobile}>
-				<>
-					<Row style={{padding: 10}}>
-						<LeftOutlined style={{fontSize: 20}} onClick={() => onClose()}/>
-					</Row>
-				</>
-				<List
-					style={{height: 120, overflow: "scroll"}}
-					itemLayout="horizontal"
-					size="small"
-					dataSource={knowledges}
-					renderItem={(item, index) => (
-						<List.Item
-							key={index}
-							className={selectedIndex != undefined && selectedIndex === index ? styles.list_item : ''}
-							defaultValue={item.value}
-							onClick={(e) => {
-								setSelectedIndex(index)
-								setCurrentSig(item.value)
-							}}
-						>
-							<Row align={"middle"} style={{width: "100%"}}>
-								<Col span={22}><h5>{item.label}</h5></Col>
-								<Col onClick={() => shareKnowledge(item.value, item.label)} span={2}
-								     style={{textAlign: "end"}}><ShareAltOutlined/></Col>
-							</Row>
-						</List.Item>
-					)}
-				/>
-				<h5>**从知识库选择需要询问的内容**</h5>
+				<Row align={"middle"}>
+					<Col span={3}>
+						<h5>{t('select_book')}</h5>
+					</Col>
+					<Col span={18}>
+						<Input value={bookName}/>
+					</Col>
+					<Col span={3} style={{textAlign:"center"}}>
+						<PlusOutlined onClick={()=>setShowMyKnowledges(true)}/>
+					</Col>
+				</Row>
+				<MyKnowledges activeId={activeId} visible={showMyKnowledges} canSelect={true} onSelectName={selectMyKnowledge}
+				              onClose={()=>setShowMyKnowledges(false)} knowledges={knowledges}/>
 				<Row align={"middle"}>
 					<Col span={2}>
 						{
 							stopped ?
 								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => {
 									confirm({
-										icon: <ExclamationCircleFilled />,
+										icon: <ExclamationCircleFilled/>,
 										content: t('startAsk'),
 										okText: t('confirm'),
 										cancelText: t('cancel'),
@@ -178,12 +153,11 @@ const QueryEmbeddingComponent = ({activeId, visible, onShowProgress, onClose}:{a
 					</Col>
 					<Col span={3}>
 						<Button type={"primary"} style={{marginLeft: 5}}
-						        onClick={() => handleQueryEmbeddings(currentSig, query)}>{t('ask')}</Button>
+						        onClick={() => handleQueryEmbeddings(bookSig, query)}>{t('ask')}</Button>
 					</Col>
 				</Row>
 				<Row>
-					<h5>专家回复:</h5>
-					<TextArea placeholder={"文中的基金是指xx基建基金"} value={queryResult} rows={12}/>
+					<TextArea style={{marginTop: 10}} placeholder={"文中的基金是指xx基建基金"} value={queryResult} rows={12}/>
 				</Row>
 			</div>
 		</div>
