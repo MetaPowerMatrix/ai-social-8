@@ -35,7 +35,7 @@ const TaskPanel = ({id, panelWidth, onShowProgress }:{id: string, onShowProgress
 			return
 		}
 		onShowProgress(true);
-		command.create_today_event(id, dailyEvent).then((response) => {
+		command.create_today_event(id, dailyEvent, "study").then((response) => {
 			alert(t('waiting'))
 			onShowProgress(false);
 		})
