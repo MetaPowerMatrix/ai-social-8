@@ -162,7 +162,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             </Head>
             {isLogin ?
                 <Tabs
-                    destroyInactiveTabPane={true}
+                    // destroyInactiveTabPane={true}
                     tabBarGutter={40}
                     centered
                     size={"middle"}

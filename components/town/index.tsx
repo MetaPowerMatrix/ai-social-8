@@ -1,6 +1,6 @@
 import {Button, Col, Divider, List, Modal, Popover, Row, Tabs, Timeline} from "antd";
 import React, {useEffect, useState} from "react";
-import styles from './UserFeedMobile.module.css'
+import styles from './TownComponent.module.css'
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import {
@@ -8,9 +8,11 @@ import {
 } from "@ant-design/icons";
 import StudyTownCompoent from "@/components/study_town";
 import HotAI from "@/components/HotAI";
+import TravelTownComponent from "@/components/TravelTown";
 
 const towns =[
 	{label: '学习小镇,都是学霸', value: 'study'},
+	{label: '旅游小镇，诗和远方', value: 'travel'},
 	{label: '幸运小镇', value: 'literature'},
 	{label: '音乐小镇，Music！！', value: 'music'},
 	{label: '财富小镇,想赚钱就来', value: 'invest'},
@@ -75,8 +77,9 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 		)
 	}
 	return (
-		<div className={styles.user_feed_container}>
+		<div className={styles.town_container}>
 			{/*<h4 style={{textAlign:"center"}}>{t('town')}</h4>*/}
+			<div className={styles.town_content}>
 			{ mobile &&
 				<>
           <Row align={"middle"}>
@@ -117,14 +120,18 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
                   }}/>
 		          </Col>
           </Row>
-          <div style={{overflow: "scroll", height: 581}}>
+          <div style={{overflow: "scroll"}}>
             {activeTown === 'study' &&
 	            <StudyTownCompoent id={id} mobile={true} onShowProgress={onShowProgress}/>
             }
+	          {activeTown === 'travel' &&
+                <TravelTownComponent activeId={id} onShowProgress={onShowProgress}/>
+	          }
           </div>
           <HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>
         </>
 			}
+			</div>
 		</div>
 	)
 }

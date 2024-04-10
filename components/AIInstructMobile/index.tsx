@@ -431,7 +431,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 								<Col span={24}>
 									<TextArea placeholder={t('command')} value={question} rows={1}/>
 								</Col>
-								<TextArea placeholder={"回复"} style={{marginTop: 10}} value={answer} rows={11}/>
+								<TextArea placeholder={"回复"} style={{marginTop: 10}} value={answer} rows={13}/>
 							</Row>
 						</div>
 					</div>

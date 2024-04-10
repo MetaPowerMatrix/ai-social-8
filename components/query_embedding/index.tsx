@@ -157,7 +157,7 @@ const QueryEmbeddingComponent = ({activeId, onShowProgress}:{activeId:string, on
 					</Col>
 				</Row>
 				<Row>
-					<TextArea style={{marginTop: 10}} placeholder={"文中的基金是指xx基建基金"} value={queryResult} rows={17}/>
+					<TextArea style={{marginTop: 10}} placeholder={"文中的基金是指xx基建基金"} value={queryResult} rows={18}/>
 				</Row>
 			</div>
 		</div>

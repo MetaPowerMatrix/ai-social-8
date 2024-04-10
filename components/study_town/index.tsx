@@ -3,7 +3,6 @@ import React, {useEffect, useState} from "react";
 import styles from './StudyTownCompoent.module.css'
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
-import HotAI from "@/components/HotAI";
 import {
 	BankOutlined,
 	CommentOutlined, ExclamationCircleFilled,
@@ -125,10 +124,10 @@ const StudyTownCompoent = ({id, mobile, onShowProgress}:{id: string, mobile: boo
 		{label: t('topic'), key:"topic", icon: <CommentOutlined/>},
 	]
 	return (
-		<div className={styles.user_feed_container}>
-			{ mobile &&
-        <div style={{overflow: "scroll", height: 560}}>
-          {activeTown === 'study' &&
+		<div className={styles.study_town_container}>
+			<div className={styles.study_town_content}>
+				{ mobile &&
+            <div style={{overflow: "scroll", height: 580}}>
               <Tabs
                   centered
                   tabBarGutter={40}
@@ -139,17 +138,17 @@ const StudyTownCompoent = ({id, mobile, onShowProgress}:{id: string, mobile: boo
                   activeKey={activeTab}
                   onChange={(key) => setActivTab(key)}
                   items={tabs.map((tab, i) => {
-				            return {
-					            label: tab.label,
-					            key: tab.key,
-					            children: tabContent(tab.key),
-					            icon: tab.icon
-				            };
-			            })}
+										return {
+											label: tab.label,
+											key: tab.key,
+											children: tabContent(tab.key),
+											icon: tab.icon
+										};
+									})}
               />
-          }
-        </div>
-			}
+            </div>
+				}
+			</div>
 			<HotTopics town={activeTown} activeId={id} onClose={()=>setShowTopics(false)} visible={showTopics} canSelect={false} onSelectName={onSelectTopic}/>
 		</div>
 	)

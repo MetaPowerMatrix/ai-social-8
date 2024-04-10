@@ -195,7 +195,8 @@
     "scan_btn": "扫码代充",
     "go_talk": "去聊天",
     "copy": "点击复制链接",
-    "copied": "已复制链接"
+    "copied": "已复制链接",
+    "deposit_ok": "充值成功"
   },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"

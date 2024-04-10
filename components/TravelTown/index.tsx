@@ -1,37 +1,36 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, Modal, GetProp, Input, Row, Upload, UploadFile, UploadProps} from "antd";
-import styles from "./SummaryComponent.module.css";
+import {Button, Col, Image, Modal, GetProp, Input, Row, Upload, UploadFile, UploadProps} from "antd";
+import styles from "./TravelTownComponent.module.css";
 import {
 	AudioOutlined, CheckOutlined, ExclamationCircleFilled,
 	PauseOutlined,
 	UploadOutlined
 } from "@ant-design/icons";
-import TextArea from "antd/es/input/TextArea";
 import {api_url, getApiServer, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import {getOS} from "@/lib/utils";
 
-const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowProgress: (s: boolean)=>void}) => {
+const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShowProgress: (s: boolean)=>void}) => {
 	const [transcriptFile, setTranscriptFile] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocketRecorder, setWsSocketRecorder] = useState<WebSocketManager>();
-	const [knowledge, setKnowledge] = useState('');
+	const [description, setDescription] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [summarys, setSummarys] = useState<string[]>([]);
 	const [isUploadRecord, setIsUploadRecord] = useState(true);
 	const [sigs, setSig] = useState<string[]>([]);
 	const [uploaded, setUploaded] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
-	const t = useTranslations('AIInstruct');
+	const t = useTranslations('travel');
 	const {confirm} = Modal;
 
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 	useEffect(() => {
-			initAudioStream().then(()=>{})
+		initAudioStream().then(()=>{})
 		// return () => {
 		// 		recorder.
 		// };
@@ -101,7 +100,7 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 		if (fileList.length > 0){
 			formData.append('file', fileList[0] as FileType);
 		}
-		formData.append('message', JSON.stringify({ id: activeId, link: knowledge, transcript: transcriptFile, shared: ''}));
+		formData.append('message', JSON.stringify({ id: activeId, scene: description, transcript: transcriptFile, shared: ''}));
 
 		onShowProgress(true);
 		let url = getApiServer(80) + api_url.portal.task.knowledge_embedding
@@ -150,9 +149,9 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 		},
 		fileList,
 	};
-	const knowledgeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const decriptionInput = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
-		setKnowledge(event.target.value)
+		setDescription(event.target.value)
 	}
 
 	const handleQuerySummary = (query_sigs: string[]) => {
@@ -172,9 +171,9 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 		})
 	}
 	return (
-		<div className={styles.summary_container_mobile}>
-			<div className={styles.summary_content_mobile}>
-				<Row align={"middle"}>
+		<div className={styles.travel_town_mobile_container}>
+			<div className={styles.travel_town_mobile_content}>
+				<Row align={"middle"} style={{marginTop: 20, marginBottom:20,padding:10}}>
 					<Col span={2}>
 						{
 							stopped ?
@@ -208,19 +207,20 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 							</Upload>
 						</>
 					</Col>
-					<Col span={14}>
-						<Input placeholder={t('linkKnowledge')} value={knowledge} onChange={knowledgeInput}/>
-					</Col>
-					<Col span={3} style={{textAlign: "end"}}>
-						<Button type={"primary"} style={{marginLeft: 10}} onClick={(e) => handleKnowledge(e)}>{t('do_summary')}</Button>
+					<Col span={19}>
+						<Input value={description} onChange={decriptionInput}/>
 					</Col>
 				</Row>
-				<Row>
-						<TextArea style={{marginTop: 10}} placeholder={t('digest')} value={summarys.join('\n')} rows={20}/>
-				</Row>
+				<div>
+					<Image
+						src="/images/notlogin.png"
+						height={500}
+						alt="scene"
+					/>
+				</div>
 			</div>
 		</div>
 	)
 }
 
-export default SummaryComponent;
+export default TravelTownComponent;

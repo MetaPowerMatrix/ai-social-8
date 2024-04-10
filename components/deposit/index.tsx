@@ -52,7 +52,7 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 					console.log(res)
 				})
 				Modal.success({
-					content: "充值成功"
+					content: t('deposit_ok')
 				})
 			})
 			.on('error', console.error); // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
@@ -100,14 +100,17 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 						console.log(res)
 					})
 					if (is_donation){
-						alert(t("donated"))
+						Modal.success({
+							content: t("donated")
+						})
 					}else{
-						alert(t('deposited'))
+						Modal.success({
+							content: t("deposited")
+						})
 					}
 					onClose()
 				})
 				.on('error', function (error){
-					// alert(error.data.message)
 					console.error
 				}); // If a out of gas error, the second parameter is the receipt.
 	}
@@ -155,14 +158,18 @@ const Deposit: React.FC<DepositProps> = ({visible, id, onClose, mobile}) => {
 	const handleSubmit = (values: any) => {
 		console.log(values);
 		if (values.amount === ""){
-			alert(t("requireAmount"))
+			Modal.warning({
+				content: t("requireAmount")
+			})
 		}
 		deposit(id, values.amount, false)
 	};
 	const handleSubmitDonation = (values: any) => {
 		console.log(values);
 		if (values.DonationAmount === ""){
-			alert(t("requireAmount"))
+			Modal.warning({
+				content: t("requireAmount")
+			})
 		}
 		deposit(id, values.DonationAmount, true)
 	};
