@@ -24,7 +24,6 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 	const [isUploadRecord, setIsUploadRecord] = useState(true);
 	const [sigs, setSig] = useState<string[]>([]);
 	const [uploaded, setUploaded] = useState<boolean>(false)
-	const [addShared, setAddShared] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('AIInstruct');
 	const {confirm} = Modal;
@@ -33,6 +32,9 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 
 	useEffect(() => {
 			initAudioStream().then(()=>{})
+		// return () => {
+		// 		recorder.
+		// };
 	}, [])
 
 	// Function to initialize audio recording and streaming
