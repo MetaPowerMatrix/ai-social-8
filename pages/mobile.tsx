@@ -169,9 +169,6 @@ export default function Home() {
 			alert(t('event'))
 			return
 		}
-		command.create_today_event(activeId, dailyEvent).then((response) => {
-			alert(t('waiting'))
-		})
 	};
 	const dailyInput = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.preventDefault();
