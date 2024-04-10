@@ -214,7 +214,7 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 					</Col>
 				</Row>
 				<Row>
-						<TextArea style={{marginTop: 10}} placeholder={t('digest')} value={summarys.join('\n')} rows={14}/>
+						<TextArea style={{marginTop: 10}} placeholder={t('digest')} value={summarys.join('\n')} rows={19}/>
 				</Row>
 			</div>
 		</div>

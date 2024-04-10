@@ -118,8 +118,8 @@ const useCommand = () => {
       }
     }).catch((e) => console.log(e))
   }
-  const create_today_event = async (id: string, topic: string) => {
-    let data = {id: id, topic: topic}
+  const create_today_event = async (id: string, topic: string, town: string) => {
+    let data = {id: id, topic: topic, town: town}
     let url = getApiServer(80) + api_url.portal.task.event
     let response = await fetch(
       `${url}`,

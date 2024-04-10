@@ -14,24 +14,31 @@ import commandDataContainer from "@/container/command";
 
 interface HotAIPros {
 	activeId: string,
+	inTab: boolean,
 	visible: boolean,
 	canSelect: boolean,
-	onSelectName: (name: string, id: string)=>void,
 	onClose: ()=>void,
 }
 
-const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect, onSelectName, onClose}) => {
-	const t = useTranslations('AIInstruct');
-	const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
+const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, inTab, visible, canSelect, onClose}) => {
+	const t = useTranslations('discovery');
 	const [knowledges, setKnowledges] = useState<PortalKnowledge[]>([])
 	const command = commandDataContainer.useContainer()
 	const {confirm} = Modal;
 
 	const handleAddSharedKnowledge = (name:string, sig:string) => {
-		command.add_shared_knowledge(activeId, sig, name).then(()=>{
-			Modal.success({
-				content: "添加成功"
-			})
+		confirm({
+			icon: <ExclamationCircleFilled />,
+			content: t('share_tips'),
+			okText: t('confirm'),
+			cancelText: t('cancel'),
+			onOk() {
+				command.add_shared_knowledge(activeId, sig, name).then(()=>{
+					Modal.success({
+						content: t('add_share_ok')
+					})
+				})
+			}
 		})
 	}
 	useEffect(()=> {
@@ -42,48 +49,48 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, visible, can
 			})
 		}
 	},[visible])
-	const [open, setOpen] = useState(false);
 
 	return (
-		<div hidden={!visible} className={styles.sharedKnowledges_container_mobile}>
-			{
-        <Row style={{padding: 10}}>
-            <LeftOutlined style={{fontSize: 15}} onClick={() => onClose()}/>
-        </Row>
+		<div hidden={!visible} className={inTab ? styles.sharedKnowledges_container_tab : styles.sharedKnowledges_container_mobile}>
+			{!inTab &&
+					<>
+              <Row style={{padding: 10}}>
+                  <LeftOutlined style={{fontSize: 15}} onClick={() => onClose()}/>
+              </Row>
+              <h3 style={{textAlign:"center"}}>{t('shared')}</h3>
+					</>
 			}
 			<div className={styles.sharedKnowledges_content_mobile}>
-					<div style={{overflow: "scroll", padding: 15}}>
-						<h3 style={{textAlign:"center"}}>{t('shared')}</h3>
-						<List
-							itemLayout="horizontal"
-							size="small"
-							dataSource={knowledges}
-							renderItem={(item, index) => (
-								<List.Item
-									key={index}
-									defaultValue={item.sig}
-								>
-									<Row align={"middle"} style={{width:"100%"}}>
-										<Col span={18}><h5 style={{overflow:"scroll"}}>{item.title}</h5></Col>
-										{
-											canSelect &&
-                        <Col span={2} style={{textAlign: "end",marginLeft:10}}>
-		                        <PlusOutlined onClick={()=> handleAddSharedKnowledge(item.title, item.sig)}/>
-												</Col>
-										}
-										<Col span={2} style={{textAlign: "end"}}>
-												<OrderedListOutlined onClick={()=>{
-													Modal.info({
-														title: t('digest'),
-														content: item.summary,
-													})
-												}}/>
+				<List
+					itemLayout="horizontal"
+					size="small"
+					dataSource={knowledges}
+					renderItem={(item, index) => (
+						<List.Item
+							key={index}
+							defaultValue={item.sig}
+						>
+							<Row align={"middle"} style={{width:"100%"}}>
+								<Col span={canSelect ?18:22}>
+									<h5 style={{overflow:"scroll"}}>{item.title}</h5></Col>
+								{
+									canSelect &&
+	                  <Col span={2} style={{textAlign: "end",marginLeft:10}}>
+	                      <PlusOutlined onClick={()=> handleAddSharedKnowledge(item.title, item.sig)}/>
 										</Col>
-									</Row>
-								</List.Item>
-							)}
-						/>
-					</div>
+								}
+								<Col span={2} style={{textAlign: "end"}}>
+										<OrderedListOutlined onClick={()=>{
+											Modal.info({
+												title: t('digest'),
+												content: item.summary,
+											})
+										}}/>
+								</Col>
+							</Row>
+						</List.Item>
+					)}
+				/>
 			</div>
 		</div>
 	);

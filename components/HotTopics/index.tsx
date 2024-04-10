@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styles from "./HotTopicsComponent.module.css";
 import {
-	Button,
 	Col, List, Modal, Row
 } from "antd";
 import {useTranslations} from "next-intl";
@@ -10,20 +9,19 @@ import {
 	PlusOutlined, SearchOutlined
 } from "@ant-design/icons";
 import commandDataContainer from "@/container/command";
-import TextArea from "antd/es/input/TextArea";
 
 interface HotAIPros {
 	visible: boolean,
 	activeId: string,
+	town: string,
 	canSelect: boolean,
 	onSelectName: (name: string, id: string)=>void,
 	onClose: ()=>void,
 }
 
-const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect, onSelectName, onClose}) => {
+const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, town, visible, canSelect, onSelectName, onClose}) => {
 	const t = useTranslations('discovery');
 	const [hotTopics, setHotTopics] = useState<string[]>([])
-	const [townTopic, setTownTopic] = useState('');
 	const command = commandDataContainer.useContainer()
 
 	useEffect(()=> {
@@ -35,30 +33,13 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect,
 		}
 	},[visible])
 
-	const handleTodayEvent = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		event.preventDefault();
-		if (townTopic === ""){
-			alert(t('event'))
-			return
-		}
-		command.create_today_event(activeId, townTopic).then((response) => {
-			Modal.success({
-				content: t('waiting')
-			})
-		})
-	};
 	const addHotTopic= async (topic:string, subject:string) => {
-		command.create_today_event(activeId, topic).then((response) => {
+		command.create_today_event(activeId, topic, town).then((response) => {
 			Modal.success({
 				content: t('waiting')
 			})
 		})
 	};
-	const topicInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-		event.preventDefault();
-		setTownTopic(event.target.value)
-	}
-
 	return (
 		<div hidden={!visible} className={styles.hotai_container_mobile}>
 			{
@@ -67,16 +48,6 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect,
         </Row>
 			}
 			<div className={styles.hotai_content_mobile}>
-				<Row>
-					<Col span={24}>
-						<TextArea placeholder={t('topicTips')} rows={3} onChange={(e) => topicInput(e)}/>
-					</Col>
-				</Row>
-				<Row>
-					<Col span={24} style={{textAlign:"end",marginTop:10}}>
-						<Button type={"primary"} onClick={handleTodayEvent}>发送</Button>
-					</Col>
-				</Row>
 					<div style={{overflow: "scroll", padding: 15}}>
 						<h3 style={{textAlign:"center"}}>{t('topics')}</h3>
 						<List
@@ -98,7 +69,6 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect,
                         <Col span={2}><PlusOutlined onClick={()=> addHotTopic(item, item)}/></Col>
 										}
 										{
-											canSelect &&
                         <Col span={2} style={{textAlign: "end"}}><SearchOutlined onClick={()=> {
 													onSelectName(item, item)
 	                        onClose()

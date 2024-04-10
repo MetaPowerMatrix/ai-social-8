@@ -119,7 +119,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
         {label: t('messages'), key:"chat", icon: <CommentOutlined/>},
         {label: t('assistant'), key:"pro", icon: <SolutionOutlined />},
         {label: t("town"), key:"feed", icon: <ShopOutlined style={{fontSize:18,color:"goldenrod"}} />},
-        {label: t("discovery"), key:"discovery", icon: <BarsOutlined />},
+        // {label: t("discovery"), key:"discovery", icon: <BarsOutlined />},
         {label: t("mine"), key:"mine", icon: <UserOutlined />}
     ]
 
@@ -137,9 +137,9 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 {key === 'feed' &&
                     <TwonMobile id={activeId} mobile={true} userFeed={userFeed} onShowProgress={showProgressBar} />
                 }
-                {key === 'discovery' &&
-                    <DiscoveryComponent showLiveChat={()=>setOpenLive(true)}/>
-                }
+                {/*{key === 'discovery' &&*/}
+                {/*    <DiscoveryComponent showLiveChat={()=>setOpenLive(true)}/>*/}
+                {/*}*/}
                 {key === 'mine' &&
                     <HeaderPanelMobile
                         showDeposit={()=>{setOpenDeposit(true)}}
@@ -162,6 +162,8 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             </Head>
             {isLogin ?
                 <Tabs
+                    destroyInactiveTabPane={true}
+                    tabBarGutter={40}
                     centered
                     size={"middle"}
                     type={"line"}
