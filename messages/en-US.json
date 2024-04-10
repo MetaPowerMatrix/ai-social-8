@@ -198,6 +198,11 @@
     "copied": "已复制链接",
     "deposit_ok": "充值成功"
   },
+  "travel": {
+    "startRecordingSceneDescription": "开始录制场景描述",
+    "confirm": "确认",
+    "cancel": "取消"
+  },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"
   }

@@ -181,7 +181,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     })}
                 />
                 :
-                <Image priority src="/images/ai-town.jpeg" fill style={{objectFit: 'cover',}} alt={"map"}/>
+                <Image priority src="/images/ai-town.jp2" fill style={{objectFit: 'cover',}} alt={"map"}/>
             }
             <MaskedHighlight zones={zones} visible={guide} />
             <ProgressBarComponent visible={loading} steps={15} />

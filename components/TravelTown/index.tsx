@@ -9,21 +9,20 @@ import {
 import {api_url, getApiServer, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
-import commandDataContainer from "@/container/command";
 import {getOS} from "@/lib/utils";
+import utilStyles from "@/styles/utils.module.css";
 
 const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShowProgress: (s: boolean)=>void}) => {
-	const [transcriptFile, setTranscriptFile] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocketRecorder, setWsSocketRecorder] = useState<WebSocketManager>();
 	const [description, setDescription] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [summarys, setSummarys] = useState<string[]>([]);
 	const [isUploadRecord, setIsUploadRecord] = useState(true);
-	const [sigs, setSig] = useState<string[]>([]);
 	const [uploaded, setUploaded] = useState<boolean>(false)
-	const command = commandDataContainer.useContainer()
+	const [scene, setScene] = useState<string>("/images/notlogin.png")
+	const [sample, setSample] = useState<string>("/images/notlogin.png")
+	const [confirmed, setConfirmed] = useState<boolean>(false)
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
 
@@ -49,7 +48,8 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 	const process_recorder_message = (event: any) => {
 		console.log(event.data.toString())
 		if (event.data.toString() !== 'pong') {
-			setTranscriptFile(event.data.toString())
+			setDescription(event.data.toString())
+			handleGenerateScene(event.data.toString())
 		}
 	}
 
@@ -61,7 +61,7 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 			options = {mimeType: 'audio/mp4;codecs=mp4a'}
 		}
 		const mediaRecorder = new MediaRecorder(stream, options);
-		const socketRecorder = new WebSocketManager(Streaming_Server + "/recorder", process_recorder_message);
+		const socketRecorder = new WebSocketManager(Streaming_Server + "/up", process_recorder_message);
 
 		setWsSocketRecorder(socketRecorder)
 		setRecorder(mediaRecorder)
@@ -94,16 +94,15 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 			setStopped(true)
 		}
 	}
-	const handleKnowledge= (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-		event.preventDefault(); // Prevent the default form submission
+	const handleGenerateScene= (description: string) => {
 		const formData = new FormData();
 		if (fileList.length > 0){
 			formData.append('file', fileList[0] as FileType);
 		}
-		formData.append('message', JSON.stringify({ id: activeId, scene: description, transcript: transcriptFile, shared: ''}));
+		formData.append('message', JSON.stringify({ id: activeId, description: description}));
 
 		onShowProgress(true);
-		let url = getApiServer(80) + api_url.portal.task.knowledge_embedding
+		let url = getApiServer(80) + api_url.portal.town.gen_scene
 		fetch(url, {
 			method: 'POST',
 			body: formData,
@@ -111,17 +110,16 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 			.then(response => response.json())
 			.then(data => {
 				if (data.code === "200") {
-					let sigs: string[] = JSON.parse(data.content)
-					sigs = sigs.filter((sig) => {return sig !== ''})
-					Modal.success({
-						content: '文档上传成功，等待学习结果!'
-					})
-					setSig(sigs)
-					console.log(sigs)
-					handleQuerySummary(sigs)
+					let images: string[] = JSON.parse(data.content)
+					if (images.length > 0){
+						setScene(images[0])
+					}
+					if (images.length > 1 && images[1] !== ''){
+						setSample(images[1])
+					}
 				}else{
 					Modal.warning({
-						content: '文档上传失败.'
+						content: '场景生成失败.'
 					})
 				}
 				onShowProgress(false);
@@ -129,7 +127,7 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 			.catch((error) => {
 				console.error('Error:', error);
 				Modal.warning({
-					content: '文档上传失败.'
+					content: '场景生成失败.'
 				})
 				onShowProgress(false);
 			});
@@ -154,22 +152,6 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 		setDescription(event.target.value)
 	}
 
-	const handleQuerySummary = (query_sigs: string[]) => {
-		let newSummarys: string[] = []
-		query_sigs.forEach((sig) => {
-			command.query_summary(activeId, sig).then((res) => {
-				console.log(res)
-				if (res !== undefined){
-					newSummarys.push(res)
-					setSummarys((prev) => {
-						prev = [...newSummarys]
-						return prev
-					})
-					console.log(summarys)
-				}
-			})
-		})
-	}
 	return (
 		<div className={styles.travel_town_mobile_container}>
 			<div className={styles.travel_town_mobile_content}>
@@ -178,15 +160,20 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 						{
 							stopped ?
 								<AudioOutlined style={{color: "black", fontSize: 18}} onClick={() =>{
-									confirm({
-										icon: <ExclamationCircleFilled />,
-										content: t('startRecordingKnowledge'),
-										okText: t('confirm'),
-										cancelText: t('cancel'),
-										onOk() {
-											stop_record()
-										}
-									})
+									if (confirmed){
+										stop_record()
+									}else{
+										confirm({
+											icon: <ExclamationCircleFilled />,
+											content: t('startRecordingSceneDescription'),
+											okText: t('confirm'),
+											cancelText: t('cancel'),
+											onOk() {
+												stop_record()
+												setConfirmed(true)
+											}
+										})
+									}
 								}}/>
 								:
 								<PauseOutlined style={{color: "black", fontSize: 18}} onClick={() => stop_record()}/>
@@ -213,10 +200,18 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 				</Row>
 				<div>
 					<Image
-						src="/images/notlogin.png"
+						src={scene}
 						height={500}
 						alt="scene"
 					/>
+					<div style={{position: "fixed", top: 150, left: 0, zIndex: 2, border:"1px solid red"}}>
+						<img
+							height={72}
+							width={72}
+							src={sample}
+							alt="sample"
+						/>
+					</div>
 				</div>
 			</div>
 		</div>
