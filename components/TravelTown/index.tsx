@@ -10,15 +10,13 @@ import {api_url, getApiServer, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import {getOS} from "@/lib/utils";
-import utilStyles from "@/styles/utils.module.css";
 
 const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShowProgress: (s: boolean)=>void}) => {
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
-	const [wsSocketRecorder, setWsSocketRecorder] = useState<WebSocketManager>();
+	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [description, setDescription] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [isUploadRecord, setIsUploadRecord] = useState(true);
 	const [uploaded, setUploaded] = useState<boolean>(false)
 	const [scene, setScene] = useState<string>("/images/notlogin.png")
 	const [sample, setSample] = useState<string>("/images/notlogin.png")
@@ -45,7 +43,7 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 		}
 	};
 
-	const process_recorder_message = (event: any) => {
+	const process_ws_message = (event: any) => {
 		console.log(event.data.toString())
 		if (event.data.toString() !== 'pong') {
 			setDescription(event.data.toString())
@@ -61,9 +59,9 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 			options = {mimeType: 'audio/mp4;codecs=mp4a'}
 		}
 		const mediaRecorder = new MediaRecorder(stream, options);
-		const socketRecorder = new WebSocketManager(Streaming_Server + "/up", process_recorder_message);
+		const socket = new WebSocketManager(Streaming_Server + "/up", process_ws_message);
 
-		setWsSocketRecorder(socketRecorder)
+		setWsSocket(socket)
 		setRecorder(mediaRecorder)
 
 		mediaRecorder.ondataavailable = (event) => {
@@ -74,7 +72,7 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 			}
 		};
 		mediaRecorder.onstop = () => {
-			socketRecorder.send(new Blob(chunks, { 'type' : 'audio/webm' }));
+			socket.send(new Blob(chunks, { 'type' : 'audio/webm' }));
 			console.log("send")
 			chunks = [];
 		};
