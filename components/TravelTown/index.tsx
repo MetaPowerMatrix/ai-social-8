@@ -74,11 +74,7 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 			}
 		};
 		mediaRecorder.onstop = () => {
-			if (isUploadRecord){
-				socketRecorder.send(new Blob(chunks, { 'type' : 'audio/webm' }));
-			}else{
-				// socket.send(new Blob(chunks, { 'type' : 'audio/webm' }));
-			}
+			socketRecorder.send(new Blob(chunks, { 'type' : 'audio/webm' }));
 			console.log("send")
 			chunks = [];
 		};
