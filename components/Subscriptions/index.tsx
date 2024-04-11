@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styles from "@/components/Subscriptions/SubscriptionsComponent.module.css";
-import {Button, Col, Divider, Modal, Popover, Row} from "antd";
+import {Button, Col, Divider, Form, Input, Modal, Popover, Row, Tabs} from "antd";
 import {useTranslations} from "next-intl";
 import {
 	CheckOutlined,
@@ -26,8 +26,12 @@ declare global {
 
 const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onClose, onShowProgress, mobile}) => {
 	const t = useTranslations('others');
+	const command = commandDataContainer.useContainer()
+	const [activeTab, setActivTab] = useState('subscription');
+	const [form] = Form.useForm();
+	const [formDonation] = Form.useForm();
 
-	const transferToken = async (id: string, amount: number, type: string, web3: Web3) => {
+	const transferToken = async (id: string, amount: number, type: string, web3: Web3, is_donation: boolean, channel: string) => {
 		// const web3 = new Web3(window.ethereum)
 		const accounts = await web3.eth.getAccounts();
 		const myAddress = accounts[0];
@@ -45,7 +49,23 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 			})
 			.on('receipt', function(receipt){
 				console.log('Transaction was confirmed.');
-				handleSubCommand(amount, type)
+				if (channel === 'deposit'){
+					command.deposit_metapower(id, amount, is_donation).then((res) => {
+						console.log(res)
+					})
+					if (is_donation) {
+						Modal.success({
+							content: t('donated')
+						})
+					}else{
+						Modal.success({
+							content: t('deposited')
+						})
+					}
+				}
+				if (channel === 'sub') {
+					handleSubCommand(amount, type)
+				}
 			})
 			.on('error', console.error); // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
 	};
@@ -86,18 +106,18 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 
 	const handleSubmitBasic = () => {
 		connectToBsc().then((web3) => {
-			transferToken(id, 200000, 'basic', web3).then(() => {
+			transferToken(id, 200000, 'basic', web3, false, "sub").then(() => {
 			})
 		});
 	};
 	const handleSubmitPlus = () => {
 		connectToBsc().then((web3) => {
-			transferToken(id, 2000000, 'plus', web3).then(()=>{})
+			transferToken(id, 2000000, 'plus', web3, false, "sub").then(()=>{})
 		});
 	};
 	const handleSubmitPro = () => {
 		connectToBsc().then((web3) => {
-			transferToken(id, 200000000, 'pro', web3).then(()=>{})
+			transferToken(id, 200000000, 'pro', web3, false, "sub").then(()=>{})
 		});
 	};
 
@@ -128,7 +148,149 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 				alert(t('sub_fail'));
 			});
 	};
+	const Subscription = () => {
+		return(
+			<>
+				<div style={{height: 560, overflow: "scroll"}}>
+					<Row align={"middle"} justify={"space-between"}>
+						<Col span={24} style={{textAlign: "center", marginBottom: 10, border: "1px dotted cyan"}}>
+							<h1>Basic</h1>
+							<h2>PAB Staking 200,000/12Months</h2>
+							<Button type={"primary"} onClick={handleSubmitBasic}>{t('upgrade')}</Button>
+							<h4><CheckOutlined/> Force 10,000</h4>
+							<h4><CheckOutlined/> Earn Force Value</h4>
+						</Col>
+					</Row>
+					<Row>
+						<Col span={24} style={{textAlign: "center", marginBottom: 10, border: "1px dotted cyan"}}>
+							<h1>Plus</h1>
+							<h2>PAB Staking 2,000,000/12Months</h2>
+							<Button type={"primary"} onClick={handleSubmitPlus}>{t('upgrade')}</Button>
+							<h4><CheckOutlined/> Force 120,000</h4>
+							<h4><CheckOutlined/> create 1 Town</h4>
+							<h4><CheckOutlined/> Earn Force Value and redeem rewards</h4>
+						</Col>
+					</Row>
+					<Row>
+						<Col span={24} style={{textAlign: "center", border: "1px dotted cyan"}}>
+							<h1>Pro</h1>
+							<h2>PAB Staking 200,000,000/12Months</h2>
+							<Button type={"primary"} onClick={handleSubmitPro}>{t('upgrade')}</Button>
+							<h4><CheckOutlined/> Force 1,500,000</h4>
+							<h4><CheckOutlined/> create 3 Towns</h4>
+							<h4><CheckOutlined/> Earn Force Value and redeem rewards</h4>
+						</Col>
+					</Row>
+					<Divider type={"horizontal"}/>
+					<Row>
+						<Col span={8} style={{textAlign: "center"}}>
+							<a target={"_blank"}
+							   href={"https://pancakeswap.finance/swap?outputCurrency=0xD6311f9A6bd3a802263F4cd92e2729bC2C31Ed23&inputCurrency=0x55d398326f99059fF775485246999027B3197955"}>PAB购买地址</a>
+						</Col>
+						<Col span={8} style={{textAlign: "center"}}>
+							<Popover
+								content={<Image width={246} height={336} onClick={() => alert(t('scan'))} src={"/images/wepay.png"}
+								                alt={"scan"}/>} title={t('scan')}>
+								<Button type="primary">{t('scan_btn')}</Button>
+							</Popover>
 
+						</Col>
+						<Col span={8} style={{textAlign: "center"}}>
+							<a target={"_blank"}
+							   href={"https://bscscan.com/address/0xd6311f9a6bd3a802263f4cd92e2729bc2c31ed23"}>PAB合约地址</a>
+						</Col>
+					</Row>
+				</div>
+			</>
+		)
+	}
+
+	const deposit = (id: string, amount: string, is_donation:boolean) => {
+		connectToBsc().then((web3) => {
+			transferToken(id, parseFloat(amount), '', web3, is_donation, 'deposit').then((res) => {
+				console.log(res)
+			})
+		})
+	}
+
+	const handleSubmit = (values: any) => {
+		console.log(values);
+		if (values.amount === ""){
+			Modal.warning({
+				content: t("requireAmount")
+			})
+		}else{
+			deposit(id, values.amount, false)
+		}
+	};
+	const handleSubmitDonation = (values: any) => {
+		console.log(values);
+		if (values.DonationAmount === ""){
+			Modal.warning({
+				content: t("requireAmount")
+			})
+		}else{
+			deposit(id, values.DonationAmount, true)
+		}
+	};
+
+	const Deposit = () => {
+		return(
+			<>
+				<h5 style={{display: 'inline-block'}}>{t("tips3")}</h5>
+				<Form layout="horizontal" form={form} variant="filled" onFinish={handleSubmit}>
+					<Form.Item label={t("amount")} name="amount" rules={[{required: true, message: t('must')}]}>
+						<Input/>
+					</Form.Item>
+					<Form.Item>
+						<Button type="primary" htmlType="submit">
+							{t("deposit")}
+						</Button>
+						<Divider type={"vertical"}/>
+					</Form.Item>
+				</Form>
+				<Divider type={"horizontal"}/>
+				<div>
+					<h5 style={{display: 'inline-block'}}>{t("donationTips")}</h5>
+				</div>
+				<Form layout="horizontal" form={formDonation} variant="filled" onFinish={handleSubmitDonation}>
+					<Form.Item label={t("DonationAmount")} name="DonationAmount" rules={[{required: true, message: t('must')}]}>
+						<Input/>
+					</Form.Item>
+					<Form.Item>
+						<Button type="primary" htmlType="submit" >
+							{t("donation")}
+						</Button>
+					</Form.Item>
+				</Form>
+				<Divider/>
+				<Row>
+					<Col span={24} style={{textAlign: "center"}}>
+						<Popover
+							content={<Image width={246} height={336} onClick={() => alert(t('scan'))} src={"/images/wepay.png"}
+							                alt={"scan"}/>} title={t('scan')}>
+							<Button type="primary">{t('scan_btn')}</Button>
+						</Popover>
+
+					</Col>
+				</Row>
+
+			</>
+		)
+	}
+	const tabs = [
+		{label: '订阅', value: 'subscription'},
+		{label: '充值&捐赠', value: 'deposit'},
+	]
+
+	const tabContent = (key: string) => {
+		return (
+			<>
+				{ key === 'subscription' && <Subscription /> }
+				{ key === 'deposit' &&  <Deposit/> }
+			</>
+		)
+	}
 	return (
 		<div hidden={!visible}>
 			<div className={styles.voice_instruct_container}>
@@ -138,53 +300,23 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 							<CloseOutlined style={{color: "black", fontSize: 20}} onClick={() => onClose()}/>
 						</Col>
 					</Row>
-					<Divider type={"horizontal"}/>
-					<div style={{height: 560, overflow:"scroll"}}>
-          <Row align={"middle"} justify={"space-between"} >
-	          <Col span={24} style={{textAlign: "center", marginBottom:10, border: "1px dotted cyan"}}>
-		          <h1>Basic</h1>
-		          <h2>PAB Staking 200,000/12Months</h2>
-		          <Button type={"primary"} onClick={handleSubmitBasic}>{t('upgrade')}</Button>
-		          <h4><CheckOutlined /> Force 10,000</h4>
-		          <h4><CheckOutlined /> Earn Force Value</h4>
-	          </Col>
-          </Row>
-					<Row>
-	          <Col span={24} style={{textAlign: "center", marginBottom:10, border: "1px dotted cyan"}}>
-		          <h1>Plus</h1>
-		          <h2>PAB Staking 2,000,000/12Months</h2>
-		          <Button type={"primary"} onClick={handleSubmitPlus}>{t('upgrade')}</Button>
-		          <h4><CheckOutlined/> Force 120,000</h4>
-		          <h4><CheckOutlined/> create 1 Town</h4>
-		          <h4><CheckOutlined/> Earn Force Value and redeem rewards</h4>
-	          </Col>
-					</Row>
-					<Row>
-	          <Col span={24} style={{textAlign: "center", border: "1px dotted cyan"}}>
-		          <h1>Pro</h1>
-		          <h2>PAB Staking 200,000,000/12Months</h2>
-		          <Button type={"primary"} onClick={handleSubmitPro}>{t('upgrade')}</Button>
-		          <h4><CheckOutlined/> Force 1,500,000</h4>
-		          <h4><CheckOutlined/> create 3 Towns</h4>
-		          <h4><CheckOutlined/> Earn Force Value and redeem rewards</h4>
-	          </Col>
-          </Row>
-					<Divider type={"horizontal"}/>
-					<Row>
-						<Col span={8} style={{textAlign: "center"}}>
-						<a target={"_blank"} href={"https://pancakeswap.finance/swap?outputCurrency=0xD6311f9A6bd3a802263F4cd92e2729bC2C31Ed23&inputCurrency=0x55d398326f99059fF775485246999027B3197955"}>PAB购买地址</a>
-						</Col>
-						<Col span={8} style={{textAlign: "center"}}>
-							<Popover  content={<Image width={246} height={336} onClick={()=>alert(t('scan'))} src={"/images/wepay.png"} alt={"scan"}/>} title={t('scan')}>
-								<Button type="primary">{t('scan_btn')}</Button>
-							</Popover>
-
-						</Col>
-						<Col span={8} style={{textAlign: "center"}}>
-							<a target={"_blank"} href={"https://bscscan.com/address/0xd6311f9a6bd3a802263f4cd92e2729bc2c31ed23"}>PAB合约地址</a>
-						</Col>
-					</Row>
-					</div>
+					<Tabs
+						centered
+						tabBarGutter={40}
+						size={"middle"}
+						type={"line"}
+						animated={true}
+						tabPosition="top"
+						activeKey={activeTab}
+						onChange={(key) => setActivTab(key)}
+						items={tabs.map((tab, i) => {
+							return {
+								label: tab.label,
+								key: tab.value,
+								children: tabContent(tab.value),
+							};
+						})}
+					/>
 				</div>
 			</div>
 		</div>

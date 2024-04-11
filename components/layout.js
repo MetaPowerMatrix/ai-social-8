@@ -5,7 +5,6 @@ import {Col, Divider, Flex, FloatButton, Row} from "antd";
 import {
     MenuOutlined,
     SettingOutlined,
-    EuroOutlined,
     TikTokOutlined, UserOutlined, QrcodeOutlined
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
@@ -17,7 +16,6 @@ import HeaderPanel from "@/components/header";
 import MaskedHighlight from "@/components/MaskedHighlight";
 import ISSForm from "@/components/iss";
 import commandDataContainer from "@/container/command";
-import Deposit from "@/components/deposit";
 import LiveChat from "@/components/LiveChat";
 import {getMQTTBroker, Streaming_Server} from "@/common";
 import AIInstructComponent from "@/components/AIInstruct";
@@ -30,7 +28,6 @@ export default function Layout({ children, title, description, onChangeId, onRef
     const [openCode, setOpenCode] = useState(false);
     const [openLive, setOpenLive] = useState(false);
     const [openInstruct, setOpenInstruct] = useState(false);
-    const [openDeposit, setOpenDeposit] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
     const [activeId, setActiveId] = useState("");
@@ -175,11 +172,8 @@ export default function Layout({ children, title, description, onChangeId, onRef
             <FloatButton.Group open={open} trigger="click" style={{right: 64}} onClick={onChange} icon={<MenuOutlined/>}>
                 <FloatButton onClick={()=>{setOpenInstruct(true)}} icon={<UserOutlined/>}/>
                 <FloatButton onClick={()=>{setOpenLive(true)}} icon={<TikTokOutlined/>}/>
-                {/*<FloatButton onClick={()=>{setOpenCall(true)}} icon={<PhoneOutlined/>}/>*/}
-                <FloatButton onClick={()=>{setOpenDeposit(true)}} icon={<EuroOutlined />}/>
                 <FloatButton onClick={()=>{setEditISS(true)}} icon={<SettingOutlined />}/>
                 <FloatButton onClick={()=>{setOpenCode(true)}} icon={<QrcodeOutlined />}/>
-                {/*<FloatButton onClick={()=>onRefresh()} icon={<RedoOutlined/>}/>*/}
             </FloatButton.Group>
             <ModalLogin isOpen={!isLogin} tips={t} options={availableIds}
                         onClose={(id) => {
@@ -197,8 +191,6 @@ export default function Layout({ children, title, description, onChangeId, onRef
                         }}
             />
             <ISSForm mobile={false} userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
-            {/*<CallPato mobile={false} id={activeId} visible={openCall} onClose={()=>{setOpenCall(false)}}/>*/}
-            <Deposit mobile={false} id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
             <LiveChat id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
                       visible={openLive} onShowProgress={showProgressBar}/>
             <AIInstructComponent id={activeId} serverUrl={Streaming_Server} visible={openInstruct} onShowProgress={showProgressBar}

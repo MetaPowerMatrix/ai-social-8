@@ -11,11 +11,11 @@ import styles from './HeaderPanelMobile.module.css'
 import ISSForm from "@/components/iss";
 import SubscriptionsComponent from "@/components/Subscriptions";
 
-const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, showDeposit}:
+const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode}:
    {activeId:string,
-	   onShowProgress: (s: boolean)=>void, onChangeId: (s: boolean)=>void,
+	   onShowProgress: (s: boolean)=>void,
+	   onChangeId: (s: boolean)=>void,
 	   showQRCode: ()=>void,
-	   showDeposit: ()=>void,
 	 }) =>
 {
 	const [userInfo, setUserInfo] = useState<PatoInfo>();
@@ -86,20 +86,12 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode, sh
 					<h5><RightOutlined /></h5>
 				</Col>
 			</Row>
-			<Row className={styles.header_meta} onClick={showDeposit}>
+			<Row className={styles.header_meta} onClick={()=>setShowSubscription(true)}>
 				<Col className={styles.colorBar} span={12}>
 					<h5>{t("Balance")}</h5>
 				</Col>
 				<Col className={styles.colorBarEnd} span={12}>
 					<h5>{userInfo?.balance.toString()}<RightOutlined /></h5>
-				</Col>
-			</Row>
-			<Row className={styles.header_meta} onClick={()=>setShowSubscription(true)}>
-				<Col className={styles.colorBar} span={12}>
-					<h5>{t("stake")}</h5>
-				</Col>
-				<Col  className={styles.colorBarEnd} span={12}>
-					<h5>0 PAB<RightOutlined /></h5>
 				</Col>
 			</Row>
 			<Row className={styles.header_meta}>

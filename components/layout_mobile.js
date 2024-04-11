@@ -14,7 +14,6 @@ import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
 import ProgressBarComponent from "@/components/ProgressBar";
 import MaskedHighlight from "@/components/MaskedHighlight";
-import Deposit from "@/components/deposit";
 import {getMQTTBroker, Streaming_Server} from "@/common";
 import HeaderPanelMobile from "./header_mobile";
 import AIInstructMobileComponent from "@/components/AIInstructMobile";
@@ -22,13 +21,10 @@ import QRCodeComponent from "@/components/QRCode";
 import mqtt from "mqtt";
 import TwonMobile from "@/components/town";
 import LiveChatMobile from "@/components/LiveChatMobile";
-import DiscoveryComponent from "@/components/discovery";
-import {red} from "next/dist/lib/picocolors";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(false);
     const [openCode, setOpenCode] = useState(false);
-    const [openDeposit, setOpenDeposit] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
     const [activeId, setActiveId] = useState("");
@@ -142,7 +138,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 {/*}*/}
                 {key === 'mine' &&
                     <HeaderPanelMobile
-                        showDeposit={()=>{setOpenDeposit(true)}}
                         showQRCode={()=>{setOpenCode(true)}}
                         onShowProgress={showProgressBar}
                         activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}
@@ -200,7 +195,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                             }
                         }}
             />
-            <Deposit mobile={true} id={activeId} visible={openDeposit} onClose={()=>{setOpenDeposit(false)}}/>
             <LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
                       visible={openLive} onShowProgress={showProgressBar}/>
             <QRCodeComponent visible={openCode} id={activeId} onClose={()=>setOpenCode(false)} mobile={true}/>
