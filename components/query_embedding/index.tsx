@@ -113,6 +113,9 @@ const QueryEmbeddingComponent = ({activeId, onShowProgress}:{activeId:string, on
 		setBookName(name)
 		setBookSig(sig)
 	}
+	const inputQuestion = (event: React.ChangeEvent<HTMLInputElement>) =>{
+		setQuery(event.target.value)
+	}
 	return (
 		<div className={styles.summary_container_mobile}>
 			<div className={styles.summary_content_mobile}>
@@ -149,7 +152,7 @@ const QueryEmbeddingComponent = ({activeId, onShowProgress}:{activeId:string, on
 						}
 					</Col>
 					<Col span={18}>
-						<Input placeholder={"文章中的基金是什么意思"} value={query}/>
+						<Input onChange={inputQuestion} placeholder={"文章中的基金是什么意思"} value={query}/>
 					</Col>
 					<Col span={3}>
 						<Button type={"primary"} style={{marginLeft: 5}}

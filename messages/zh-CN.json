@@ -197,7 +197,8 @@
   "travel": {
     "startRecordingSceneDescription": "开始录制场景描述",
     "confirm": "确认",
-    "cancel": "取消"
+    "cancel": "取消",
+    "uploadSample": "上传示例图片"
   },
   "LocaleSwitcher": {
     "switchLocale": "切换语言 {locale, select, cn {中文} en {English}}"

@@ -125,7 +125,9 @@ export const api_url = {
         'query': '/api/pato/pro/auth/query'
       },
       'town':{
-        "gen_scene": '/api/town/generate/scene'
+        "gen_scene": '/api/town/generate/scene',
+        "image_parse": '/api/town/image/description',
+        "image_chat": '/api/town/chat/image'
       },
       'task': {
         'pray': '/api/pray',
