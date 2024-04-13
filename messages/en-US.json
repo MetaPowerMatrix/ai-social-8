@@ -118,7 +118,7 @@
     "talk": "交谈",
     "search": "搜索",
     "mail": "邮件",
-    "command": "咨询",
+    "command": "问题",
     "paper": "论文",
     "payment": "支付&投资",
     "live": "AI直播",
@@ -141,7 +141,7 @@
     "startTalkWithPro": "你即将发起和专家的对话，需要消耗1原力值，对话将在合适的时间进行，你可以稍后回来查看",
     "share_ok": "分享成功",
     "share_tips": "分享你觉得有价值的知识，小镇居民添加这个知识你将会获得10点原力值",
-    "ask": "询问",
+    "ask": "发送",
     "select_book": "选书"
   },
   "discovery": {

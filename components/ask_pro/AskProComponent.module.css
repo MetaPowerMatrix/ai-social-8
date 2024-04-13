@@ -1,4 +1,4 @@
-.summary_container_mobile {
+.ask_pro_mobile_container {
   position: fixed;
   z-index: 4;
   left: 0;
@@ -8,7 +8,7 @@
   overflow: auto;
   background-color: rgba(0,0,0,0.4);
 }
-.summary_content_mobile {
+.ask_pro_mobile_content {
   position: absolute;
   background-color: white;
   padding: 20px;

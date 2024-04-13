@@ -116,7 +116,7 @@
     "digest": "摘要",
     "pro": "专家",
     "reply": "回复",
-    "command": "咨询",
+    "command": "问题",
     "talk": "问答",
     "search": "数据",
     "mail": "邮件",
@@ -139,7 +139,7 @@
     "uploadKnowledge": "上传你想要阅读的文章书籍，稍后专家会给出谈话内容的摘要，稍后还可以询问专家谈话内容的关键点",
     "linkKnowledge": "粘贴【网站/公众号】链接，稍后专家会给出谈话内容的摘要，稍后还可以询问专家谈话内容的关键点",
     "show_pro_messages": "查看你和专家的交谈历史",
-    "ask": "询问",
+    "ask": "发送",
     "select_book": "选书"
   },
   "discovery": {

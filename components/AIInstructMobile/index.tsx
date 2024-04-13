@@ -9,7 +9,7 @@ import {
 import {useTranslations} from "next-intl";
 import {
 	AndroidOutlined,
-	AudioOutlined, ExclamationCircleFilled, LeftOutlined, OpenAIOutlined,
+	AudioOutlined, CommentOutlined, ExclamationCircleFilled, LeftOutlined, OpenAIOutlined,
 	PauseOutlined, RightOutlined, UnorderedListOutlined
 } from "@ant-design/icons";
 import {api_url, ChatMessage, getApiServer, getMQTTBroker, HotPro, Streaming_Server} from "@/common";
@@ -20,6 +20,7 @@ import mqtt from "mqtt";
 import SubscriptionsComponent from "@/components/Subscriptions";
 import {getOS, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
+import AskProComponent from "@/components/ask_pro";
 
 interface AIInstructPros {
 	id: string,
@@ -35,28 +36,21 @@ declare global {
 
 const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgress}) => {
 	const t = useTranslations('AIInstruct');
-	const [openSub, setOpenSub] = useState<boolean>(false);
 	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
 	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [summary, setSummary] = useState<string>("");
 	const [hideMessages, setHideMessages] = useState<boolean>(true);
-	const [question, setQuestion] = useState<string>("");
-	const [stopped, setStopped] = useState<boolean>(true);
-	const [answer, setAnswer] = useState<string>("");
 	const [hotPros, setHotPros] = useState<HotPro[]>([])
-	const [recorder, setRecorder] = useState<MediaRecorder>();
-	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
-	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
-	const [accessAssitant, setAccessAssitant] = useState<string>()
 	const [activeTabPro, setActiveTabPro] = useState<string>('mine');
-	const tabHeight: number = 180
+	const [showProChat, setShowProChat] = useState<boolean>(false)
+	const [proName, setProName] = useState<string>('')
+	const [proId, setProId] = useState<string>('')
+	const tabHeight: number = 520
 	const command = commandDataContainer.useContainer()
-	let chunks: BlobPart[] = [];
 	const {confirm} = Modal;
 
 	useEffect(() => {
-		initAudioStream().then(()=>{})
 		let asInfoStr = localStorage.getItem("assistants")
 		if (asInfoStr !== null) {
 			const asInfo = JSON.parse(asInfoStr)
@@ -68,165 +62,13 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 			});
 			setAuthorisedIds(idsMap);
 		}
-
-		// Initialize MQTT client and connect
-		const mqttClient = mqtt.connect(getMQTTBroker());
-		mqttClient.on("connect", () => {
-			console.log("Instruct Connected to MQTT broker");
-		});
-		mqttClient.on("error", (err) => {
-			// console.error("Error connecting to MQTT broker:", err);
-		});
-		setClient(mqttClient);
-
-		return () => {
-			mqttClient.end(); // Clean up the connection on component unmount
-		};
 	}, []);
-
-	useEffect(() => {
-		if (client) {
-			const topic_instruct_voice = id+"/instruct/voice";
-			const topic_instruct = id+"/instruct";
-
-			// Handler for incoming messages
-			const onMessage = (topic: string, message: Buffer) => {
-				if (topic === topic_instruct){
-					console.log("receive answer: ", message.toString())
-					setAnswer(message.toString())
-				}else{
-					console.log("receive audio: ", message.toString())
-					playAudioWithWebAudioApi(message.toString())
-				}
-			};
-
-			// Subscribe to the topic
-			client.subscribe([topic_instruct,topic_instruct_voice], (err) => {
-				if (!err) {
-					console.log("Subscribed to topic: ", [topic_instruct,topic_instruct_voice]);
-					client.on('message', onMessage);
-				}
-			});
-			// Return a cleanup function to unsubscribe and remove the message handler
-			return () => {
-				if (client) {
-					client.unsubscribe([topic_instruct,topic_instruct_voice]);
-					client.removeListener('message', onMessage);
-				}
-			};
-		}
-	}, [client]); // Re-run this effect if the `client` state changes
 
 	useEffect(()=>{
 		command.getProHots().then((resp)=>{
 			setHotPros(resp)
 		})
 	},[])
-	// Function to initialize audio recording and streaming
-	const initAudioStream = async () => {
-		try {
-			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-			handleAudioStream(stream);
-		} catch (error) {
-			console.error('Error accessing the microphone:', error);
-		}
-	};
-
-	const process_ws_message = (event: any) => {
-		console.log(event.data.toString())
-		console.log("assist: ", accessAssitant)
-		if (event.data.toString() !== 'pong'){
-			setQuestion(event.data.toString())
-			if (accessAssitant === undefined){
-				handleVoiceCommand(event.data.toString(), id)
-			}else{
-				handleVoiceCommand(event.data.toString(), accessAssitant)
-			}
-		}
-	}
-
-	const handleAudioStream = (stream: MediaStream) => {
-		let options = {mimeType: 'audio/webm;codecs=pcm'};
-		let OS = getOS()
-		if (OS === 'iphone'|| OS === 'macosx'){
-			options = {mimeType: 'audio/mp4;codecs=mp4a'}
-		}
-		const mediaRecorder = new MediaRecorder(stream, options);
-		const socket = new WebSocketManager(Streaming_Server + "/up", process_ws_message);
-
-		setWsSocket(socket)
-		setRecorder(mediaRecorder)
-
-		mediaRecorder.ondataavailable = (event) => {
-			console.log(event)
-			if (event.data.size > 0) {
-				chunks.push(event.data);
-				// socket.send(event.data);
-			}
-		};
-		mediaRecorder.onstop = () => {
-			socket.send(new Blob(chunks, { 'type' : 'audio/webm' }));
-			console.log("send")
-			chunks = [];
-		};
-		// mediaRecorder.start(2000); // Start recording, and emit data every 5s
-	};
-
-	const stop_record = () => {
-		if (stopped){
-			recorder?.start(1000)
-			setStopped(false)
-		}else{
-			recorder?.stop()
-			setStopped(true)
-		}
-	}
-
-	const handleVoiceCommand = (topic: string, pro: string) => {
-		const data = {id: id, message: topic, pro: pro};
-		let url = getApiServer(80) + api_url.portal.interaction.instruct
-		fetch(url, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json;charset=utf-8'
-			},
-			body: JSON.stringify(data)
-		})
-			.then(response => response.json())
-			.then(data => {
-				if (data.code === "200") {
-					// let answer = data.content
-					// setAnswer(answer)
-					// setRoleOnePortrait(openInfo.role_1_portarit)
-					// alert('等待助手执行任务');
-				}else{
-					alert(t('assist_fail'));
-				}
-				onShowProgress(false);
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-				alert(t('assist_fail'));
-				onShowProgress(false);
-			});
-	};
-
-	async function playAudioWithWebAudioApi(url: string): Promise<void> {
-		try {
-			const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-			const response = await fetch(url);
-			const arrayBuffer = await response.arrayBuffer();
-			const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-			const source = audioContext.createBufferSource();
-			source.buffer = audioBuffer;
-			source.connect(audioContext.destination);
-			source.start();
-
-		} catch (error) {
-			console.error('Error playing audio with Web Audio API:', error);
-		}
-	}
 
 	const callPato = (id: string, callid: string) => {
 		command.callPato(id, callid).then((res) => {
@@ -272,7 +114,11 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 			callPato(id, callid)
 		}
 	};
-
+	const openProChat = (pro_id: string, pro_name: string) => {
+		setProId(pro_id)
+		setProName(pro_name)
+		setShowProChat(true)
+	}
 	const pro_tabs = [
 		{
 			key: 'mine',
@@ -327,23 +173,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 																			}
 																		})
 																	}}/>
-								                  {
-									                  stopped ?
-										                  <AudioOutlined style={{marginRight:10,fontSize:18}}  onClick={()=>{
-											                  confirm({
-												                  icon: <ExclamationCircleFilled />,
-												                  content: t('startAskPro'),
-												                  okText: t('confirm'),
-												                  cancelText: t('cancel'),
-												                  onOk() {
-													                  setAccessAssitant(item.value)
-													                  stop_record()
-												                  }
-											                  })
-																			}}/>
-										                  :
-										                  <PauseOutlined style={{marginRight:10,fontSize:18}} onClick={() => stop_record()}/>
-								                  }
+								                  <CommentOutlined style={{marginRight:10,fontSize:18}} onClick={() => openProChat(item.value, item.label)}/>
 								                  <UnorderedListOutlined style={{fontSize:18}} onClick={()=>{
 									                  Modal.info({
 										                  content: t('show_pro_messages'),
@@ -389,25 +219,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 																			}
 																		})
 																	}}/>
-																	{
-																		stopped ?
-																			<AudioOutlined style={{marginLeft:10,fontSize:18}}  onClick={()=> {
-																				confirm({
-																					icon: <ExclamationCircleFilled />,
-																					content: t('startAskPro'),
-																					okText: t('confirm'),
-																					cancelText: t('cancel'),
-																					onOk() {
-																						setAccessAssitant(item.id)
-																						stop_record()
-																					}
-																				})
-																			}}/>
-																			:
-																			<PauseOutlined style={{marginLeft:10,fontSize:18}} onClick={
-																				() => stop_record()
-																			}/>
-																	}
+																	<CommentOutlined style={{marginLeft:10,fontSize:18}} onClick={() => openProChat(item.id, item.name)}/>
 																	<UnorderedListOutlined style={{marginLeft:10,fontSize:18}} onClick={()=>{
 																		Modal.info({
 																			content: t('show_pro_messages'),
@@ -425,14 +237,6 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
                   </div>
 							}
 						</Card>
-						<div>
-							<Row align={"middle"} justify={"space-between"}>
-								<Col span={24}>
-									<TextArea placeholder={t('command')} value={question} rows={1}/>
-								</Col>
-								<TextArea placeholder={"回复"} style={{marginTop: 10}} value={answer} rows={13}/>
-							</Row>
-						</div>
 					</div>
 					<div hidden={hideMessages} style={{overflow: "scroll", height: 700, padding: 15}}>
 						<Row>
@@ -464,8 +268,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 							)}
 						/>
 					</div>
-					<SubscriptionsComponent mobile={true} id={id} onClose={() => setOpenSub(false)} visible={openSub}
-					                        onShowProgress={onShowProgress}/>
+					<AskProComponent activeId={id} visible={showProChat} pro_name={proName} pro_id={proId} onClose={()=>setShowProChat(false)} onShowProgress={onShowProgress}/>
 				</div>
 			</div>
 	);

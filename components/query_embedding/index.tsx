@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Button, Col, Divider, Input, List, Modal, Row} from "antd";
 import styles from "./QueryEmbeddingComponent.module.css";
 import {
+	AudioFilled,
 	AudioOutlined, CloseCircleOutlined, CloseOutlined, ExclamationCircleFilled,
 	PauseOutlined, PlusOutlined, RightOutlined, ShareAltOutlined
 } from "@ant-design/icons";
@@ -81,14 +82,12 @@ const QueryEmbeddingComponent = ({activeId, visible, bookname, bookSig, onClose,
 		}
 	}
 	const handleQueryEmbeddings = (sig: string, q: string) => {
-		if (sig !== ""){
-			command.query_embedding(activeId, sig, q).then((res) => {
-				console.log(res)
-				if (res !== undefined){
-					setQueryResult(res)
-				}
-			})
-		}
+		command.query_embedding(activeId, sig, q).then((res) => {
+			console.log(res)
+			if (res !== undefined){
+				setQueryResult(res)
+			}
+		})
 	}
 	const inputQuestion = (event: React.ChangeEvent<HTMLInputElement>) =>{
 		setQuery(event.target.value)
@@ -97,12 +96,21 @@ const QueryEmbeddingComponent = ({activeId, visible, bookname, bookSig, onClose,
 		<div hidden={!visible} className={styles.summary_container_mobile}>
 			<div className={styles.summary_content_mobile}>
 				<CloseOutlined onClick={()=>onClose()} style={{fontSize: 18}}/>
-				<h5 style={{textAlign:"center"}}>{bookname}</h5>
-				<Row align={"middle"}>
-					<Col span={2}>
+				<div style={{textAlign:"center",marginBottom:5}}>{bookname}</div>
+				<Row>
+					<Col span={24}>
+						<Input onChange={inputQuestion} placeholder={"文章中的基金是什么意思"} value={query}/>
+					</Col>
+				</Row>
+				<Row>
+					<TextArea style={{marginTop: 10}} placeholder={"文中的基金是指xx基建基金"} value={queryResult} rows={14}/>
+				</Row>
+				<Row align={"middle"} style={{marginTop:10}}>
+					<Col span={8}></Col>
+					<Col span={4}>
 						{
 							stopped ?
-								<AudioOutlined style={{color: "black", fontSize: 20}} onClick={() => {
+								<AudioFilled style={{color: "black", fontSize: 22}} onClick={() => {
 									confirm({
 										icon: <ExclamationCircleFilled/>,
 										content: t('startAsk'),
@@ -114,19 +122,13 @@ const QueryEmbeddingComponent = ({activeId, visible, bookname, bookSig, onClose,
 									})
 								}}/>
 								:
-								<PauseOutlined style={{color: "black", fontSize: 20}} onClick={() => stop_record()}/>
+								<PauseOutlined style={{color: "black", fontSize: 22}} onClick={() => stop_record()}/>
 						}
 					</Col>
-					<Col span={18}>
-						<Input onChange={inputQuestion} placeholder={"文章中的基金是什么意思"} value={query}/>
-					</Col>
-					<Col span={3}>
-						<Button type={"primary"} style={{marginLeft: 5}}
+					<Col span={4}>
+						<Button type={"primary"} style={{marginLeft: 0}}
 						        onClick={() => handleQueryEmbeddings(bookSig, query)}>{t('ask')}</Button>
 					</Col>
-				</Row>
-				<Row>
-					<TextArea style={{marginTop: 10}} placeholder={"文中的基金是指xx基建基金"} value={queryResult} rows={18}/>
 				</Row>
 			</div>
 		</div>
