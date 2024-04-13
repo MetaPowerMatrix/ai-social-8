@@ -2,8 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Button, Col, Divider, Input, List, Modal, Row} from "antd";
 import styles from "./QueryEmbeddingComponent.module.css";
 import {
-	AudioOutlined, ExclamationCircleFilled,
-	LeftOutlined,
+	AudioOutlined, CloseCircleOutlined, CloseOutlined, ExclamationCircleFilled,
 	PauseOutlined, PlusOutlined, RightOutlined, ShareAltOutlined
 } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
@@ -12,38 +11,20 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import {getOS} from "@/lib/utils";
-import MyKnowledges from "@/components/MyKnowledges";
 
-const QueryEmbeddingComponent = ({activeId, onShowProgress}:{activeId:string, onShowProgress: (s: boolean)=>void}) => {
+const QueryEmbeddingComponent = ({activeId, visible, bookname, bookSig, onClose, onShowProgress}:{activeId:string, visible:boolean, bookname:string, bookSig:string, onClose: ()=>void, onShowProgress: (s: boolean)=>void}) => {
 	const [query, setQuery] = useState<string>("");
 	const [queryResult, setQueryResult] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
-	const [bookName, setBookName] = useState<string>('')
-	const [bookSig, setBookSig] = useState<string>('')
 	const command = commandDataContainer.useContainer()
-	const [showMyKnowledges, setShowMyKnowledges] = useState<boolean>(false)
-	const [knowledges, setKnowledges] = useState<{ label: string; value: string; }[]>([])
 	const t = useTranslations('AIInstruct');
 	const {confirm} = Modal;
 
 	useEffect(() => {
 			initAudioStream().then(()=>{})
 	}, [])
-
-	useEffect(() =>{
-		command.query_knowledges(activeId).then((res) => {
-			let kList: { label: string; value: string; }[] = []
-			res?.forEach((item) => {
-				let k = item.split('#')
-				if (k.length > 1){
-					kList.push({label: k[0], value: k[1]})
-				}
-			})
-			setKnowledges(kList)
-		})
-	}, [activeId])
 
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
@@ -109,29 +90,14 @@ const QueryEmbeddingComponent = ({activeId, onShowProgress}:{activeId:string, on
 			})
 		}
 	}
-	const selectMyKnowledge = (name:string, sig:string) => {
-		setBookName(name)
-		setBookSig(sig)
-	}
 	const inputQuestion = (event: React.ChangeEvent<HTMLInputElement>) =>{
 		setQuery(event.target.value)
 	}
 	return (
-		<div className={styles.summary_container_mobile}>
+		<div hidden={!visible} className={styles.summary_container_mobile}>
 			<div className={styles.summary_content_mobile}>
-				<Row align={"middle"}>
-					<Col span={3}>
-						<h5>{t('select_book')}</h5>
-					</Col>
-					<Col span={18}>
-						<Input value={bookName}/>
-					</Col>
-					<Col span={3} style={{textAlign:"center"}}>
-						<PlusOutlined onClick={()=>setShowMyKnowledges(true)}/>
-					</Col>
-				</Row>
-				<MyKnowledges activeId={activeId} visible={showMyKnowledges} canSelect={true} onSelectName={selectMyKnowledge}
-				              onClose={()=>setShowMyKnowledges(false)} knowledges={knowledges}/>
+				<CloseOutlined onClick={()=>onClose()} style={{fontSize: 18}}/>
+				<h5 style={{textAlign:"center"}}>{bookname}</h5>
 				<Row align={"middle"}>
 					<Col span={2}>
 						{

@@ -7,7 +7,7 @@ import {
     BarsOutlined,
     ShopOutlined,
     SolutionOutlined,
-    CommentOutlined,
+    CommentOutlined, ExperimentOutlined,
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
@@ -21,6 +21,7 @@ import QRCodeComponent from "@/components/QRCode";
 import mqtt from "mqtt";
 import TwonMobile from "@/components/town";
 import LiveChatMobile from "@/components/LiveChatMobile";
+import StudyTownCompoent from "@/components/study_town";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [open, setOpen] = useState(false);
@@ -113,7 +114,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
 
     const tabs =[
         {label: t('messages'), key:"chat", icon: <CommentOutlined/>},
-        {label: t('assistant'), key:"pro", icon: <SolutionOutlined />},
+        {label: t('train'), key:"pro", icon: <ExperimentOutlined />},
         {label: t("town"), key:"feed", icon: <ShopOutlined style={{fontSize:18,color:"goldenrod"}} />},
         // {label: t("discovery"), key:"discovery", icon: <BarsOutlined />},
         {label: t("mine"), key:"mine", icon: <UserOutlined />}
@@ -128,7 +129,10 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     </div>
                 }
                 {key === 'pro' &&
-                    <AIInstructMobileComponent id={activeId} onShowProgress={showProgressBar}/>
+                    <>
+                        <h4 style={{width: "100%", textAlign:"center"}}>{t('study')}</h4>
+                        <StudyTownCompoent id={activeId} mobile={true} onShowProgress={showProgressBar}/>
+                    </>
                 }
                 {key === 'feed' &&
                     <TwonMobile id={activeId} mobile={true} userFeed={userFeed} onShowProgress={showProgressBar} />

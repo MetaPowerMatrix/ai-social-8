@@ -127,7 +127,7 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 						setDescription(answer[0])
 					}
 					if (answer.length > 1){
-						playAudioWithWebAudioApi(answer[1])
+						playAudioWithWebAudioApi(answer[1]).then(r => {})
 					}
 				}else{
 					alert(t('assist_fail'));
@@ -176,7 +176,6 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 			});
 	};
 	const handleImageDescription= () => {
-		setSendDescription(false)
 		const formData = new FormData();
 		if (fileList.length > 0){
 			formData.append('file', fileList[0] as FileType);
@@ -270,7 +269,10 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 							<FileImageOutlined style={{color: "black", fontSize: 18}} onClick={() => handleImageDescription()}/>
 						}/>
 						<FloatButton icon={
-							<MessageOutlined style={{color: "black", fontSize: 18}} onClick={() => stop_record()}/>
+							<MessageOutlined style={{color: "black", fontSize: 18}} onClick={() =>{
+								stop_record()
+								setSendDescription(false)
+							}}/>
 						}/>
 					</FloatButton.Group>
 					<Row>

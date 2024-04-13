@@ -28,6 +28,8 @@ import {formatDateTimeString, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 import LayoutMobile from "@/components/layout_mobile";
 import mqtt from "mqtt";
+import TextArea from "antd/es/input/TextArea";
+import HotTopics from "@/components/HotTopics";
 
 const MessageHeader = ({onChangeDate, onClickReload, queryDate}:{
 	onChangeDate: (datestring: string)=>void,
@@ -139,19 +141,20 @@ export default function Home() {
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [reloadTimes, setReloadTimes] = useState(0);
 	const [sessionList, setSessionList] = useState<SessionList[]>([])
-	const [dailyEvent, setDailyEvent] = useState('');
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const [isMySeesion, setIsMySession] = useState<boolean>(false)
 	const [activeName, setActiveName] = useState<string>("")
-	const [continueTalk, setContinueTalk] = useState<boolean>(true)
 	const [api, contextHolder] = notification.useNotification();
 	const [currentSession, setCurrentSession] = useState<string>("")
 	const [hideDetail, setHideDetail] = useState<boolean>(true)
 	const [summary, setSummary] = useState<string>("")
 	const [activeTab, setActivTab] = useState('feed');
 	const [userFeed, setUserFeed] = useState([{children:"新的一天开始了"}]);
+	const [showTopics, setShowTopics] = useState<boolean>(false)
+	const [topic, setTopic] = useState<string>('')
+	const [topicChatHis, setTopicChatHis] = useState<string[]>([])
+	const activeTown = 'study';
 	const {confirm} = Modal;
-
 	const t = useTranslations('Index');
 
 	const openNotification = (title: string, message: string) => {
@@ -163,17 +166,6 @@ export default function Home() {
 		});
 	};
 
-	const handleTodayEvent = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		event.preventDefault();
-		if (dailyEvent === ""){
-			alert(t('event'))
-			return
-		}
-	};
-	const dailyInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-		event.preventDefault();
-		setDailyEvent(event.target.value)
-	}
 	const changeQueryDate = (datestring: string) => {
 		setQueryDate(datestring);
 	}
@@ -345,6 +337,48 @@ export default function Home() {
 			}
 		})
 	}
+	const handleTodayEvent = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		event.preventDefault();
+		if (topic === ""){
+			Modal.warning({
+				content: t('event_tips')
+			})
+			return
+		}
+		confirm({
+			icon: <ExclamationCircleFilled />,
+			content: t('talking_tips'),
+			okText: t('confirm'),
+			cancelText: t('cancel'),
+			onOk() {
+				command.create_today_event(activeId, topic, activeTown).then((response) => {
+					Modal.success({
+						content: t('talking')
+					})
+				})
+			}
+		})
+	};
+
+	const topicInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+		event.preventDefault();
+		setTopic(event.target.value)
+	}
+	const onSelectTopic = (name:string, id:string) =>{
+		setTopic(name)
+	}
+	const queryTopicChatHis = () => {
+		if (topic === ''){
+			Modal.warning({
+				content: t('event_tips')
+			})
+		}else{
+			command.get_topic_chat_his(activeId, topic, activeTown).then((res) => {
+				setTopicChatHis(res)
+			})
+		}
+	}
+
 	const tabContent = (key: string) => {
 		return(
 			<>
@@ -408,6 +442,41 @@ export default function Home() {
                 </Row>
             </div>
 				}
+				{key === 'topic' &&
+            <div style={{overflow:"scroll", height:490}}>
+                <TextArea style={{marginBottom: 10}} value={topic} placeholder={t('topicTips')} rows={2} onChange={(e) => topicInput(e)}/>
+                <Row>
+                    <Col span={8}>
+                        <Button onClick={()=>setShowTopics(true)}>{t('event_pick')}</Button>
+                    </Col>
+                    <Col span={8}>
+                        <Button onClick={()=>queryTopicChatHis()}>{t('event_query')}</Button>
+                    </Col>
+                    <Col span={8}>
+                        <Button type={"primary"} onClick={handleTodayEvent}>{t('event')}</Button>
+                    </Col>
+                </Row>
+                <List
+                    itemLayout="vertical"
+                    size="small"
+                    split={false}
+                    dataSource={topicChatHis}
+                    renderItem={(item, index) => {
+											return (
+												<List.Item
+													key={index}
+												>
+													<Row>
+														<Col span={24}>
+															<h5>{item}</h5>
+														</Col>
+													</Row>
+												</List.Item>
+											)
+										}}
+                />
+            </div>
+				}
 			</>
 		)
 	}
@@ -415,6 +484,7 @@ export default function Home() {
 	const tabs =[
 		{label: t('feed'), key:"feed", icon: <RedditOutlined />},
 		{label: t('messages'), key:"messages", icon: <CommentOutlined/>},
+		{label: t('topic'), key:"topic", icon: <CommentOutlined/>},
 	]
 	return (
 		<LayoutMobile onRefresh={(name: string) => setActiveName(name)} onChangeId={(newId: string) => setActiveId(newId)}
@@ -425,22 +495,10 @@ export default function Home() {
 				<title>{t('title')}</title>
 			</Head>
 			<div hidden={!hideDetail} style={{height: pageHeight, padding: 10}}>
-				{/*<h4 style={{textAlign: "center"}}>{t('chatTitle')}</h4>*/}
-				{/*<div style={{padding: 10}}>*/}
-				{/*	<Row align={"middle"}>*/}
-				{/*		<Col span={5} style={{textAlign: "start"}}><label>{t('event')}</label></Col>*/}
-				{/*		<Col span={15} style={{textAlign: "center"}}>*/}
-				{/*			<Input placeholder={t('taskDailyTips')} onChange={(e) => dailyInput(e)}/>*/}
-				{/*		</Col>*/}
-				{/*		<Col span={4} style={{textAlign: "center"}}>*/}
-				{/*			<button onClick={(e) => handleTodayEvent(e)}>{t('submit')}</button>*/}
-				{/*		</Col>*/}
-				{/*	</Row>*/}
-				{/*</div>*/}
 				<Tabs
 					centered
 					size={"middle"}
-					tabBarGutter={100}
+					tabBarGutter={40}
 					type={"line"}
 					animated={true}
 					tabPosition="top"
@@ -456,6 +514,7 @@ export default function Home() {
 					})}
 				/>
 			</div>
+			<HotTopics town={activeTown} activeId={activeId} onClose={()=>setShowTopics(false)} visible={showTopics} canSelect={false} onSelectName={onSelectTopic}/>
 			<div hidden={hideDetail} style={{overflow: "scroll", height: pageHeight, padding: 15}}>
 				<Row>
 					<LeftOutlined onClick={() => setHideDetail(true)}/>

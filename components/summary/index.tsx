@@ -6,14 +6,15 @@ import {
 	PauseOutlined,
 	UploadOutlined
 } from "@ant-design/icons";
-import TextArea from "antd/es/input/TextArea";
 import {api_url, getApiServer, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import {getOS} from "@/lib/utils";
+import MyKnowledges from "@/components/MyKnowledges";
+import QueryEmbeddingComponent from "@/components/query_embedding";
 
-const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowProgress: (s: boolean)=>void}) => {
+const SummaryComponent = ({activeId, onShowProgress, updateCounter}:{activeId:string, updateCounter:number, onShowProgress: (s: boolean)=>void}) => {
 	const [transcriptFile, setTranscriptFile] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
@@ -22,8 +23,12 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [summarys, setSummarys] = useState<string[]>([]);
 	const [isUploadRecord, setIsUploadRecord] = useState(true);
-	const [sigs, setSig] = useState<string[]>([]);
 	const [uploaded, setUploaded] = useState<boolean>(false)
+	const [showQueryDialog, setShowQueryDialog] = useState<boolean>(false)
+	const [knowledges, setKnowledges] = useState<{ label: string; value: string; summary:string }[]>([])
+	const [knowledgeUpdated, setKnowledgeUpdated] = useState<number>(0)
+	const [selectedBook, setSelectedBook]=  useState<string>('')
+	const [selectedBookSig, setSelectedBookSig]=  useState<string>('')
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('AIInstruct');
 	const {confirm} = Modal;
@@ -36,6 +41,17 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 		// 		recorder.
 		// };
 	}, [])
+
+	useEffect(() =>{
+		command.query_knowledges(activeId).then((res) => {
+			let kList: { label: string; value: string; summary: string }[] = []
+			res?.forEach((item) => {
+					kList.push({label: item.title, value: item.sig, summary: item.summary})
+			})
+			setKnowledges(kList)
+		})
+	}, [activeId, knowledgeUpdated, updateCounter])
+
 
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
@@ -112,14 +128,10 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 			.then(response => response.json())
 			.then(data => {
 				if (data.code === "200") {
-					let sigs: string[] = JSON.parse(data.content)
-					sigs = sigs.filter((sig) => {return sig !== ''})
+					setKnowledgeUpdated(knowledgeUpdated + 1)
 					Modal.success({
 						content: '文档上传成功，等待学习结果!'
 					})
-					setSig(sigs)
-					console.log(sigs)
-					handleQuerySummary(sigs)
 				}else{
 					Modal.warning({
 						content: '文档上传失败.'
@@ -174,6 +186,17 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 	return (
 		<div className={styles.summary_container_mobile}>
 			<div className={styles.summary_content_mobile}>
+				<Row style={{marginBottom: 10}}>
+					<Col span={24}>
+						<MyKnowledges activeId={activeId} onSelectName={
+							(name, value)=>{
+								setSelectedBook(name)
+								setSelectedBookSig(value)
+								setShowQueryDialog(true)
+							}
+						} knowledges={knowledges}/>
+					</Col>
+				</Row>
 				<Row align={"middle"}>
 					<Col span={2}>
 						{
@@ -208,16 +231,17 @@ const SummaryComponent = ({activeId, onShowProgress}:{activeId:string, onShowPro
 							</Upload>
 						</>
 					</Col>
-					<Col span={14}>
+					<Col span={13}>
 						<Input placeholder={t('linkKnowledge')} value={knowledge} onChange={knowledgeInput}/>
 					</Col>
-					<Col span={3} style={{textAlign: "end"}}>
+					<Col span={4} style={{textAlign: "end"}}>
 						<Button type={"primary"} style={{marginLeft: 10}} onClick={(e) => handleKnowledge(e)}>{t('do_summary')}</Button>
 					</Col>
 				</Row>
-				<Row>
-						<TextArea style={{marginTop: 10}} placeholder={t('digest')} value={summarys.join('\n')} rows={20}/>
-				</Row>
+				{/*<Row>*/}
+				{/*		<TextArea style={{marginTop: 10}} placeholder={t('digest')} value={summarys.join('\n')} rows={20}/>*/}
+				{/*</Row>*/}
+				<QueryEmbeddingComponent onClose={()=>setShowQueryDialog(false)} visible={showQueryDialog} bookname={selectedBook} bookSig={selectedBookSig} activeId={activeId} onShowProgress={onShowProgress}/>
 			</div>
 		</div>
 	)

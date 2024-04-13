@@ -1,26 +1,23 @@
 import React from 'react';
 import styles from "./MyKnowledgesComponentComponent.module.css";
 import {
-	Col, List, Modal, Row
+	Col, Divider, List, Modal, Row
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
 	ExclamationCircleFilled,
 	LeftOutlined, OrderedListOutlined,
-	PlusOutlined, ShareAltOutlined
+	PlusOutlined, SearchOutlined, ShareAltOutlined
 } from "@ant-design/icons";
 import commandDataContainer from "@/container/command";
 
 interface HotAIPros {
 	activeId: string,
-	visible: boolean,
-	canSelect: boolean,
 	onSelectName: (name: string, id: string)=>void,
-	onClose: ()=>void,
-	knowledges: { label: string, value: string }[]
+	knowledges: { label: string, value: string, summary: string }[]
 }
 
-const MyKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, visible, canSelect, onSelectName, onClose, knowledges}) => {
+const MyKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, onSelectName, knowledges}) => {
 	const t = useTranslations('discovery');
 	const command = commandDataContainer.useContainer()
 	const {confirm} = Modal;
@@ -42,15 +39,9 @@ const MyKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, visible, canSele
 	}
 
 	return (
-		<div hidden={!visible} className={styles.sharedKnowledges_container_mobile}>
-			{
-        <Row style={{padding: 10}}>
-            <LeftOutlined style={{fontSize: 15}} onClick={() => onClose()}/>
-        </Row>
-			}
+		<div className={styles.sharedKnowledges_container_mobile}>
 			<div className={styles.sharedKnowledges_content_mobile}>
-					<div style={{overflow: "scroll", padding: 15}}>
-						<h3 style={{textAlign:"center"}}>{t('my_knowledges')}</h3>
+					<div style={{overflow: "scroll"}}>
 						<List
 							itemLayout="horizontal"
 							size="small"
@@ -62,25 +53,18 @@ const MyKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, visible, canSele
 								>
 									<Row align={"middle"} style={{width:"100%"}}>
 										<Col span={18}><h5 style={{overflow:"scroll"}}>{item.label}</h5></Col>
-										{
-											canSelect &&
-                        <Col span={2} style={{textAlign: "end",marginLeft:10}}>
-		                        <PlusOutlined onClick={()=>{
-			                        confirm({
-				                        icon: <ExclamationCircleFilled />,
-				                        content: t('addMyKnowledge'),
-				                        okText: t('confirm'),
-				                        cancelText: t('cancel'),
-				                        onOk() {
-					                        onSelectName(item.label, item.value)
-					                        onClose()
-				                        }
-			                        })
-		                        }}/>
-												</Col>
-										}
-										<Col onClick={() => shareKnowledge(item.value, item.label)} span={2}
-										     style={{textAlign: "end"}}><ShareAltOutlined/></Col>
+										<Col span={6} style={{textAlign:"end"}}>
+											<SearchOutlined onClick={()=>onSelectName(item.label, item.value)}/>
+											<Divider type={"vertical"}/>
+											<ShareAltOutlined onClick={() => shareKnowledge(item.value, item.label)} />
+											<Divider type={"vertical"}/>
+											<OrderedListOutlined onClick={()=>{
+												Modal.info({
+													title: t('digest'),
+													content: item.summary,
+												})
+											}}/>
+										</Col>
 									</Row>
 								</List.Item>
 							)}

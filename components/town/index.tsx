@@ -9,9 +9,10 @@ import {
 import StudyTownCompoent from "@/components/study_town";
 import HotAI from "@/components/HotAI";
 import TravelTownComponent from "@/components/TravelTown";
+import AIInstructMobileComponent from "@/components/AIInstructMobile";
 
 const towns =[
-	{label: '学习小镇,都是学霸', value: 'study'},
+	{label: '专家小镇，有求必应', value: 'study'},
 	{label: '旅游小镇，诗和远方', value: 'travel'},
 	{label: '幸运小镇', value: 'literature'},
 	{label: '音乐小镇，Music！！', value: 'music'},
@@ -22,7 +23,7 @@ const towns =[
 ]
 const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, onShowProgress: (s: boolean)=>void}) => {
 	const [activeTown, setActivTown] = useState('study');
-	const [activeTownLabel, setActiveTownLabel] = useState<string>('学习小镇,都是学霸')
+	const [activeTownLabel, setActiveTownLabel] = useState<string>(towns[0].label)
 	const [showHot, setShowHot] = useState<boolean>(false)
 	const [openPop, setOpenPop] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
@@ -85,13 +86,6 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
           <Row align={"middle"}>
               <Col span={19} style={{textAlign:"center"}}>
 		              <h4>{activeTownLabel}</h4>
-                  {/*<select style={{width: "100%", padding:5, marginBottom:10}} id="town" name="town" onChange={(e) => townChange(e)}>*/}
-									{/*	{towns.map((option) => (*/}
-									{/*		<option key={option.value} value={option.value}>*/}
-									{/*			{option.label}*/}
-									{/*		</option>*/}
-									{/*	))}*/}
-                  {/*</select>*/}
               </Col>
 		          <Col span={1} style={{marginRight:10}}>
                   <Popover
@@ -122,7 +116,7 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
           </Row>
           <div style={{overflow: "scroll"}}>
             {activeTown === 'study' &&
-	            <StudyTownCompoent id={id} mobile={true} onShowProgress={onShowProgress}/>
+                <AIInstructMobileComponent id={id} onShowProgress={onShowProgress}/>
             }
 	          {activeTown === 'travel' &&
                 <TravelTownComponent activeId={id} onShowProgress={onShowProgress}/>

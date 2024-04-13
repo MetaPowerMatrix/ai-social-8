@@ -289,7 +289,6 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 	return (
 			<div className={styles.voice_instruct_container}>
 				<div className={styles.voice_instruct_content}>
-					<h4 style={{textAlign:"center"}}>{t('title')}</h4>
 					<div hidden={!hideMessages}>
 						<Card
 							bodyStyle={{padding: "0"}}

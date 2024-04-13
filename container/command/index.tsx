@@ -511,7 +511,7 @@ const useCommand = () => {
       let response = await fetch(`${url}`,)
       if (response.ok) {
         let dataJson = await response.json()
-        let knowLedges: string[] = JSON.parse(dataJson.content)
+        let knowLedges: PortalKnowledge[] = JSON.parse(dataJson.content)
         return knowLedges
       }
     } catch (e) {

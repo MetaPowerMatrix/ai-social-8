@@ -34,6 +34,7 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, inTab, visib
 			cancelText: t('cancel'),
 			onOk() {
 				command.add_shared_knowledge(activeId, sig, name).then(()=>{
+					onClose()
 					Modal.success({
 						content: t('add_share_ok')
 					})
