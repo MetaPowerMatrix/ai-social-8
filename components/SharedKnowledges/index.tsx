@@ -29,7 +29,7 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, inTab, visib
 	const handleAddSharedKnowledge = (name:string, sig:string) => {
 		confirm({
 			icon: <ExclamationCircleFilled />,
-			content: t('share_tips'),
+			content: t('addSharedKnowledge'),
 			okText: t('confirm'),
 			cancelText: t('cancel'),
 			onOk() {

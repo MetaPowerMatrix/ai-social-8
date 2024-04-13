@@ -132,6 +132,7 @@ const SummaryComponent = ({activeId, onShowProgress, updateCounter}:{activeId:st
 					Modal.success({
 						content: '文档上传成功，等待学习结果!'
 					})
+					setFileList([])
 				}else{
 					Modal.warning({
 						content: '文档上传失败.'
