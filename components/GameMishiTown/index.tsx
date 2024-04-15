@@ -153,10 +153,10 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 						              setReload(reload + 1)
 					              }
 					              }/>
+					<GameSceneComponent roomName={roomName} visible={showGameScene} onClose={() => setShowGameScene(false)}
+					                    roomId={roomId} activeId={activeId} owner={owner} onShowProgress={onShowProgress}/>
 				</div>
 			</div>
-			<GameSceneComponent isOwner={isOwner} roomName={roomName} visible={showGameScene} onClose={() => setShowGameScene(false)}
-			                    roomId={roomId} activeId={activeId} owner={owner} onShowProgress={onShowProgress}/>
 		</>
 	)
 }

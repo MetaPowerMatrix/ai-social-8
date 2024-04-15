@@ -14,8 +14,8 @@ import {useTranslations} from "next-intl";
 import {getOS} from "@/lib/utils";
 import commandDataContainer from "@/container/command";
 
-const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, owner, isOwner, onClose}:
-    {visible:boolean,activeId:string,roomName:string, roomId:string, owner:string, isOwner:boolean, onShowProgress: (s: boolean)=>void,onClose: ()=>void}) => {
+const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, owner, onClose}:
+    {visible:boolean,activeId:string,roomName:string, roomId:string, owner:string, onShowProgress: (s: boolean)=>void,onClose: ()=>void}) => {
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
@@ -25,6 +25,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const [confirmed, setConfirmed] = useState<boolean>(false)
 	const [showChatDialog, setShowChatDialog] = useState<boolean>(false)
 	const [message, setMessage] = useState<string>('')
+	const [isOwner, setIsOwner] = useState<boolean>(false)
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
 	const command = commandDataContainer.useContainer()
@@ -38,6 +39,12 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		// 		recorder.
 		// };
 	}, [])
+
+	useEffect(()=>{
+		console.log("active id, owner", activeId, owner)
+		setIsOwner(activeId === owner)
+		console.log(isOwner)
+	},[activeId, owner]);
 
 	// Function to initialize audio recording and streaming
 	const initAudioStream = async () => {
@@ -301,7 +308,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 								})
 							}
 						}}>
-							{isOwnerRef ? '生成场景':'询问线索'}
+							{isOwner ? '生成场景':'询问线索'}
 							{stopped ? <AudioOutlined style={{color: "black"}}/> : <PauseOutlined style={{color: "black"}}/>}
 						</Button>
 					</Col>
@@ -311,7 +318,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 						}}>离开房间</Button>
 					</Col>
 					{
-						isOwnerRef ?
+						isOwner ?
               <Col span={8} style={{textAlign:"center"}}>
                   <Upload id="upload-input" maxCount={1} showUploadList={true} {...props}>
                       <Button>{uploaded ? <CheckOutlined /> : null} 上传场景</Button>
