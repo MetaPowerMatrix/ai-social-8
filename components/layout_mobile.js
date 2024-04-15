@@ -139,7 +139,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     })}
                 />
                 :
-                <Image priority src="/images/ai-town.jp2" fill style={{objectFit: 'cover',}} alt={"map"}/>
+                <Image priority src="/images/town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
             }
             <ProgressBarComponent visible={loading} steps={15} />
             <ModalLogin mobile={true} isOpen={!isLogin} tips={t} options={availableIds}
