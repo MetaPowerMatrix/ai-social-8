@@ -129,7 +129,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     tabPosition="bottom"
                     activeKey={activeTab}
                     onChange={(key)=>setActivTab(key)}
-                    items={tabs.map((tab, i) => {
+                    items={tabs.map((tab) => {
                         return {
                             label: tab.label,
                             key: tab.key,

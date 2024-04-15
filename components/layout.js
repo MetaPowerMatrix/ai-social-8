@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from './layout.module.css';
-import {Col, Divider, Flex, FloatButton, Row} from "antd";
+import {Col, Divider, FloatButton, Row} from "antd";
 import {
     MenuOutlined,
     SettingOutlined,
