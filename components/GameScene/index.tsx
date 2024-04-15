@@ -319,24 +319,26 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 							{stopped ? <AudioOutlined style={{color: "black"}}/> : <PauseOutlined style={{color: "black"}}/>}
 						</Button>
 					</Col>
-					<Col span={8} style={{textAlign:"center"}}>
-						<Button style={{color:"black"}} onClick={() =>{
-							onClose()
-						}}>离开房间</Button>
-					</Col>
 					{
 						isOwner ?
               <Col span={8} style={{textAlign:"center"}}>
                   <Upload id="upload-input" maxCount={1} showUploadList={true} {...props}>
-                      <Button>{uploaded ? <CheckOutlined /> : null} 上传场景</Button>
+                      <Button>{uploaded ? <CheckOutlined /> : null} 公布答案</Button>
                   </Upload>
               </Col>
 							:
-							<Col span={8} style={{textAlign:"center"}}>
-								<Button style={{color:"black"}} onClick={() =>{
-									handleJoin(owner,roomId, roomName)
-								}}>开始玩</Button>
-							</Col>
+							<>
+								<Col span={8} style={{textAlign:"center"}}>
+									<Button style={{color:"black"}} onClick={() =>{
+										onClose()
+									}}>发送答案</Button>
+								</Col>
+								<Col span={8} style={{textAlign:"center"}}>
+									<Button style={{color:"black"}} onClick={() =>{
+										handleJoin(owner,roomId, roomName)
+									}}>下一关</Button>
+								</Col>
+							</>
 					}
 				</Row>
 				<ChatDialog visible={showChatDialog} message={message} onClose={()=>setShowChatDialog(false)}/>
