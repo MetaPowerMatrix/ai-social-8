@@ -116,18 +116,10 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 								</Col>
 								<Col span={2} style={{textAlign: "end"}}>
 									<LoginOutlined onClick={()=>{
-										confirm({
-											icon: <ExclamationCircleFilled />,
-											content: t('joinTips'),
-											okText: t('confirm'),
-											cancelText: t('cancel'),
-											onOk() {
 												setRoomId(item.room_id)
 												setRoomName(item.title)
 												setOwner(item.owner)
 												setShowGameScene(true)
-											}
-										})
 									}}/>
 								</Col>
 							</Row>

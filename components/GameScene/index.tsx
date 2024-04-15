@@ -23,7 +23,6 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const [scene, setScene] = useState<string>("/images/notlogin.png")
 	const [confirmed, setConfirmed] = useState<boolean>(false)
 	const [showChatDialog, setShowChatDialog] = useState<boolean>(false)
-	const [speaker, setSpeaker] = useState<string>('')
 	const [message, setMessage] = useState<string>('')
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
@@ -56,6 +55,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		if (event.data.toString() !== 'pong') {
 			setShowChatDialog(true)
 			setMessage("我：" + event.data.toString())
+			alert(isOwner)
 			if (isOwner){
 				handleGenerateScene(event.data.toString())
 			}else{
@@ -151,9 +151,6 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	};
 	const handleGenerateScene= (description: string) => {
 		const formData = new FormData();
-		// if (fileList.length > 0){
-		// 	formData.append('file', fileList[0] as FileType);
-		// }
 		formData.append('message', JSON.stringify({ id: activeId, room_id: roomId, description: description}));
 
 		onShowProgress(true);
@@ -240,21 +237,29 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	};
 
 	const handleJoin = (owner: string, room_id: string, room_name: string) => {
-		command.join_game(activeId, owner, room_id, room_name).then((res) => {
-			Modal.success({
-				content: '加入房间成功!'
-			})
-			setScene(res)
+		confirm({
+			icon: <ExclamationCircleFilled />,
+			content: t('joinTips'),
+			okText: t('confirm'),
+			cancelText: t('cancel'),
+			onOk() {
+				command.join_game(activeId, owner, room_id, room_name).then((res) => {
+					Modal.success({
+						content: '加入房间成功!'
+					})
+					setScene(res)
+				})
+			}
 		})
 	}
 
-	const ChatDialog = ({visible, name, message, onClose}:{visible:boolean, name:string, message:string, onClose: ()=>void}) => {
+	const ChatDialog = ({visible, message, onClose}:{visible:boolean,message:string, onClose: ()=>void}) => {
 		return(
 			<div hidden={!visible} className={styles.dialog_layer}>
 				<CloseOutlined onClick={() => onClose()} style={{color:"white", fontSize: 18, padding:10}}/>
 				<Row>
 					<Col span={24}>
-						<h5 style={{color:"black"}}>{name}: {message}</h5>
+						<h5 style={{color:"black"}}>{message}</h5>
 					</Col>
 				</Row>
 			</div>
@@ -322,7 +327,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 							</Col>
 					}
 				</Row>
-				<ChatDialog visible={showChatDialog} name={speaker} message={message} onClose={()=>setShowChatDialog(false)}/>
+				<ChatDialog visible={showChatDialog} message={message} onClose={()=>setShowChatDialog(false)}/>
 			</div>
 		</div>
 	)
