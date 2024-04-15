@@ -574,7 +574,9 @@ const useCommand = () => {
     if (response.ok) {
       let dataJson = await response.json()
       console.log(dataJson.content)
+      return dataJson.content;
     }
+    return ''
   }
   const ask_clue = async (id: string, owner: string, room_id: string, room_name: string, message: string, image_url: string) => {
     let data = {owner: owner, room_id: room_id, room_name: room_name, id: id,

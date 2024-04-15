@@ -95,15 +95,6 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 		})
 	}, [reload])
 
-	const handleJoin = (owner: string, room_id: string, room_name: string) => {
-		setShowGameScene(true)
-		command.join_game(activeId, owner, room_id, room_name).then((res) => {
-			Modal.success({
-				content: '加入房间成功!'
-			})
-		})
-	}
-
 	return (
 		<div className={styles.travel_town_mobile_container}>
 			<div className={styles.travel_town_mobile_content}>
@@ -134,7 +125,7 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 												setRoomId(item.room_id)
 												setRoomName(item.title)
 												setOwner(item.owner)
-												handleJoin(item.owner, item.room_id, item.title)
+												setShowGameScene(true)
 											}
 										})
 									}}/>

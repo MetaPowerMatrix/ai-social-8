@@ -27,6 +27,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const [message, setMessage] = useState<string>('')
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
+	const command = commandDataContainer.useContainer()
 	const isOwner = activeId === owner
 
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -35,6 +36,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
+		handleJoin(owner, roomId, roomName)
 		// return () => {
 		// 		recorder.
 		// };
@@ -235,6 +237,15 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		fileList,
 	};
 
+	const handleJoin = (owner: string, room_id: string, room_name: string) => {
+		command.join_game(activeId, owner, room_id, room_name).then((res) => {
+			Modal.success({
+				content: '加入房间成功!'
+			})
+			setScene(res)
+		})
+	}
+
 	const ChatDialog = ({visible, name, message, onClose}:{visible:boolean, name:string, message:string, onClose: ()=>void}) => {
 		return(
 			<div hidden={!visible} className={styles.dialog_layer}>
@@ -294,11 +305,14 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 							onClose()
 						}}>离开房间</Button>
 					</Col>
-					<Col span={8} style={{textAlign:"center"}}>
-						<Upload id="upload-input" maxCount={1} showUploadList={true} {...props}>
-							<Button>{uploaded ? <CheckOutlined /> : null} 上传场景</Button>
-						</Upload>
-					</Col>
+					{
+						!isOwner &&
+              <Col span={8} style={{textAlign:"center"}}>
+                  <Upload id="upload-input" maxCount={1} showUploadList={true} {...props}>
+                      <Button>{uploaded ? <CheckOutlined /> : null} 上传场景</Button>
+                  </Upload>
+              </Col>
+					}
 				</Row>
 				<ChatDialog visible={showChatDialog} name={speaker} message={message} onClose={()=>setShowChatDialog(false)}/>
 			</div>
