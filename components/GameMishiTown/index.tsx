@@ -80,7 +80,6 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 	const [owner, setOwner] = useState<string>('')
 	const [roomId, setRoomId] = useState<string>('')
 	const [roomName, setRoomName] = useState<string>('')
-	const [isOwner, setIsOwner] = useState<boolean>(false)
 	const t = useTranslations('travel');
 	const activeTown = "game"
 	const command = commandDataContainer.useContainer()
@@ -121,7 +120,6 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 											setRoomId(item.room_id)
 											setRoomName(item.title)
 											setOwner(item.owner)
-											setIsOwner(item.owner === activeId)
 											setShowGameScene(true)
 										}}/>
 									</Col>

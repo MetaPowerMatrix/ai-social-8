@@ -61,7 +61,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		if (event.data.toString() !== 'pong') {
 			setShowChatDialog(true)
 			setMessage("我：" + event.data.toString())
-			if (isOwnerRef){
+			if (isOwnerRef.current){
 				handleGenerateScene(event.data.toString())
 			}else{
 				handleVoiceCommand(event.data.toString())
@@ -156,6 +156,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	};
 	const handleGenerateScene= (description: string) => {
 		const formData = new FormData();
+		console.log("room id: ", roomId)
 		formData.append('message', JSON.stringify({ id: activeId, room_id: roomId, description: description}));
 
 		onShowProgress(true);
