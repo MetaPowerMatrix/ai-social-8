@@ -55,7 +55,6 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		if (event.data.toString() !== 'pong') {
 			setShowChatDialog(true)
 			setMessage("我：" + event.data.toString())
-			alert(isOwner)
 			if (isOwner){
 				handleGenerateScene(event.data.toString())
 			}else{
