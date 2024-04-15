@@ -29,8 +29,12 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
 	const command = commandDataContainer.useContainer()
-	const isOwnerRef = useRef(isOwner);
-	const sceneRef = useRef(scene)
+	const isOwnerRef = useRef<boolean>();
+	isOwnerRef.current = isOwner;
+	const sceneRef = useRef<string>()
+	sceneRef.current = scene
+	const roomIdRef = useRef<string>()
+	roomIdRef.current =roomId
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 	useEffect(() => {
@@ -123,7 +127,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		}
 	}
 	const handleVoiceCommand = (topic: string) => {
-		const data = {id: activeId, message: topic, pro: activeId, image_url: sceneRef};
+		const data = {id: activeId, message: topic, pro: activeId, image_url: sceneRef.current};
 		let url = getApiServer(80) + api_url.portal.town.image_chat
 		fetch(url, {
 			method: 'POST',
@@ -157,7 +161,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const handleGenerateScene= (description: string) => {
 		const formData = new FormData();
 		console.log("room id: ", roomId)
-		formData.append('message', JSON.stringify({ id: activeId, room_id: roomId, description: description}));
+		formData.append('message', JSON.stringify({ id: activeId, room_id: roomIdRef.current, description: description}));
 
 		onShowProgress(true);
 		let url = getApiServer(80) + api_url.portal.town.gen_scene
