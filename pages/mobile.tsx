@@ -131,7 +131,7 @@ const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSav
 	);
 };
 
-export default function Home() {
+export default function MobileHome() {
 	const [activeId, setActiveId] = useState("");
 	const command = commandDataContainer.useContainer()
 	const [pageHeight, setPageHeight] = useState<number>(660)
