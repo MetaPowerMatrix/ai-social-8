@@ -26,7 +26,7 @@
     "topic": "小镇话题",
     "topicTips": "选择合适的话题，在小镇里你会备受欢迎哦",
     "event_pick": "选择热门话题",
-    "event_query": "查询话题聊天",
+    "event_query": "查询聊天记录",
     "event_tips": "选择或者输入一个话题",
     "topic_tips": "看看小镇的热门话题，加到自己的话题里和大家一起聊吧",
     "talking_tips": "发起话题和小镇居民聊天，可以增加影响力哦，需要支付10个原力",
@@ -198,8 +198,12 @@
   },
   "travel": {
     "startRecordingSceneDescription": "开始录制场景描述",
+    "joinTips": "确认加入房间，需要消耗1原力值",
     "confirm": "确认",
-    "cancel": "取消"
+    "cancel": "取消",
+    "uploadSample": "上传示例图片",
+    "create_room_tips": "是否生成房间，需要消耗10原力值",
+    "create_room": "创建房间"
   },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"

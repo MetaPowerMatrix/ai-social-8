@@ -12,14 +12,12 @@ import {
 	Tooltip
 } from "antd";
 import {
-	BarsOutlined,
 	CommentOutlined,
 	DeleteOutlined,
 	ExclamationCircleFilled,
 	LeftOutlined, RedditOutlined,
 	RedoOutlined,
-	RightOutlined, ShopOutlined, SolutionOutlined,
-	UploadOutlined, UserOutlined
+	RightOutlined
 } from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, getMQTTBroker, SessionList} from "@/common";
@@ -182,6 +180,7 @@ export default function Home() {
 	}
 
 	useEffect(()=> {
+		command.log_user_activity(activeId, "home", "login").then(()=>{})
 		const localInfoStr = localStorage.getItem("local_patos")
 		if (localInfoStr !== null) {
 			const localInfo = JSON.parse(localInfoStr)

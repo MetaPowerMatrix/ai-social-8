@@ -1,0 +1,27 @@
+.travel_town_mobile_container {
+    width: 100%;
+    height: 580px;
+}
+.travel_town_mobile_content {
+    height: 100%;
+    width: 100%;
+}
+.room_edit_container {
+    position: fixed;
+    z-index: 4;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+.room_edit_content {
+    position: absolute;
+    background-color: white;
+    padding: 20px;
+    width: 90%;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

@@ -30,6 +30,14 @@ export interface PortalKnowledge{
   owner: string,
   summary: string,
 }
+export interface PortalRoomInfo{
+  owner: string,
+  room_id: string,
+  room_name: string,
+  title: string,
+  description: string,
+  town: string
+}
 
 export interface LiveOpenResponse {
   session: string,
@@ -127,7 +135,13 @@ export const api_url = {
       'town':{
         "gen_scene": '/api/town/generate/scene',
         "image_parse": '/api/town/image/description',
-        "image_chat": '/api/town/chat/image'
+        "image_chat": '/api/town/chat/image',
+        "list_game": '/api/town/create/game',
+        "create_game": '/api/town/create/game',
+        "join_game": '/api/town/create/game',
+        "game_clue": '/api/town/game/clue',
+        "send_answer": '/api/town/game/send/answer',
+        "accept_answer": '/api/town/game/accept/answer'
       },
       'task': {
         'pray': '/api/pray',
@@ -154,9 +168,6 @@ export const api_url = {
       'character': {
         'iss': '/api/pato/iss',
         'edit': '/api/pato/iss/edit',
-      },
-      'market': {
-        'list': '/api/job/list',
       }
     },
     'account': {
@@ -166,10 +177,7 @@ export const api_url = {
         'subscription': '/api/sub'
       },
     },
-    'defi': {
-      'trade':{
-        'send': '/tiktokExecInstanceMethod',
-        'recv': '/tiktokExecInstanceMethod',
-      },
+    'stats': {
+      'active': '/api/stats/user/active',
     },
 }

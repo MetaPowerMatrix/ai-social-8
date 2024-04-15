@@ -1,29 +1,33 @@
 import React, {useEffect, useState} from "react";
-import {Button, Col, Image, Modal, GetProp, Input, Row, Upload, UploadFile, UploadProps, FloatButton} from "antd";
-import styles from "./TravelTownComponent.module.css";
+import {Button, Col, Image, Modal, GetProp, Row, Upload, UploadFile, UploadProps, FloatButton} from "antd";
+import styles from "./GameSceneComponent.module.css";
 import {
-	AudioOutlined, CheckOutlined, ExclamationCircleFilled, FileImageOutlined, MenuOutlined, MessageOutlined,
-	PauseOutlined, QrcodeOutlined, SettingOutlined, TikTokOutlined,
-	UploadOutlined, UserOutlined
+	AudioOutlined,
+	CheckOutlined,
+	CloseOutlined,
+	ExclamationCircleFilled,
+	PauseOutlined,
 } from "@ant-design/icons";
-import {api_url, getApiServer, Streaming_Server} from "@/common";
+import {api_url, getApiServer, PortalRoomInfo, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import {getOS} from "@/lib/utils";
+import commandDataContainer from "@/container/command";
 
-const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShowProgress: (s: boolean)=>void}) => {
+const GameSceneComponent = ({visible,activeId,roomId, onShowProgress, owner, onClose}:{visible:boolean,activeId:string, roomId:string, owner:string, onShowProgress: (s: boolean)=>void,onClose: ()=>void}) => {
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
-	const [description, setDescription] = useState('');
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [uploaded, setUploaded] = useState<boolean>(false)
 	const [scene, setScene] = useState<string>("/images/notlogin.png")
 	const [confirmed, setConfirmed] = useState<boolean>(false)
-	const [open, setOpen] = useState(true);
-	const [sendDescription, setSendDescription] = useState<boolean>(true)
+	const [showChatDialog, setShowChatDialog] = useState<boolean>(false)
+	const [speaker, setSpeaker] = useState<string>('')
+	const [message, setMessage] = useState<string>('')
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
+	const isOwner = activeId === owner
 
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -47,8 +51,8 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 	const process_ws_message = (event: any) => {
 		console.log(event.data.toString())
 		if (event.data.toString() !== 'pong') {
-			setDescription(event.data.toString())
-			if (sendDescription){
+			setMessage(event.data.toString())
+			if (isOwner){
 				handleGenerateScene(event.data.toString())
 			}else{
 				handleVoiceCommand(event.data.toString())
@@ -124,7 +128,7 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 				if (data.code === "200") {
 					let answer: string[] = JSON.parse(data.content)
 					if (answer.length > 0){
-						setDescription(answer[0])
+						setMessage(answer[0])
 					}
 					if (answer.length > 1){
 						playAudioWithWebAudioApi(answer[1]).then(r => {})
@@ -193,7 +197,7 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 				if (data.code === "200") {
 					let description: string = data.content.split(',')
 					if (description.length > 0){
-						setDescription(description[0])
+						setMessage(description[0])
 					}
 					if (description.length > 1){
 						setScene(description[1])
@@ -229,69 +233,68 @@ const TravelTownComponent = ({activeId, onShowProgress}:{activeId:string, onShow
 		fileList,
 	};
 
-	const onChange = () => {
-		setOpen(!open);
-	};
-
+	const ChatDialog = ({visible, name, message, onClose}:{visible:boolean, name:string, message:string, onClose: ()=>void}) => {
+		return(
+			<div hidden={!visible} className={styles.dialog_layer}>
+				<CloseOutlined onClick={() => onClose()} style={{color:"white", fontSize: 18, padding:10}}/>
+				<Row>
+					<Col span={24}>
+						<h5 style={{color:"black"}}>{name}: {message}</h5>
+					</Col>
+				</Row>
+			</div>
+		)
+	}
 	return (
-		<div className={styles.travel_town_mobile_container}>
-			<div className={styles.travel_town_mobile_content}>
-				<div className={styles.layer}>
-					<FloatButton.Group open={open} trigger="click" style={{right: 10, bottom: 300}} onClick={onChange} icon={<MenuOutlined/>}>
-						<FloatButton icon={
-							stopped ?
-								<AudioOutlined style={{color: "black", fontSize: 18}} onClick={() =>{
-									if (confirmed){
-										stop_record()
-									}else{
-										confirm({
-											icon: <ExclamationCircleFilled />,
-											content: t('startRecordingSceneDescription'),
-											okText: t('confirm'),
-											cancelText: t('cancel'),
-											onOk() {
-												stop_record()
-												setConfirmed(true)
-												setSendDescription(true)
-											}
-										})
-									}
-								}}/>
-								:
-								<PauseOutlined style={{color: "black", fontSize: 18}} onClick={() => stop_record()}/>
-						}/>
-						<FloatButton icon={
-								<Upload id="upload-input" maxCount={1} showUploadList={true} {...props}>
-									<Button icon={uploaded ? <CheckOutlined /> : <UploadOutlined/>}></Button>
-								</Upload>
-						}/>
-						<FloatButton icon={
-							<FileImageOutlined style={{color: "black", fontSize: 18}} onClick={() => handleImageDescription()}/>
-						}/>
-						<FloatButton icon={
-							<MessageOutlined style={{color: "black", fontSize: 18}} onClick={() =>{
+		<div hidden={!visible} className={styles.game_scene_container}>
+			<div className={styles.game_scene_content}>
+				<CloseOutlined onClick={() => onClose()} style={{color:"white", fontSize: 18, padding:10}}/>
+				<Row>
+					<Col span={24}>
+						<Image
+							src={scene}
+							height={620}
+							alt="scene"
+						/>
+					</Col>
+				</Row>
+				<Row align={"middle"} style={{padding:10}}>
+					<Col span={8} style={{textAlign:"center"}}>
+						<Button onClick={() =>{
+							if (confirmed){
 								stop_record()
-								setSendDescription(false)
-							}}/>
-						}/>
-					</FloatButton.Group>
-					<Row>
-						<Col span={24}>
-							<h5 style={{color:"black"}}>{description}</h5>
-							{/*<TextArea value= rows={3} onChange={decriptionInput}/>*/}
-						</Col>
-					</Row>
-				</div>
-				<div>
-					<Image
-						src={scene}
-						height={570}
-						alt="scene"
-					/>
-				</div>
+							}else{
+								confirm({
+									icon: <ExclamationCircleFilled />,
+									content: t('startRecordingSceneDescription'),
+									okText: t('confirm'),
+									cancelText: t('cancel'),
+									onOk() {
+										stop_record()
+										setConfirmed(true)
+									}
+								})
+							}
+						}}>
+							{isOwner ? '生成场景':'询问线索'}
+							{stopped ? <AudioOutlined style={{color: "black"}}/> : <PauseOutlined style={{color: "black"}}/>}
+						</Button>
+					</Col>
+					<Col span={8} style={{textAlign:"center"}}>
+						<Button style={{color:"black"}} onClick={() =>{
+							onClose()
+						}}>离开房间</Button>
+					</Col>
+					<Col span={8} style={{textAlign:"center"}}>
+						<Upload id="upload-input" maxCount={1} showUploadList={true} {...props}>
+							<Button>{uploaded ? <CheckOutlined /> : null} 上传场景</Button>
+						</Upload>
+					</Col>
+				</Row>
+				<ChatDialog visible={showChatDialog} name={speaker} message={message} onClose={()=>setShowChatDialog(false)}/>
 			</div>
 		</div>
 	)
 }
 
-export default TravelTownComponent;
+export default GameSceneComponent;

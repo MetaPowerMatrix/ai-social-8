@@ -6,12 +6,11 @@ import commandDataContainer from "@/container/command";
 import {
 	ExclamationCircleFilled, ExperimentOutlined, PlusOutlined, SwapOutlined, TeamOutlined,
 } from "@ant-design/icons";
-import StudyTownCompoent from "@/components/study_town";
 import HotAI from "@/components/HotAI";
-import TravelTownComponent from "@/components/TravelTown";
 import AIInstructMobileComponent from "@/components/AIInstructMobile";
 import Image from "next/image";
 import utilStyles from "@/styles/utils.module.css";
+import GameMishiTownComponent from "@/components/GameMishiTown";
 
 const towns =[
 	{label: '游戏小镇', value: 'game', description: '嗨起来'},
@@ -32,19 +31,11 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 	const t = useTranslations('discovery');
 	const {confirm} = Modal;
 
-	const handleJoin = () => {
-		confirm({
-			icon: <ExclamationCircleFilled/>,
-			content: t('join_tips'),
-			okText: t('confirm'),
-			cancelText: t('cancel'),
-			onOk() {
-				command.goTown(id, activeTown, '').then((res) => {
-					Modal.success({
-						content: t("join_ok"),
-					});
-				})
-			}
+	const handleJoin = (activeTown: string) => {
+		command.goTown(id, activeTown, '').then((res) => {
+			// Modal.success({
+			// 	content: t("join_ok"),
+			// });
 		})
 	}
 
@@ -61,12 +52,10 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 						<List.Item
 							key={index}
 							onClick={()=>{
-								Modal.info({
-									content: t('select_town_tips')
-								})
 								setActivTown(item.value)
 								setActiveTownLabel(item.label)
 								setOpenPop(false)
+								handleJoin(item.value)
 							}}
 						>
 							<Row align={"middle"}>
@@ -89,47 +78,36 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
 	}
 	return (
 		<div className={styles.town_container}>
-			{/*<h4 style={{textAlign:"center"}}>{t('town')}</h4>*/}
 			<div className={styles.town_content}>
 			{ mobile &&
 				<>
           <Row align={"middle"}>
-              <Col span={19} style={{textAlign:"center"}}>
-		              <h4>{activeTownLabel}</h4>
-              </Col>
-		          <Col span={1} style={{marginRight:10}}>
+              <Col span={24} style={{textAlign:"center"}}>
+		              <h4 style={{display:"inline-block"}}>{activeTownLabel}</h4>
                   <Popover
-		                  placement={"bottom"}
+                      placement={"bottom"}
                       content={
-												<div style={{width: 360, overflow:"scroll", height:500}}>
-													<TownList/>
-												</div>
-											}
+					              <div style={{width: 370, overflowY:"scroll", height:500}}>
+						              <TownList/>
+					              </div>
+				              }
                       trigger="click"
                       open={openPop}
                       onOpenChange={handleOpenChange}
                   >
-                      <SwapOutlined />
+                      <SwapOutlined style={{marginLeft:5}}/>
                   </Popover>
-		          </Col>
-		          <Col span={1} style={{marginRight:10}}>
-                  <PlusOutlined onClick={handleJoin} />
-		          </Col>
-		          <Col span={1}>
-                  <TeamOutlined onClick={()=>{
-	                  Modal.info({
-		                  content: t('sheniu_tips'),
-		                  onOk() { setShowHot(true) },
-	                  });
-                  }}/>
-		          </Col>
+                  <TeamOutlined style={{marginLeft:5}} onClick={()=>{
+			              setShowHot(true)
+		              }}/>
+              </Col>
           </Row>
           <div style={{overflow: "scroll"}}>
             {activeTown === 'pro' &&
                 <AIInstructMobileComponent id={id} onShowProgress={onShowProgress}/>
             }
 	          {activeTown === 'game' &&
-                <TravelTownComponent activeId={id} onShowProgress={onShowProgress}/>
+                <GameMishiTownComponent activeId={id} onShowProgress={onShowProgress}/>
 	          }
           </div>
           <HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>

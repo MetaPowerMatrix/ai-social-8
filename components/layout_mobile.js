@@ -4,48 +4,26 @@ import styles from './layout_mobile.module.css';
 import {Tabs} from "antd";
 import {
     UserOutlined,
-    BarsOutlined,
     ShopOutlined,
-    SolutionOutlined,
     CommentOutlined, ExperimentOutlined,
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
 import ProgressBarComponent from "@/components/ProgressBar";
-import MaskedHighlight from "@/components/MaskedHighlight";
-import {getMQTTBroker, Streaming_Server} from "@/common";
 import HeaderPanelMobile from "./header_mobile";
-import AIInstructMobileComponent from "@/components/AIInstructMobile";
 import QRCodeComponent from "@/components/QRCode";
-import mqtt from "mqtt";
 import TwonMobile from "@/components/town";
-import LiveChatMobile from "@/components/LiveChatMobile";
 import StudyTownCompoent from "@/components/study_town";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
-    const [open, setOpen] = useState(false);
     const [openCode, setOpenCode] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
     const [activeId, setActiveId] = useState("");
-    const [activeName, setActiveName] = useState("");
-    const [guide, setGuide] = useState(false)
     const [loading, setLoading] = useState(false);
-    const [userFeed, setUserFeed] = useState([{children:"新的一天开始了"}]);
-    const [openLive, setOpenLive] = useState(false);
-    const [client, setClient] = useState(null);
     const [activeTab, setActivTab] = useState('chat');
     const t = useTranslations('Login');
-
-    const zones = [
-        { id: 'zone1', top: 560, left: 80, height:220, width:320,
-            tips: '每天在这里设置一个话题，可以增加和别人交谈的机会哦'},
-        { id: 'zone2', top: 760, left: 80, height:220, width:320,
-            tips: '如果你有一些专业的知识，在这里上传，别人会很愿意和你聊天哦'},
-        { id: 'zone3', top: 960, left: 80, height:140, width:320,
-            tips: '这里显示你的Pato的聊天记录，可以按时间查询' },
-    ];
 
     const showProgressBar = (show) => {
         setLoading(show)
@@ -53,24 +31,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const changeLoginState = (status) =>{
         setIsLogin(status);
     }
-    const onChange = () => {
-        setOpen(!open);
-    };
-
-    useEffect(()=>{
-        const mqttClient = mqtt.connect(getMQTTBroker());
-        mqttClient.on("connect", () => {
-            console.log("Feed Connected to MQTT broker");
-        });
-        mqttClient.on("error", (err) => {
-            console.error("Error connecting to MQTT broker:", err);
-        });
-        setClient(mqttClient);
-
-        return () => {
-            mqttClient.end(); // Clean up the connection on component unmount
-        };
-    },[])
 
     useEffect(() => {
         const localInfoStr = localStorage.getItem("local_patos")
@@ -91,7 +51,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             // console.log(idsMap)
             idsMap.forEach((item) => {
                 if (item.value === activeId) {
-                    setActiveName(item.label);
                     onRefresh(item.label)
                 }
             });
@@ -135,7 +94,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     </>
                 }
                 {key === 'feed' &&
-                    <TwonMobile id={activeId} mobile={true} userFeed={userFeed} onShowProgress={showProgressBar} />
+                    <TwonMobile id={activeId} mobile={true} onShowProgress={showProgressBar} />
                 }
                 {/*{key === 'discovery' &&*/}
                 {/*    <DiscoveryComponent showLiveChat={()=>setOpenLive(true)}/>*/}
@@ -144,7 +103,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     <HeaderPanelMobile
                         showQRCode={()=>{setOpenCode(true)}}
                         onShowProgress={showProgressBar}
-                        activeId={activeId} onChangeId={changeLoginState} userFeed={userFeed}
+                        activeId={activeId} onChangeId={changeLoginState}
                     />
                 }
             </>
@@ -182,7 +141,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 :
                 <Image priority src="/images/ai-town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
             }
-            <MaskedHighlight zones={zones} visible={guide} />
             <ProgressBarComponent visible={loading} steps={15} />
             <ModalLogin mobile={true} isOpen={!isLogin} tips={t} options={availableIds}
                         onClose={(id) => {
@@ -199,8 +157,8 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                             }
                         }}
             />
-            <LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
-                      visible={openLive} onShowProgress={showProgressBar}/>
+            {/*<LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}*/}
+            {/*          visible={openLive} onShowProgress={showProgressBar}/>*/}
             <QRCodeComponent visible={openCode} id={activeId} onClose={()=>setOpenCode(false)} mobile={true}/>
         </div>
     );

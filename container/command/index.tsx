@@ -6,7 +6,7 @@ import {
   PatoInfo,
   Persona,
   PortalHotAi,
-  PortalKnowledge,
+  PortalKnowledge, PortalRoomInfo,
   SessionMessages
 } from "@/common";
 
@@ -428,9 +428,27 @@ const useCommand = () => {
       console.log(dataJson)
     }
   }
-  const add_shared_knowledge = async (id: string, sig: string, title: String) => {
+  const add_shared_knowledge = async (id: string, sig: string, title: string) => {
     let data = {id: id, sig: sig, title: title, shared: false}
     let url = getApiServer(80) + api_url.portal.task.knowledge_add
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson)
+    }
+  }
+  const log_user_activity = async (id: string, page: string, action: string) => {
+    let data = {id: id, page: page, action: action}
+    let url = getApiServer(80) + api_url.stats.active
     let response = await fetch(
       `${url}`,
       {
@@ -505,7 +523,7 @@ const useCommand = () => {
     return null
   }
   const query_knowledges = async (id: string) => {
-    if (id === "") return null
+    if (id === "") return []
     let url = getApiServer(80) + api_url.portal.knowledges + "/" + id
     try {
       let response = await fetch(`${url}`,)
@@ -517,7 +535,118 @@ const useCommand = () => {
     } catch (e) {
       console.log(e)
     }
-    return null
+    return []
+  }
+  const create_game_room = async (id: string, title: string, description: string, town: string) => {
+    let data = {owner: id, room_id:'', title: title, description: description, town: town}
+    let url = getApiServer(80) + api_url.portal.town.create_game
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson.content)
+      return dataJson.content
+    }
+    return ''
+  }
+  const join_game = async (id: string, owner: string, room_id: string, room_name: string) => {
+    let data = {owner: owner, room_id: room_id, room_name: room_name, id: id,
+      message: '', image_url: '', answer:''}
+    let url = getApiServer(80) + api_url.portal.town.join_game
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson.content)
+    }
+  }
+  const ask_clue = async (id: string, owner: string, room_id: string, room_name: string, message: string, image_url: string) => {
+    let data = {owner: owner, room_id: room_id, room_name: room_name, id: id,
+      message: message, image_url: image_url, answer:''}
+    let url = getApiServer(80) + api_url.portal.town.game_clue
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson.content)
+    }
+  }
+  const send_answer = async (id: string, owner: string, room_id: string, room_name: string, message: string, image_url: string, answer: string) => {
+    let data = {owner: owner, room_id: room_id, room_name: room_name, id: id,
+      message: message, image_url: image_url, answer:answer}
+    let url = getApiServer(80) + api_url.portal.town.send_answer
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson.content)
+    }
+  }
+  const accept_answer = async (id: string, owner: string, room_id: string, room_name: string, message: string, image_url: string, answer: string) => {
+    let data = {owner: owner, room_id: room_id, room_name: room_name, id: id,
+      message: message, image_url: image_url, answer:answer}
+    let url = getApiServer(80) + api_url.portal.town.accept_answer
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      console.log(dataJson.content)
+    }
+  }
+  const query_rooms = async (town: string) => {
+    if (town === "") return []
+    let url = getApiServer(80) + api_url.portal.town.list_game + "/" + town
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        let rooms: PortalRoomInfo[] = JSON.parse(dataJson.content)
+        return rooms
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return []
   }
   const queryPatoAuthToken = async (token: string | null) => {
     if (token === null) return []
@@ -555,7 +684,8 @@ const useCommand = () => {
     deposit_metapower, archive_session, stake_metapower, continue_live_chat, end_live_chat, restore_live_chat,
     getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken, edit_session_messages, continue_session_chat,
     goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge,
-    getProHots, add_shared_knowledge, getTopicHots, init_topic_chat, get_topic_chat_his
+    getProHots, add_shared_knowledge, getTopicHots, init_topic_chat, get_topic_chat_his, query_rooms, create_game_room,
+    send_answer, accept_answer, ask_clue, join_game, log_user_activity
   }
 }
 

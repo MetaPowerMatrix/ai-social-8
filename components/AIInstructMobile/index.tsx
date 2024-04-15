@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import styles from "@/components/AIInstructMobile/AIInstructMobileComponent.module.css";
 import {
-	Button, Card,
+	Card,
 	Col, DatePicker,
 	DatePickerProps, Divider,
 	List, Row, Modal
@@ -9,16 +9,11 @@ import {
 import {useTranslations} from "next-intl";
 import {
 	AndroidOutlined,
-	AudioOutlined, CommentOutlined, ExclamationCircleFilled, LeftOutlined, OpenAIOutlined,
-	PauseOutlined, RightOutlined, UnorderedListOutlined
+	CommentOutlined, ExclamationCircleFilled, LeftOutlined, UnorderedListOutlined
 } from "@ant-design/icons";
-import {api_url, ChatMessage, getApiServer, getMQTTBroker, HotPro, Streaming_Server} from "@/common";
+import {ChatMessage, HotPro} from "@/common";
 import commandDataContainer from "@/container/command";
-import {WebSocketManager} from "@/lib/WebsocketManager";
-import TextArea from "antd/es/input/TextArea";
-import mqtt from "mqtt";
-import SubscriptionsComponent from "@/components/Subscriptions";
-import {getOS, getTodayDateString} from "@/lib/utils";
+import {getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 import AskProComponent from "@/components/ask_pro";
 
