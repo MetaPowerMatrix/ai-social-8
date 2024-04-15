@@ -36,7 +36,6 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
-		handleJoin(owner, roomId, roomName)
 		// return () => {
 		// 		recorder.
 		// };
@@ -55,7 +54,8 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const process_ws_message = (event: any) => {
 		console.log(event.data.toString())
 		if (event.data.toString() !== 'pong') {
-			setMessage(event.data.toString())
+			setShowChatDialog(true)
+			setMessage("我：" + event.data.toString())
 			if (isOwner){
 				handleGenerateScene(event.data.toString())
 			}else{
@@ -132,7 +132,8 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 				if (data.code === "200") {
 					let answer: string[] = JSON.parse(data.content)
 					if (answer.length > 0){
-						setMessage(answer[0])
+						setShowChatDialog(true)
+						setMessage("AI：" + answer[0])
 					}
 					if (answer.length > 1){
 						playAudioWithWebAudioApi(answer[1]).then(r => {})
@@ -201,6 +202,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 				if (data.code === "200") {
 					let description: string = data.content.split(',')
 					if (description.length > 0){
+						setShowChatDialog(true)
 						setMessage(description[0])
 					}
 					if (description.length > 1){
@@ -306,12 +308,18 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 						}}>离开房间</Button>
 					</Col>
 					{
-						!isOwner &&
+						isOwner ?
               <Col span={8} style={{textAlign:"center"}}>
                   <Upload id="upload-input" maxCount={1} showUploadList={true} {...props}>
                       <Button>{uploaded ? <CheckOutlined /> : null} 上传场景</Button>
                   </Upload>
               </Col>
+							:
+							<Col span={8} style={{textAlign:"center"}}>
+								<Button style={{color:"black"}} onClick={() =>{
+									handleJoin(owner,roomId, roomName)
+								}}>开始玩</Button>
+							</Col>
 					}
 				</Row>
 				<ChatDialog visible={showChatDialog} name={speaker} message={message} onClose={()=>setShowChatDialog(false)}/>
