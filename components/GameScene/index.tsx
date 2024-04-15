@@ -304,6 +304,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 									cancelText: t('cancel'),
 									onOk() {
 										stop_record()
+										setIsOwner(isOwner)
 										setConfirmed(true)
 									}
 								})
