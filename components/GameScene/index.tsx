@@ -295,6 +295,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					<Col span={8} style={{textAlign:"center"}}>
 						<Button onClick={() =>{
 							if (confirmed){
+								setIsOwner(isOwner)
 								stop_record()
 							}else{
 								confirm({
