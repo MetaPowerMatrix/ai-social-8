@@ -14,7 +14,7 @@ import {useTranslations} from "next-intl";
 import {getOS} from "@/lib/utils";
 import commandDataContainer from "@/container/command";
 
-const GameSceneComponent = ({visible,activeId,roomId, onShowProgress, owner, onClose}:{visible:boolean,activeId:string, roomId:string, owner:string, onShowProgress: (s: boolean)=>void,onClose: ()=>void}) => {
+const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, owner, onClose}:{visible:boolean,activeId:string,roomName:string, roomId:string, owner:string, onShowProgress: (s: boolean)=>void,onClose: ()=>void}) => {
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
@@ -30,6 +30,8 @@ const GameSceneComponent = ({visible,activeId,roomId, onShowProgress, owner, onC
 	const isOwner = activeId === owner
 
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+
+	console.log("enter room: ", roomId, roomName, activeId, owner)
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
@@ -149,7 +151,7 @@ const GameSceneComponent = ({visible,activeId,roomId, onShowProgress, owner, onC
 		// if (fileList.length > 0){
 		// 	formData.append('file', fileList[0] as FileType);
 		// }
-		formData.append('message', JSON.stringify({ id: activeId, description: description}));
+		formData.append('message', JSON.stringify({ id: activeId, room_id: roomId, description: description}));
 
 		onShowProgress(true);
 		let url = getApiServer(80) + api_url.portal.town.gen_scene
@@ -248,7 +250,14 @@ const GameSceneComponent = ({visible,activeId,roomId, onShowProgress, owner, onC
 	return (
 		<div hidden={!visible} className={styles.game_scene_container}>
 			<div className={styles.game_scene_content}>
-				<CloseOutlined onClick={() => onClose()} style={{color:"white", fontSize: 18, padding:10}}/>
+				<Row align={"middle"}>
+					<Col span={2}>
+						<CloseOutlined onClick={() => onClose()} style={{color:"white", fontSize: 18, padding:10}}/>
+					</Col>
+					<Col span={22} style={{textAlign:"center"}}>
+						<span style={{color:"white", fontSize:18}}>{roomName}</span>
+					</Col>
+				</Row>
 				<Row>
 					<Col span={24}>
 						<Image

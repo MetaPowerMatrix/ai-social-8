@@ -13,7 +13,7 @@ import utilStyles from "@/styles/utils.module.css";
 import GameMishiTownComponent from "@/components/GameMishiTown";
 
 const towns =[
-	{label: '游戏小镇', value: 'game', description: '嗨起来'},
+	{label: '密室小镇', value: 'game', description: '拨开重重迷雾，你能否战胜AI的迷思'},
 	{label: '专家小镇', value: 'pro', description: '有求必应,童叟无欺'},
 	{label: '幸运小镇', value: 'literature', description: '有一种从天而降的富贵'},
 	{label: '旅游小镇', value: 'travel', description: '诗和远方，没钱也行'},

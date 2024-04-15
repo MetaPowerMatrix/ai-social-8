@@ -136,9 +136,9 @@ export const api_url = {
         "gen_scene": '/api/town/generate/scene',
         "image_parse": '/api/town/image/description',
         "image_chat": '/api/town/chat/image',
-        "list_game": '/api/town/create/game',
+        "list_game": '/api/town/game/rooms',
         "create_game": '/api/town/create/game',
-        "join_game": '/api/town/create/game',
+        "join_game": '/api/town/join/game',
         "game_clue": '/api/town/game/clue',
         "send_answer": '/api/town/game/send/answer',
         "accept_answer": '/api/town/game/accept/answer'

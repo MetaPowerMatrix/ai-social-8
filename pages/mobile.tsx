@@ -180,7 +180,6 @@ export default function MobileHome() {
 	}
 
 	useEffect(()=> {
-		command.log_user_activity(activeId, "home", "login").then(()=>{})
 		const localInfoStr = localStorage.getItem("local_patos")
 		if (localInfoStr !== null) {
 			const localInfo = JSON.parse(localInfoStr)

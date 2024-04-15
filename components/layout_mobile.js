@@ -15,6 +15,7 @@ import HeaderPanelMobile from "./header_mobile";
 import QRCodeComponent from "@/components/QRCode";
 import TwonMobile from "@/components/town";
 import StudyTownCompoent from "@/components/study_town";
+import commandDataContainer from "@/container/command";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [openCode, setOpenCode] = useState(false);
@@ -24,6 +25,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const [loading, setLoading] = useState(false);
     const [activeTab, setActivTab] = useState('chat');
     const t = useTranslations('Login');
+    const command = commandDataContainer.useContainer()
 
     const showProgressBar = (show) => {
         setLoading(show)
@@ -55,6 +57,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 }
             });
             setAvailableIds(idsMap);
+            command.log_user_activity(localInfo.active_id, "home", "login").then(()=>{})
         }
     },[activeId]);
 

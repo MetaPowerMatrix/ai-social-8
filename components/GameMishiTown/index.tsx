@@ -13,7 +13,13 @@ import commandDataContainer from "@/container/command";
 import TextArea from "antd/es/input/TextArea";
 import GameSceneComponent from "@/components/GameScene";
 
-const EditRoomInfo = ({id,visible,activeTown,onClose}:{id:string, visible:boolean, activeTown:string, onClose:(room_id: string)=>void}) => {
+const EditRoomInfo = ({id,visible,activeTown,onClose,onCreated}:
+    {
+			id:string, visible:boolean, activeTown:string,
+      onClose:(room_id: string)=>void
+	    onCreated:(room_id:string, room_name:string)=>void
+		}
+) => {
 	const [roomName, setRoomName] = useState<string>('')
 	const [roomDescription, setRoomDescription] = useState<string>('')
 	const t = useTranslations('travel');
@@ -35,6 +41,7 @@ const EditRoomInfo = ({id,visible,activeTown,onClose}:{id:string, visible:boolea
 			onOk() {
 				command.create_game_room(id, roomName, roomDescription,activeTown).then((res)=>{
 					onClose(res)
+					onCreated(res, roomName)
 				})
 			}
 		})
@@ -72,6 +79,7 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 	const [reload, setReload] = useState<number>(0)
 	const [owner, setOwner] = useState<string>('')
 	const [roomId, setRoomId] = useState<string>('')
+	const [roomName, setRoomName] = useState<string>('')
 	const t = useTranslations('travel');
 	const activeTown = "game"
 	const command = commandDataContainer.useContainer()
@@ -119,13 +127,14 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 									<LoginOutlined onClick={()=>{
 										confirm({
 											icon: <ExclamationCircleFilled />,
-											content: t('join'),
+											content: t('joinTips'),
 											okText: t('confirm'),
 											cancelText: t('cancel'),
 											onOk() {
-												handleJoin(item.owner, item.room_id, item.title)
 												setRoomId(item.room_id)
+												setRoomName(item.title)
 												setOwner(item.owner)
+												handleJoin(item.owner, item.room_id, item.title)
 											}
 										})
 									}}/>
@@ -142,16 +151,21 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 					<Col span={2}></Col>
 				</Row>
 				<EditRoomInfo id={activeId} visible={showEditRoom} activeTown={activeTown}
+            onCreated={(room_id, room_name)=>{
+							setRoomId(room_id)
+	            setRoomName(room_name)
+            }}
             onClose={(room_id)=>{
 							if (room_id !== '') {
 								setShowEditRoom(false)
 								setShowGameScene(true)
-								setReload(reload + 1)
 							}else{
 								setShowEditRoom(false)
-						}}
+							}
+	            setReload(reload + 1)
+						}
 				}/>
-				<GameSceneComponent visible={showGameScene} onClose={()=>setShowGameScene(false)} roomId={roomId} activeId={activeId} owner={owner} onShowProgress={onShowProgress}/>
+				<GameSceneComponent roomName={roomName} visible={showGameScene} onClose={()=>setShowGameScene(false)} roomId={roomId} activeId={activeId} owner={owner} onShowProgress={onShowProgress}/>
 			</div>
 		</div>
 	)
