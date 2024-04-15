@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Button, Col, Image, Modal, GetProp, Row, Upload, UploadFile, UploadProps, FloatButton} from "antd";
 import styles from "./GameSceneComponent.module.css";
 import {
@@ -14,7 +14,8 @@ import {useTranslations} from "next-intl";
 import {getOS} from "@/lib/utils";
 import commandDataContainer from "@/container/command";
 
-const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, owner, onClose}:{visible:boolean,activeId:string,roomName:string, roomId:string, owner:string, onShowProgress: (s: boolean)=>void,onClose: ()=>void}) => {
+const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, owner, isOwner, onClose}:
+    {visible:boolean,activeId:string,roomName:string, roomId:string, owner:string, isOwner:boolean, onShowProgress: (s: boolean)=>void,onClose: ()=>void}) => {
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
@@ -27,11 +28,9 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
 	const command = commandDataContainer.useContainer()
-	const isOwner = activeId === owner
-
+	const isOwnerRef = useRef(isOwner);
+	const sceneRef = useRef(scene)
 	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-
-	console.log("enter room: ", roomId, roomName, activeId, owner)
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
@@ -55,10 +54,10 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		if (event.data.toString() !== 'pong') {
 			setShowChatDialog(true)
 			setMessage("我：" + event.data.toString())
-			if (isOwner){
+			if (isOwnerRef){
 				handleGenerateScene(event.data.toString())
 			}else{
-				handleVoiceCommand(event.data.toString(), scene)
+				handleVoiceCommand(event.data.toString())
 			}
 		}
 	}
@@ -116,8 +115,8 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			console.error('Error playing audio with Web Audio API:', error);
 		}
 	}
-	const handleVoiceCommand = (topic: string, image_url: string) => {
-		const data = {id: activeId, message: topic, pro: activeId, image_url: image_url};
+	const handleVoiceCommand = (topic: string) => {
+		const data = {id: activeId, message: topic, pro: activeId, image_url: sceneRef};
 		let url = getApiServer(80) + api_url.portal.town.image_chat
 		fetch(url, {
 			method: 'POST',
@@ -302,7 +301,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 								})
 							}
 						}}>
-							{isOwner ? '生成场景':'询问线索'}
+							{isOwnerRef ? '生成场景':'询问线索'}
 							{stopped ? <AudioOutlined style={{color: "black"}}/> : <PauseOutlined style={{color: "black"}}/>}
 						</Button>
 					</Col>
@@ -312,7 +311,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 						}}>离开房间</Button>
 					</Col>
 					{
-						isOwner ?
+						isOwnerRef ?
               <Col span={8} style={{textAlign:"center"}}>
                   <Upload id="upload-input" maxCount={1} showUploadList={true} {...props}>
                       <Button>{uploaded ? <CheckOutlined /> : null} 上传场景</Button>

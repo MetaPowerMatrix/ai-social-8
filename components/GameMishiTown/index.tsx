@@ -80,6 +80,7 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 	const [owner, setOwner] = useState<string>('')
 	const [roomId, setRoomId] = useState<string>('')
 	const [roomName, setRoomName] = useState<string>('')
+	const [isOwner, setIsOwner] = useState<boolean>(false)
 	const t = useTranslations('travel');
 	const activeTown = "game"
 	const command = commandDataContainer.useContainer()
@@ -96,61 +97,67 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 	}, [reload])
 
 	return (
-		<div className={styles.travel_town_mobile_container}>
-			<div className={styles.travel_town_mobile_content}>
-				<List
-					itemLayout="horizontal"
-					size="small"
-					style={{height:540}}
-					dataSource={roomList}
-					renderItem={(item, index) => (
-						<List.Item
-							key={index}
-						>
-							<Row align={"middle"} style={{width: "100%"}}>
-								<Col span={8}>
-									<h5 style={{overflow: "scroll"}}>{item.title}</h5>
-								</Col>
-								<Col span={12}>
-								<h5 style={{overflow:"scroll"}}>{item.description}</h5>
-								</Col>
-								<Col span={2} style={{textAlign: "end"}}>
-									<LoginOutlined onClick={()=>{
-												setRoomId(item.room_id)
-												setRoomName(item.title)
-												setOwner(item.owner)
-												setShowGameScene(true)
-									}}/>
-								</Col>
-							</Row>
-						</List.Item>
-					)}
-				/>
-				<Row>
-					<Col span={2}></Col>
-					<Col span={20}>
-						<Button style={{width:"100%", fontSize:16}} type={"primary"} onClick={()=>{setShowEditRoom(true)}}>+</Button>
-					</Col>
-					<Col span={2}></Col>
-				</Row>
-				<EditRoomInfo id={activeId} visible={showEditRoom} activeTown={activeTown}
-            onCreated={(room_id, room_name)=>{
-							setRoomId(room_id)
-	            setRoomName(room_name)
-            }}
-            onClose={(room_id)=>{
-							if (room_id !== '') {
-								setShowEditRoom(false)
-								setShowGameScene(true)
-							}else{
-								setShowEditRoom(false)
-							}
-	            setReload(reload + 1)
-						}
-				}/>
-				<GameSceneComponent roomName={roomName} visible={showGameScene} onClose={()=>setShowGameScene(false)} roomId={roomId} activeId={activeId} owner={owner} onShowProgress={onShowProgress}/>
+		<>
+			<div className={styles.travel_town_mobile_container}>
+				<div className={styles.travel_town_mobile_content}>
+					<List
+						itemLayout="horizontal"
+						size="small"
+						style={{height: 540}}
+						dataSource={roomList}
+						renderItem={(item, index) => (
+							<List.Item
+								key={index}
+							>
+								<Row align={"middle"} style={{width: "100%"}}>
+									<Col span={8}>
+										<h5 style={{overflow: "scroll"}}>{item.title}</h5>
+									</Col>
+									<Col span={12}>
+										<h5 style={{overflow: "scroll"}}>{item.description}</h5>
+									</Col>
+									<Col span={2} style={{textAlign: "end"}}>
+										<LoginOutlined onClick={() => {
+											setRoomId(item.room_id)
+											setRoomName(item.title)
+											setOwner(item.owner)
+											setIsOwner(item.owner === activeId)
+											setShowGameScene(true)
+										}}/>
+									</Col>
+								</Row>
+							</List.Item>
+						)}
+					/>
+					<Row>
+						<Col span={2}></Col>
+						<Col span={20}>
+							<Button style={{width: "100%", fontSize: 16}} type={"primary"} onClick={() => {
+								setShowEditRoom(true)
+							}}>+</Button>
+						</Col>
+						<Col span={2}></Col>
+					</Row>
+					<EditRoomInfo id={activeId} visible={showEditRoom} activeTown={activeTown}
+					              onCreated={(room_id, room_name) => {
+						              setRoomId(room_id)
+						              setRoomName(room_name)
+					              }}
+					              onClose={(room_id) => {
+						              if (room_id !== '') {
+							              setShowEditRoom(false)
+							              setShowGameScene(true)
+						              } else {
+							              setShowEditRoom(false)
+						              }
+						              setReload(reload + 1)
+					              }
+					              }/>
+				</div>
 			</div>
-		</div>
+			<GameSceneComponent isOwner={isOwner} roomName={roomName} visible={showGameScene} onClose={() => setShowGameScene(false)}
+			                    roomId={roomId} activeId={activeId} owner={owner} onShowProgress={onShowProgress}/>
+		</>
 	)
 }
 
