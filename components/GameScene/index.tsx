@@ -58,7 +58,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			if (isOwner){
 				handleGenerateScene(event.data.toString())
 			}else{
-				handleVoiceCommand(event.data.toString())
+				handleVoiceCommand(event.data.toString(), scene)
 			}
 		}
 	}
@@ -116,8 +116,8 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			console.error('Error playing audio with Web Audio API:', error);
 		}
 	}
-	const handleVoiceCommand = (topic: string) => {
-		const data = {id: activeId, message: topic, pro: activeId, image_url: scene};
+	const handleVoiceCommand = (topic: string, image_url: string) => {
+		const data = {id: activeId, message: topic, pro: activeId, image_url: image_url};
 		let url = getApiServer(80) + api_url.portal.town.image_chat
 		fetch(url, {
 			method: 'POST',
