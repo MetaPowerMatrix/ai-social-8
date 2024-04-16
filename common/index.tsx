@@ -142,7 +142,9 @@ export const api_url = {
         "join_game": '/api/town/join/game',
         "game_clue": '/api/town/game/clue',
         "send_answer": '/api/town/game/send/answer',
-        "accept_answer": '/api/town/game/accept/answer'
+        "accept_answer": '/api/town/game/accept/answer',
+        "reveal_answer": '/api/town/game/reveal/answer',
+        "generate_answer": '/api/town/game/answer/image'
       },
       'task': {
         'pray': '/api/pray',

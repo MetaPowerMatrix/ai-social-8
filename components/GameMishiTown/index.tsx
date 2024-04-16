@@ -88,6 +88,7 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 
 	useEffect(() => {
 		command.log_user_activity(activeId, "game_mishi", "browse")
+		console.log("cover: ", cover)
 	}, [])
 
 	useEffect(() => {
@@ -118,7 +119,9 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 									</Col>
 									<Col span={2} style={{textAlign: "end"}}>
 										<LoginOutlined onClick={() => {
+											console.log("set cover ",item.cover)
 											setCover(item.cover)
+											console.log("set cover after ",cover)
 											setRoomId(item.room_id)
 											setRoomName(item.title)
 											setOwner(item.owner)

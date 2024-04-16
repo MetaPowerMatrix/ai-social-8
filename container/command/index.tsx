@@ -410,7 +410,7 @@ const useCommand = () => {
     }
     return null
   }
-  const share_knowledge = async (id: string, sig: string, title: String) => {
+  const share_knowledge = async (id: string, sig: string, title: string) => {
     let data = {id: id, sig: sig, title: title, shared: true}
     let url = getApiServer(80) + api_url.portal.task.knowledge_share
     let response = await fetch(
@@ -427,6 +427,25 @@ const useCommand = () => {
       let dataJson = await response.json()
       console.log(dataJson)
     }
+  }
+  const image_desc_by_url = async (id: string, roomId: string, image_url: string) => {
+    let data = {id: id, room_id: roomId, scene: image_url}
+    let url = getApiServer(80) + api_url.portal.town.image_parse
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      return dataJson.content
+    }
+    return ''
   }
   const add_shared_knowledge = async (id: string, sig: string, title: string) => {
     let data = {id: id, sig: sig, title: title, shared: false}
@@ -597,9 +616,10 @@ const useCommand = () => {
       console.log(dataJson.content)
     }
   }
-  const send_answer = async (id: string, owner: string, room_id: string, room_name: string, message: string, image_url: string, answer: string) => {
+  const send_answer = async (id: string, owner: string, room_id: string, room_name: string, answer: string, level: number) =>
+  {
     let data = {owner: owner, room_id: room_id, room_name: room_name, id: id,
-      message: message, image_url: image_url, answer:answer}
+      message: '', image_url: '', answer:answer, level:level}
     let url = getApiServer(80) + api_url.portal.town.send_answer
     let response = await fetch(
       `${url}`,
@@ -616,10 +636,10 @@ const useCommand = () => {
       console.log(dataJson.content)
     }
   }
-  const accept_answer = async (owner: string, room_id: string, answer: string,level:number) => {
-    let data = {owner: owner, room_id: room_id, room_name: '', id: '',
-      message: '', image_url: '', answer:answer}
-    let url = getApiServer(80) + api_url.portal.town.accept_answer
+  const gen_answer = async (id: string, image_url: string, room_id: string, level:number) => {
+    let data = {owner: '', room_id: room_id, room_name: '', id: id,
+      message: '', image_url: image_url, answer:'', level: level}
+    let url = getApiServer(80) + api_url.portal.town.generate_answer
     let response = await fetch(
       `${url}`,
       {
@@ -632,8 +652,31 @@ const useCommand = () => {
     )
     if (response.ok) {
       let dataJson = await response.json()
-      console.log(dataJson.content)
+      let answer = dataJson.content
+      return answer
     }
+    return ""
+  }
+  const reveal_answer = async (id: string, owner: string, room_id: string, level:number) => {
+    let data = {owner: owner, room_id: room_id, room_name: '', id: id,
+      message: '', image_url: '', answer:'', level: level}
+    let url = getApiServer(80) + api_url.portal.town.reveal_answer
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      let answer = dataJson.content
+      return answer
+    }
+    return ""
   }
   const query_rooms = async (town: string) => {
     if (town === "") return []
@@ -687,7 +730,7 @@ const useCommand = () => {
     getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken, edit_session_messages, continue_session_chat,
     goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge,
     getProHots, add_shared_knowledge, getTopicHots, init_topic_chat, get_topic_chat_his, query_rooms, create_game_room,
-    send_answer, accept_answer, ask_clue, join_game, log_user_activity
+    send_answer, gen_answer, ask_clue, join_game, log_user_activity, image_desc_by_url, reveal_answer
   }
 }
 
