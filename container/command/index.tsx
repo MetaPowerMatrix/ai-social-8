@@ -538,7 +538,7 @@ const useCommand = () => {
     return []
   }
   const create_game_room = async (id: string, title: string, description: string, town: string) => {
-    let data = {owner: id, room_id:'', title: title, description: description, town: town}
+    let data = {owner: id, room_id:'', title: title, description: description, town: town, cover:''}
     let url = getApiServer(80) + api_url.portal.town.create_game
     let response = await fetch(
       `${url}`,
