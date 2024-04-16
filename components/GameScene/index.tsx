@@ -342,6 +342,10 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 												Modal.success({
 													content: '答案正确'
 												})
+											}else{
+												Modal.success({
+													content: '答案不正确'
+												})
 											}
 										})
 									}}>发送答案</Button>
