@@ -80,6 +80,7 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 	const [owner, setOwner] = useState<string>('')
 	const [roomId, setRoomId] = useState<string>('')
 	const [roomName, setRoomName] = useState<string>('')
+	const [cover, setCover] = useState<string>('')
 	const t = useTranslations('travel');
 	const activeTown = "game"
 	const command = commandDataContainer.useContainer()
@@ -117,6 +118,7 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 									</Col>
 									<Col span={2} style={{textAlign: "end"}}>
 										<LoginOutlined onClick={() => {
+											setCover(item.cover)
 											setRoomId(item.room_id)
 											setRoomName(item.title)
 											setOwner(item.owner)
@@ -151,7 +153,7 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 						              setReload(reload + 1)
 					              }
 					              }/>
-					<GameSceneComponent roomName={roomName} visible={showGameScene} onClose={() => setShowGameScene(false)}
+					<GameSceneComponent cover={cover} roomName={roomName} visible={showGameScene} onClose={() => setShowGameScene(false)}
 					                    roomId={roomId} activeId={activeId} owner={owner} onShowProgress={onShowProgress}/>
 				</div>
 			</div>

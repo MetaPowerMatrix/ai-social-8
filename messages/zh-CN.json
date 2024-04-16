@@ -202,7 +202,8 @@
     "cancel": "取消",
     "uploadSample": "上传示例图片",
     "create_room_tips": "是否生成房间，需要消耗10原力值",
-    "create_room": "创建房间"
+    "create_room": "创建房间",
+    "create_answer_tips": "是否生成答案，需要消耗10原力值"
   },
   "LocaleSwitcher": {
     "switchLocale": "切换语言 {locale, select, cn {中文} en {English}}"

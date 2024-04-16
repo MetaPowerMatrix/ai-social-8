@@ -36,6 +36,7 @@ export interface PortalRoomInfo{
   room_name: string,
   title: string,
   description: string,
+  cover: string,
   town: string
 }
 

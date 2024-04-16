@@ -1,31 +1,78 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Col, Image, Modal, GetProp, Row, Upload, UploadFile, UploadProps, FloatButton} from "antd";
+import {Button, Col, Image, Modal, GetProp, Row, Upload, UploadFile, UploadProps, FloatButton, Input} from "antd";
 import styles from "./GameSceneComponent.module.css";
 import {
+	ArrowLeftOutlined, ArrowRightOutlined,
 	AudioOutlined,
 	CheckOutlined,
 	CloseOutlined,
-	ExclamationCircleFilled,
-	PauseOutlined,
+	ExclamationCircleFilled, KeyOutlined,
+	PauseOutlined, QuestionOutlined,
 } from "@ant-design/icons";
 import {api_url, getApiServer, PortalRoomInfo, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import {getOS} from "@/lib/utils";
 import commandDataContainer from "@/container/command";
+import TextArea from "antd/es/input/TextArea";
 
-const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, owner, onClose}:
-    {visible:boolean,activeId:string,roomName:string, roomId:string, owner:string, onShowProgress: (s: boolean)=>void,onClose: ()=>void}) => {
+const EditAnswerInfo = ({owner,room_id,level, visible,onClose}: {visible:boolean, owner:string, room_id:string, level: number, onClose:()=>void}) => {
+	const [answer, setAnswer] = useState<string>('')
+	const t = useTranslations('travel');
+	const {confirm} = Modal;
+	const command = commandDataContainer.useContainer()
+
+	const onChangeAnswer = (event: React.ChangeEvent<HTMLTextAreaElement>) =>{
+		setAnswer(event.target.value)
+	}
+	const handleCreateAnswer = () => {
+		confirm({
+			icon: <ExclamationCircleFilled/>,
+			content: t('create_room_tips'),
+			okText: t('confirm'),
+			cancelText: t('cancel'),
+			onOk() {
+				command.accept_answer(owner, room_id, answer, level).then((res)=>{
+					onClose()
+				})
+			}
+		})
+	}
+	return (
+		<div hidden={!visible} className={styles.level_answer_container}>
+			<div className={styles.level_answer_content}>
+				<CloseOutlined onClick={() => onClose()} style={{fontSize: 18, marginBottom:20}}/>
+				<Row>
+					<TextArea onChange={onChangeAnswer} style={{marginTop: 10}} placeholder={"房间描述"} value={answer} rows={4}/>
+				</Row>
+				<Row align={"middle"} style={{marginTop: 10}}>
+					<Col span={8}></Col>
+					<Col span={4}>
+						<Button type={"primary"} style={{marginLeft: 0}}
+						        onClick={() => handleCreateAnswer()}>{t('create_room')}</Button>
+					</Col>
+				</Row>
+			</div>
+		</div>
+	)
+}
+
+const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, owner, cover, onClose}:
+    {visible:boolean,activeId:string,roomName:string, roomId:string, owner:string, cover:string, onShowProgress: (s: boolean)=>void,onClose: ()=>void}) => {
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [uploaded, setUploaded] = useState<boolean>(false)
-	const [scene, setScene] = useState<string>("/images/notlogin.png")
+	const [clueCounter, setClueCounter] = useState<number>(0)
+	const [scene, setScene] = useState<string>(cover)
 	const [confirmed, setConfirmed] = useState<boolean>(false)
 	const [showChatDialog, setShowChatDialog] = useState<boolean>(false)
 	const [message, setMessage] = useState<string>('')
 	const [isOwner, setIsOwner] = useState<boolean>(false)
+	const [gameLevel, setGameLevel] = useState<number>(0)
+	const [sceneCount, setSceneCount] = useState<number>(1)
+	const [showEditAnswer, setShowEditAnswer] = useState<boolean>(false)
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
 	const command = commandDataContainer.useContainer()
@@ -147,6 +194,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					if (answer.length > 1){
 						playAudioWithWebAudioApi(answer[1]).then(r => {})
 					}
+					setClueCounter(clueCounter + 1)
 				}else{
 					alert(t('assist_fail'));
 				}
@@ -246,18 +294,19 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		fileList,
 	};
 
-	const handleJoin = (owner: string, room_id: string, room_name: string) => {
+	const handleJoin = (owner: string, room_id: string, room_name: string, level:number) => {
 		confirm({
 			icon: <ExclamationCircleFilled />,
 			content: t('joinTips'),
 			okText: t('confirm'),
 			cancelText: t('cancel'),
 			onOk() {
-				command.join_game(activeId, owner, room_id, room_name).then((res) => {
+				command.join_game(activeId, owner, room_id, room_name, level).then((res) => {
 					Modal.success({
 						content: '加入房间成功!'
 					})
-					setScene(res)
+					setScene(res[1])
+					setSceneCount(res[0])
 				})
 			}
 		})
@@ -298,6 +347,12 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 				<Row align={"middle"} style={{padding:10}}>
 					<Col span={8} style={{textAlign:"center"}}>
 						<Button onClick={() =>{
+							if (!isOwner && clueCounter > 3) {
+								Modal.warning({
+									content: '三次询问线索的机会已用完'
+								})
+								return
+							}
 							if (confirmed){
 								setIsOwner(isOwner)
 								stop_record()
@@ -321,27 +376,67 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					</Col>
 					{
 						isOwner ?
-              <Col span={8} style={{textAlign:"center"}}>
+              <Col span={6} style={{textAlign:"center"}}>
                   <Upload id="upload-input" maxCount={1} showUploadList={true} {...props}>
-                      <Button>{uploaded ? <CheckOutlined /> : null} 公布答案</Button>
+                      <Button>{uploaded ? <CheckOutlined /> : null} 生成答案</Button>
                   </Upload>
               </Col>
 							:
 							<>
-								<Col span={8} style={{textAlign:"center"}}>
+								<Col span={6} style={{textAlign:"center"}}>
 									<Button style={{color:"black"}} onClick={() =>{
 										onClose()
 									}}>发送答案</Button>
 								</Col>
-								<Col span={8} style={{textAlign:"center"}}>
-									<Button style={{color:"black"}} onClick={() =>{
-										handleJoin(owner,roomId, roomName)
-									}}>下一关</Button>
+								<Col span={4} style={{textAlign:"center"}}>
+									<ArrowLeftOutlined style={{color:"white"}} onClick={() =>{
+										if (gameLevel> 2) {
+											handleJoin(owner, roomId, roomName, gameLevel-1)
+										}else {
+											Modal.warning({
+												content: '这是第一关了'
+											})
+										}
+									}}/>
+								</Col>
+								<Col span={4} style={{textAlign:"center"}}>
+									<ArrowRightOutlined style={{color:"white"}} onClick={() =>{
+										if (gameLevel >= sceneCount) {
+											handleJoin(owner, roomId, roomName, gameLevel+1)
+										}else {
+											Modal.warning({
+												content: '这是最后一关了'
+											})
+										}
+									}}/>
+								</Col>
+								<Col span={4} style={{textAlign:"center"}}>
+									<QuestionOutlined style={{color:"white"}} onClick={() =>{
+										if (gameLevel >= sceneCount) {
+											handleJoin(owner, roomId, roomName, gameLevel+1)
+										}else {
+											Modal.warning({
+												content: '这是最后一关了'
+											})
+										}
+									}}/>
+								</Col>
+								<Col span={4} style={{textAlign:"center"}}>
+									<KeyOutlined style={{color:"white"}} onClick={() =>{
+										if (gameLevel >= sceneCount) {
+											handleJoin(owner, roomId, roomName, gameLevel+1)
+										}else {
+											Modal.warning({
+												content: '这是最后一关了'
+											})
+										}
+									}}/>
 								</Col>
 							</>
 					}
 				</Row>
 				<ChatDialog visible={showChatDialog} message={message} onClose={()=>setShowChatDialog(false)}/>
+				<EditAnswerInfo visible={showEditAnswer} owner={owner} room_id={roomId} level={gameLevel} onClose={()=>{}} />
 			</div>
 		</div>
 	)

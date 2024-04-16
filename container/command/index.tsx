@@ -557,9 +557,9 @@ const useCommand = () => {
     }
     return ''
   }
-  const join_game = async (id: string, owner: string, room_id: string, room_name: string) => {
+  const join_game = async (id: string, owner: string, room_id: string, room_name: string, level: number) => {
     let data = {owner: owner, room_id: room_id, room_name: room_name, id: id,
-      message: '', image_url: '', answer:''}
+      message: '', image_url: '', answer:'', level:level}
     let url = getApiServer(80) + api_url.portal.town.join_game
     let response = await fetch(
       `${url}`,
@@ -573,10 +573,10 @@ const useCommand = () => {
     )
     if (response.ok) {
       let dataJson = await response.json()
-      console.log(dataJson.content)
-      return dataJson.content;
+      let scene_info: [] = JSON.parse(dataJson.content)
+      return scene_info;
     }
-    return ''
+    return []
   }
   const ask_clue = async (id: string, owner: string, room_id: string, room_name: string, message: string, image_url: string) => {
     let data = {owner: owner, room_id: room_id, room_name: room_name, id: id,
@@ -616,9 +616,9 @@ const useCommand = () => {
       console.log(dataJson.content)
     }
   }
-  const accept_answer = async (id: string, owner: string, room_id: string, room_name: string, message: string, image_url: string, answer: string) => {
-    let data = {owner: owner, room_id: room_id, room_name: room_name, id: id,
-      message: message, image_url: image_url, answer:answer}
+  const accept_answer = async (owner: string, room_id: string, answer: string,level:number) => {
+    let data = {owner: owner, room_id: room_id, room_name: '', id: '',
+      message: '', image_url: '', answer:answer}
     let url = getApiServer(80) + api_url.portal.town.accept_answer
     let response = await fetch(
       `${url}`,

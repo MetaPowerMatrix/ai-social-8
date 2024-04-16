@@ -24,3 +24,22 @@
     border-radius: 10px;
     background-color: rgba(110,120,126,0.5);
 }
+.level_answer_container {
+    position: fixed;
+    z-index: 4;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+.level_answer_content {
+    position: absolute;
+    background-color: white;
+    padding: 20px;
+    width: 90%;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
