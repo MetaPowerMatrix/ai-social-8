@@ -55,7 +55,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const [message, setMessage] = useState<string>('')
 	const [isOwner, setIsOwner] = useState<boolean>(false)
 	const [gameLevel, setGameLevel] = useState<number>(0)
-	const [sceneCount, setSceneCount] = useState<number>(1)
+	const [sceneCount, setSceneCount] = useState<number>(2)
 	const [showEditAnswer, setShowEditAnswer] = useState<boolean>(false)
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
@@ -231,9 +231,11 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		command.image_desc_by_url(activeId, roomId, sceneRef.current ?? '').then(response => response.json())
 			.then(data => {
 				if (data.code === "200") {
-					let description: string = data.content
-					setShowChatDialog(true)
-					setMessage(description)
+					let description: string = data.content.split(',')
+					if (description.length > 0){
+						setMessage(description[0])
+						setShowChatDialog(true)
+					}
 				}else{
 					Modal.warning({
 						content: '场景描述失败.'
@@ -272,7 +274,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			onOk() {
 				command.join_game(activeId, owner, room_id, room_name, level).then((res) => {
 					Modal.success({
-						content: '加入房间成功!'
+						content: '进入下一关!'
 					})
 					setScene(res[1])
 					setSceneCount(res[0])

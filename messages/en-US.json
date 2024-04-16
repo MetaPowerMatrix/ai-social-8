@@ -198,12 +198,14 @@
   },
   "travel": {
     "startRecordingSceneDescription": "开始录制场景描述",
-    "joinTips": "确认加入房间，需要消耗1原力值",
+    "startAskClu": "开始询问线索",
+    "joinTips": "确认进入下一关，需要消耗1原力值",
     "confirm": "确认",
     "cancel": "取消",
     "uploadSample": "上传示例图片",
     "create_room_tips": "是否生成房间，需要消耗10原力值",
-    "create_room": "创建房间"
+    "create_room": "创建房间",
+    "create_answer_tips": "是否生成答案，需要消耗10原力值"
   },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"
