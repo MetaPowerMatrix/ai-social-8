@@ -633,8 +633,9 @@ const useCommand = () => {
     )
     if (response.ok) {
       let dataJson = await response.json()
-      console.log(dataJson.content)
+      return dataJson.content
     }
+    return ''
   }
   const gen_answer = async (id: string, image_url: string, room_id: string, level:number) => {
     let data = {owner: '', room_id: room_id, room_name: '', id: id,

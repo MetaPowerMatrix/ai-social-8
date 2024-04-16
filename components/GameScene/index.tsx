@@ -211,6 +211,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					let images: string[] = JSON.parse(data.content)
 					if (images.length > 0){
 						setScene(images[0])
+						setGameLevel(gameLevel + 1)
 					}
 				}else{
 					Modal.warning({
@@ -228,41 +229,15 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			});
 	};
 	const handleImageDescription= () => {
-		command.image_desc_by_url(activeId, roomId, sceneRef.current ?? '').then(response => response.json())
-			.then(data => {
-				if (data.code === "200") {
-					let description: string = data.content.split(',')
-					if (description.length > 0){
-						setMessage(description[0])
-						setShowChatDialog(true)
-					}
-				}else{
-					Modal.warning({
-						content: '场景描述失败.'
-					})
+		command.image_desc_by_url(activeId, roomId, sceneRef.current ?? '')
+			.then(res=>{
+				let description: string = res.split('##')
+				console.log(description)
+				if (description.length > 0){
+					setMessage(description[0])
+					setShowChatDialog(true)
 				}
 			})
-			.catch((error) => {
-				console.error('Error:', error);
-				Modal.warning({
-					content: '场景描述失败.'
-				})
-			});
-	};
-
-	const props: UploadProps = {
-		onRemove: (file) => {
-			const index = fileList.indexOf(file);
-			const newFileList = fileList.slice();
-			newFileList.splice(index, 1);
-			setFileList(newFileList);
-		},
-		beforeUpload: (file) => {
-			setFileList([...fileList, file]);
-			setUploaded(true)
-			return false;
-		},
-		fileList,
 	};
 
 	const handleJoin = (owner: string, room_id: string, room_name: string, level:number) => {
@@ -278,6 +253,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					})
 					setScene(res[1])
 					setSceneCount(res[0])
+					setGameLevel(gameLevel + 1)
 				})
 			}
 		})
@@ -349,14 +325,25 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 						isOwner ?
               <Col span={6} style={{textAlign:"center"}}>
 	                <Button onClick={()=>{
-		                command.gen_answer(activeId, sceneRef.current ?? '', roomId, gameLevel)
+		                command.gen_answer(activeId, sceneRef.current ?? '', roomId, gameLevel).then((res)=>{
+											let msg: string[] = JSON.parse(res)
+											setShowChatDialog(true)
+											setMessage(msg[0])
+		                })
 	                }}>生成答案</Button>
               </Col>
 							:
 							<>
 								<Col span={6} style={{textAlign:"center"}}>
 									<Button style={{color:"black"}} onClick={() =>{
-										command.send_answer(activeId, owner, roomId, roomName, '', gameLevel)
+										command.send_answer(activeId, owner, roomId, roomName, '这个密室可以打破窗户逃脱', gameLevel).then((res)=>{
+											let winner: string[] = JSON.parse(res)
+											if (winner.length > 0){
+												Modal.success({
+													content: '答案正确'
+												})
+											}
+										})
 									}}>发送答案</Button>
 								</Col>
 								<Col span={2} style={{textAlign:"center"}}>
@@ -398,6 +385,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 											cancelText: t('cancel'),
 											onOk() {
 												command.reveal_answer(activeId, owner, roomId, gameLevel).then((res)=>{
+													setShowChatDialog(true)
 													if (res === ''){
 														setMessage('AI还没有给出答案')
 													}else{
