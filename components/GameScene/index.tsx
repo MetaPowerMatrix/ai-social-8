@@ -46,8 +46,6 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
-	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [uploaded, setUploaded] = useState<boolean>(false)
 	const [clueCounter, setClueCounter] = useState<number>(0)
 	const [scene, setScene] = useState<string>('')
 	const [confirmed, setConfirmed] = useState<boolean>(false)
@@ -240,20 +238,24 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			})
 	};
 
-	const handleJoin = (owner: string, room_id: string, room_name: string, level:number) => {
+	const handleJoin = (owner: string, room_id: string, room_name: string, level:number, clockWise: boolean) => {
 		confirm({
 			icon: <ExclamationCircleFilled />,
-			content: t('joinTips'),
+			content: clockWise? t('joinTips'):t('backTips'),
 			okText: t('confirm'),
 			cancelText: t('cancel'),
 			onOk() {
 				command.join_game(activeId, owner, room_id, room_name, level).then((res) => {
 					Modal.success({
-						content: '进入下一关!'
+						content: clockWise ? '进入下一关!' : "回到上一关"
 					})
 					setScene(res[1])
 					setSceneCount(res[0])
-					setGameLevel(gameLevel + 1)
+					if (clockWise){
+						setGameLevel(gameLevel + 1)
+					}else{
+						setGameLevel(gameLevel - 1)
+					}
 				})
 			}
 		})
@@ -262,12 +264,14 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const ChatDialog = ({visible, message, onClose}:{visible:boolean,message:string, onClose: ()=>void}) => {
 		return(
 			<div hidden={!visible} className={styles.dialog_layer}>
-				<CloseOutlined onClick={() => onClose()} style={{color:"white", fontSize: 18, padding:10}}/>
-				<Row>
-					<Col span={24}>
-						<h5 style={{color:"white"}}>{message}</h5>
-					</Col>
-				</Row>
+				<CloseOutlined onClick={() => onClose()} style={{color: "white", fontSize: 18, padding: 10}}/>
+				<div className={styles.dialog_layer_content}>
+					<Row>
+						<Col span={24}>
+							<h5 style={{color: "papayawhip", margin: 0, padding: 5}}>{message}</h5>
+						</Col>
+					</Row>
+				</div>
 			</div>
 		)
 	}
@@ -276,7 +280,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			<div className={styles.game_scene_content}>
 				<Row align={"middle"}>
 					<Col span={2}>
-						<CloseOutlined onClick={() => onClose()} style={{color:"white", fontSize: 18, padding:10}}/>
+						<CloseOutlined onClick={() => onClose()} style={{color: "white", fontSize: 18, padding: 10}}/>
 					</Col>
 					<Col span={22} style={{textAlign:"center"}}>
 						<span style={{color:"white", fontSize:18}}>{roomName}</span>
@@ -294,6 +298,12 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 				<Row align={"middle"} style={{padding:10}}>
 					<Col span={8} style={{textAlign:"center"}}>
 						<Button onClick={() =>{
+							if (!isOwner && gameLevel === 0) {
+								Modal.warning({
+									content: '请先进入关卡，这里是封面'
+								})
+								return
+							}
 							if (!isOwner && clueCounter > 3) {
 								Modal.warning({
 									content: '三次询问线索的机会已用完'
@@ -323,19 +333,55 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					</Col>
 					{
 						isOwner ?
-              <Col span={6} style={{textAlign:"center"}}>
-	                <Button onClick={()=>{
-		                command.gen_answer(activeId, sceneRef.current ?? '', roomId, gameLevel).then((res)=>{
+							<>
+								<Col span={6} style={{textAlign:"center"}}>
+									<Button onClick={()=>{
+										if (gameLevel === 0 || gameLevel === undefined) {
+											Modal.warning({
+												content: '请先进入关卡，这里是封面'
+											})
+											return
+										}
+										command.gen_answer(activeId, sceneRef.current ?? '', roomId, gameLevel).then((res)=>{
 											let msg: string[] = JSON.parse(res)
 											setShowChatDialog(true)
 											setMessage(msg[0])
-		                })
-	                }}>生成答案</Button>
-              </Col>
+										})
+									}}>生成答案</Button>
+								</Col>
+								<Col span={2} style={{textAlign:"center"}}>
+									<ArrowLeftOutlined style={{color:"white",fontSize:16}} onClick={() =>{
+										if (gameLevel > 1) {
+											handleJoin(owner, roomId, roomName, gameLevel-1, false)
+										}else {
+											Modal.warning({
+												content: '这是第一关了'
+											})
+										}
+									}}/>
+								</Col>
+								<Col span={2} style={{textAlign:"center"}}>
+									<ArrowRightOutlined style={{color:"white",fontSize:16}} onClick={() =>{
+										if (gameLevel < sceneCount - 1) {
+											handleJoin(owner, roomId, roomName, gameLevel+1, true)
+										}else {
+											Modal.warning({
+												content: '这是最后一关了'
+											})
+										}
+									}}/>
+								</Col>
+							</>
 							:
 							<>
 								<Col span={6} style={{textAlign:"center"}}>
 									<Button style={{color:"black"}} onClick={() =>{
+										if (gameLevel === 0) {
+											Modal.warning({
+												content: '请先进入关卡，这里是封面'
+											})
+											return
+										}
 										command.send_answer(activeId, owner, roomId, roomName, '这个密室可以打破窗户逃脱', gameLevel).then((res)=>{
 											let winner: string[] = JSON.parse(res)
 											if (winner.length > 0){
@@ -352,8 +398,8 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 								</Col>
 								<Col span={2} style={{textAlign:"center"}}>
 									<ArrowLeftOutlined style={{color:"white",fontSize:16}} onClick={() =>{
-										if (gameLevel <= 1) {
-											handleJoin(owner, roomId, roomName, gameLevel-1)
+										if (gameLevel > 1) {
+											handleJoin(owner, roomId, roomName, gameLevel-1, false)
 										}else {
 											Modal.warning({
 												content: '这是第一关了'
@@ -364,7 +410,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 								<Col span={2} style={{textAlign:"center"}}>
 									<ArrowRightOutlined style={{color:"white",fontSize:16}} onClick={() =>{
 										if (gameLevel < sceneCount - 1) {
-											handleJoin(owner, roomId, roomName, gameLevel+1)
+											handleJoin(owner, roomId, roomName, gameLevel+1, true)
 										}else {
 											Modal.warning({
 												content: '这是最后一关了'
@@ -373,7 +419,14 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 									}}/>
 								</Col>
 								<Col span={2} style={{textAlign:"center"}}>
-									<FileImageOutlined style={{color:"white",fontSize:16}} onClick={() =>{
+									<FileImageOutlined disabled={(gameLevel === 0||gameLevel===undefined)&&!isOwner} style={{color:"white",fontSize:16}}
+                   onClick={() =>{
+	                   if (gameLevel === 0) {
+		                   Modal.warning({
+			                   content: '请先进入关卡，这里是封面'
+		                   })
+		                   return
+	                   }
 										Modal.info({
 											content: "主持人会给出场景的基本描述"
 										})
@@ -381,7 +434,13 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 									}}/>
 								</Col>
 								<Col span={2} style={{textAlign:"center"}}>
-									<KeyOutlined style={{color:"white",fontSize:16}} onClick={() =>{
+									<KeyOutlined disabled={(gameLevel === 0||gameLevel===undefined)&&!isOwner} style={{color:"white",fontSize:16}} onClick={() =>{
+										if (gameLevel === 0) {
+											Modal.warning({
+												content: '请先进入关卡，这里是封面'
+											})
+											return
+										}
 										confirm({
 											icon: <ExclamationCircleFilled />,
 											content: '确定查看答案吗，需要消耗50原力值',

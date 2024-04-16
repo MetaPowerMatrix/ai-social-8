@@ -28,6 +28,7 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 	const t = useTranslations('others');
 	const command = commandDataContainer.useContainer()
 	const [activeTab, setActivTab] = useState('subscription');
+	const [showMetaMask, setShowMetaMask] = useState<boolean>(false)
 	const [form] = Form.useForm();
 	const [formDonation] = Form.useForm();
 
@@ -212,6 +213,11 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 			})
 		})
 	}
+	const connect = ()=>{
+		connectToBsc().then(()=>{
+			setShowMetaMask(true)
+		})
+	}
 
 	const handleSubmit = (values: any) => {
 		console.log(values);
@@ -298,6 +304,11 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 					<Row>
 						<Col span={8}>
 							<CloseOutlined style={{color: "black", fontSize: 20}} onClick={() => onClose()}/>
+						</Col>
+						<Col span={12}>
+						</Col>
+						<Col span={2} style={{textAlign:"end", width:"100%"}}>
+							<img onClick={()=> connect()} hidden={!showMetaMask} src={showMetaMask?"/images/MetaMask.png":"/images/MetaMaskGray.png"} width={24} height={24}/>
 						</Col>
 					</Row>
 					<Tabs
