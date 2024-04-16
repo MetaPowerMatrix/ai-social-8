@@ -265,7 +265,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 				<CloseOutlined onClick={() => onClose()} style={{color:"white", fontSize: 18, padding:10}}/>
 				<Row>
 					<Col span={24}>
-						<h5 style={{color:"black"}}>{message}</h5>
+						<h5 style={{color:"white"}}>{message}</h5>
 					</Col>
 				</Row>
 			</div>
