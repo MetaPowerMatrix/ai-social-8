@@ -37,7 +37,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 	const [summary, setSummary] = useState<string>("");
 	const [hideMessages, setHideMessages] = useState<boolean>(true);
 	const [hotPros, setHotPros] = useState<HotPro[]>([])
-	const [activeTabPro, setActiveTabPro] = useState<string>('mine');
+	const [activeTabPro, setActiveTabPro] = useState<string>('system');
 	const [showProChat, setShowProChat] = useState<boolean>(false)
 	const [proName, setProName] = useState<string>('')
 	const [proId, setProId] = useState<string>('')
@@ -116,12 +116,12 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 	}
 	const pro_tabs = [
 		{
-			key: 'mine',
-			label: t('mine'),
-		},
-		{
 			key: 'system',
 			label: t('system'),
+		},
+		{
+			key: 'mine',
+			label: t('mine'),
 		}
 	];
 	const onProTabChange = (key: string) => {
