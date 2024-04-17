@@ -286,7 +286,13 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			<div className={styles.game_scene_content}>
 				<Row align={"middle"}>
 					<Col span={2}>
-						<CloseOutlined onClick={() => onClose()} style={{color: "white", fontSize: 18, padding: 10}}/>
+						<CloseOutlined onClick={() =>{
+							setGameLevel(0)
+							setSceneCount(2)
+							setShowChatDialog(false)
+							setClueCounter(0)
+							onClose()
+						}} style={{color: "white", fontSize: 18, padding: 10}}/>
 					</Col>
 					<Col span={22} style={{textAlign:"center"}}>
 						<span style={{color:"white", fontSize:18}}>{roomName}</span>
@@ -295,6 +301,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 				<Row>
 					<Col span={24}>
 						<Image
+							preview={false}
 							src={scene}
 							height={580}
 							alt="scene"
