@@ -205,15 +205,14 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 		}
 	}
 
-	const ChatDialog = ({visible, lyrics, onClose}:{visible:boolean, lyrics:TimeLineItemProps[], onClose: ()=>void}) => {
+	const ChatDialog = ({visible, onClose}:{visible:boolean, onClose: ()=>void}) => {
 		return(
 			<div hidden={!visible} className={styles.dialog_layer}>
 				<CloseOutlined onClick={() => onClose()} style={{color: "white", fontSize: 18, padding: 10}}/>
-				<Row className={styles.live_chat_message}>
-					<Col span={24} style={{height: 100, color: "white", overflow: "scroll"}}>
+				<Row style={{overflow: "scroll"}}>
+					<Col span={24} style={{height: 300, color: "white", padding:10}}>
 						<Timeline
 							style={{color: "white"}}
-							pending="..."
 							reverse={true}
 							items={lyrics}
 						/>
@@ -256,7 +255,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 						<LogoutOutlined style={{color: "white", fontSize: 20}} onClick={() => { end_session() }}/>
 					</Col>
 				</Row>
-				<ChatDialog visible={showChatDialog} lyrics={lyrics} onClose={()=>setShowChatDialog(false)}/>
+				<ChatDialog visible={showChatDialog} onClose={()=>setShowChatDialog(false)}/>
 			</div>
 		</div>
 	)
