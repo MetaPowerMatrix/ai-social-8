@@ -64,7 +64,6 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	sceneRef.current = scene
 	const roomIdRef = useRef<string>()
 	roomIdRef.current =roomId
-	const [loadingPercent, setLoadingPercent] = useState(0);
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
@@ -92,7 +91,6 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	};
 
 	const process_ws_message = (event: any) => {
-		console.log(event.data.toString())
 		if (event.data.toString() !== 'pong') {
 			setShowChatDialog(true)
 			setMessage("我：" + event.data.toString())
@@ -312,7 +310,6 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 							onLoadStart={()=>onShowProgress(true)}
 							onLoad={()=>{
 								onShowProgress(false)
-								setLoadingPercent(100);
 							}}
 						/>
 					</Col>

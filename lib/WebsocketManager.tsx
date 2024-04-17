@@ -1,4 +1,4 @@
-import {getBrowserType, getOS} from "@/lib/utils";
+import {getOS} from "@/lib/utils";
 
 export class WebSocketManager {
 	private ws: WebSocket | null = null;
@@ -24,7 +24,6 @@ export class WebSocketManager {
 		this.ws = new WebSocket(this.url);
 
 		this.ws.onopen = () => {
-			console.log('Live Chat WebSocket connected to ', this.url);
 			let os = getOS()
 			this.ws?.send(os)
 			this.startHeartbeat();
@@ -41,7 +40,7 @@ export class WebSocketManager {
 		};
 
 		this.ws.onmessage = (event) => {
-			console.log('WebSocket message:', event.data);
+			// console.log('WebSocket message:', event.data);
 			this.callback(event)
 			// Handle incoming messages...
 		};

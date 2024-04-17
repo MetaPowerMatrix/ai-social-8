@@ -13,17 +13,21 @@ export class SequentialAudioPlayer {
 		this.currentBuffers = 0;
 	}
 	public async addUrl(url: string)  {
-		this.urls.push(url);
-		await this.loadBuffers()
-		this.currentBuffers = this.buffers.length;
-		console.log('update current buffers length:', this.buffers.length)
+		if (!this.urls.includes(url)){
+			this.urls.push(url);
+			await this.loadBuffers()
+			this.currentBuffers = this.buffers.length;
+			console.log('update current buffers length:', this.buffers.length)
+		}
 	}
 	private async loadBuffers(): Promise<void> {
+		if (this.buffers.length > 10){
+			this.clear()
+		}
 		console.log('loop current buffers index:', this.currentBuffers)
 		console.log('loop current buffers length:', this.buffers.length)
 		for (let i = this.currentBuffers; i < this.urls.length; i++) {
 			let url = this.urls[i]
-		// for (const url of this.urls) {
 			try {
 				const response = await fetch(url);
 				const arrayBuffer = await response.arrayBuffer();
@@ -51,7 +55,12 @@ export class SequentialAudioPlayer {
 		};
 		return true
 	}
-
+	public clear(){
+		this.buffers = [];
+		this.currentIndex = 0;
+		this.currentBuffers = 0;
+		this.urls.splice(0, this.urls.length - 1)
+	}
 	public play(callback: (empty: boolean)=>void): boolean {
 		if (this.currentBuffers === 0) {
 			console.log('Audio buffers are still loading.');

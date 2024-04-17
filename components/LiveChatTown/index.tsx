@@ -16,6 +16,7 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import {SequentialAudioPlayer} from "@/lib/SequentialAudioPlayer";
 import mqtt from "mqtt";
 import {TimeLineItemProps} from "antd/lib/timeline/TimelineItem";
+import {getOS} from "@/lib/utils";
 
 interface LiveChatPros {
 	id: string,
@@ -86,11 +87,13 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 
 			// Handler for incoming messages
 			const onMessage = async (topic: string, message: Buffer) => {
-				console.log("receive topic ", topic, " ", message.toString())
 				if (topic === topic_text){
 					let newMsg = {children: message.toString()}
 					setLyrics((prev)=>{
 						const newLyrics = [...prev]
+						if (newLyrics.length > 8){
+							newLyrics.splice(0,6)
+						}
 						newLyrics.push(newMsg)
 						return newLyrics
 					})
@@ -130,7 +133,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 				console.log(voiceUrls)
 				console.log("started: ", isStart)
 				setStartPlay( isStart === undefined ? false : isStart)
-			}, 1000);
+			}, 2000);
 			// setStartPlay(true)
 		}
 	},[voiceUrls])
@@ -162,14 +165,15 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 	};
 
 	const process_ws_message = (event: any) => {
-		console.log('Received message:', event.data);
-		console.log(roleOne, roleTwo, session)
 		let message = event.data.toString()
 		if (message !== "pong"){
 			command.continue_live_chat(id, [roleOne, roleTwo], message, session)
 				.then((res) => {
 					setLyrics((prev)=>{
 						const newLyrics = [...prev]
+						if (newLyrics.length > 8){
+							newLyrics.splice(0,6)
+						}
 						newLyrics.push(message)
 						return newLyrics
 					})
@@ -179,7 +183,11 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 
 	let chunks: BlobPart[] = [];
 	const handleAudioStream = (stream: MediaStream) => {
-		const options = {mimeType: 'audio/webm;codecs=pcm'};
+		let options = {mimeType: 'audio/webm;codecs=pcm'};
+		let OS = getOS()
+		if (OS === 'iphone'|| OS === 'macosx'){
+			options = {mimeType: 'audio/mp4;codecs=mp4a'}
+		}
 		const mediaRecorder = new MediaRecorder(stream, options);
 		// const socket = new WebSocket(serverUrl + "/up");
 		const socket = new WebSocketManager(serverUrl + "/up", process_ws_message);
@@ -204,7 +212,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 
 	const stop_record = () => {
 		if (stopped){
-			recorder?.start()
+			recorder?.start(1000)
 			setStopped(false)
 		}else{
 			recorder?.stop()

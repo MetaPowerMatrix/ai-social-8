@@ -99,7 +99,6 @@ const AskProComponent = ({activeId, visible, pro_name, pro_id, onClose, onShowPr
 	};
 
 	const process_ws_message = (event: any) => {
-		console.log(event.data.toString())
 		if (event.data.toString() !== 'pong') {
 			setQuery(event.data.toString())
 		}
@@ -119,7 +118,6 @@ const AskProComponent = ({activeId, visible, pro_name, pro_id, onClose, onShowPr
 		setRecorder(mediaRecorder)
 
 		mediaRecorder.ondataavailable = (event) => {
-			console.log(event)
 			if (event.data.size > 0) {
 				chunks.push(event.data);
 				// socket.send(event.data);
