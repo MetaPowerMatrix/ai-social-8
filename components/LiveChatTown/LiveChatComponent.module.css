@@ -26,12 +26,20 @@
             -6px -6px 10px rgba(106, 120, 121, 0.5);
 }
 
-.live_chat_message {
-    z-index: 3;
-    position: absolute;
-    background-color: rgba(106, 120, 121, 0.8);
-    padding: 10px;
-    width: 35%;
-    height: 30%;
-    top: 70%;
+.dialog_layer {
+    position: fixed;
+    z-index: 4;
+    left: 40px;
+    top: 140px;
+    width: 80%;
+    height: 240px;
+    border: 1px solid red;
+    border-radius: 10px;
+    background-color: rgba(110,120,126,0.5);
+}
+.dialog_layer_content {
+    width: 100%;
+    height: 80%;
+    overflow: scroll;
+    background-color: rgba(110,120,126,0.5);
 }

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import styles from "./LiveChatComponent.module.css";
 import {
-	Col, Image,
+	Col, Image, Modal,
 	Row,
 	Timeline
 } from "antd";
@@ -19,6 +19,7 @@ import {TimeLineItemProps} from "antd/lib/timeline/TimelineItem";
 
 interface LiveChatPros {
 	id: string,
+	owner: string,
 	cover: string,
 	room_name: string,
 	roleOne:string,
@@ -37,7 +38,7 @@ declare global {
 	}
 }
 
-const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id,
+const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, owner, id,
   room_name,cover, session, roleOne, roleTwo, onClose, onShowProgress}) =>
 {
 	const t = useTranslations('LiveChat');
@@ -49,6 +50,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id
 	const [startPlay, setStartPlay] = useState<boolean>(false);
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const [player, setPlayer] = useState<SequentialAudioPlayer | undefined>(undefined);
+	const [showChatDialog, setShowChatDialog] = useState<boolean>(true)
 	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
@@ -71,7 +73,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id
 	}, []);
 
 	useEffect(() => {
-		if (client) {
+		if (client && session !== '') {
 			const topic_voice = session+"/voice";
 			const topic_text = session+"/text";
 
@@ -82,7 +84,6 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id
 					let newMsg = {children: message.toString()}
 					setLyrics((prev)=>{
 						const newLyrics = [...prev]
-						newLyrics.shift()
 						newLyrics.push(newMsg)
 						return newLyrics
 					})
@@ -112,7 +113,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id
 				}
 			};
 		}
-	}, [client]); // Re-run this effect if the `client` state changes
+	}, [client,session]); // Re-run this effect if the `client` state changes
 
 	useEffect(() => {
 		if (voiceUrls.length > 0 && !startPlay) {
@@ -130,13 +131,17 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id
 	const end_session = () => {
 		command.end_live_chat([roleOne, roleTwo]).then((res) => {
 			console.log(res)
-			alert(t('end'))
+			Modal.success({
+				content: t('end')
+			})
 		})
 	}
 	const reload_session = () => {
 		command.restore_live_chat([roleOne, roleTwo], session).then((res) => {
 			console.log(res)
-			alert(t("restore"))
+			Modal.success({
+				content: t('restore')
+			})
 		})
 	}
 	// Function to initialize audio recording and streaming
@@ -153,14 +158,16 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id
 		console.log('Received message:', event.data);
 		console.log(roleOne, roleTwo, session)
 		let message = event.data.toString()
-		command.continue_live_chat(id, [roleOne, roleTwo], message, session)
-			.then((res) => {
-				setLyrics((prev)=>{
-					const newLyrics = [...prev]
-					newLyrics.push(message)
-					return newLyrics
+		if (message !== "pong"){
+			command.continue_live_chat(id, [roleOne, roleTwo], message, session)
+				.then((res) => {
+					setLyrics((prev)=>{
+						const newLyrics = [...prev]
+						newLyrics.push(message)
+						return newLyrics
+					})
 				})
-			})
+		}
 	}
 
 	let chunks: BlobPart[] = [];
@@ -198,7 +205,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id
 		}
 	}
 
-	const ChatDialog = ({visible, message, onClose}:{visible:boolean,message:string, onClose: ()=>void}) => {
+	const ChatDialog = ({visible, lyrics, onClose}:{visible:boolean, lyrics:TimeLineItemProps[], onClose: ()=>void}) => {
 		return(
 			<div hidden={!visible} className={styles.dialog_layer}>
 				<CloseOutlined onClick={() => onClose()} style={{color: "white", fontSize: 18, padding: 10}}/>
@@ -249,6 +256,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id
 						<LogoutOutlined style={{color: "white", fontSize: 20}} onClick={() => { end_session() }}/>
 					</Col>
 				</Row>
+				<ChatDialog visible={showChatDialog} lyrics={lyrics} onClose={()=>setShowChatDialog(false)}/>
 			</div>
 		</div>
 	)

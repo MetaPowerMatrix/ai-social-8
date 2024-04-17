@@ -39,6 +39,16 @@ export interface PortalRoomInfo{
   cover: string,
   town: string
 }
+export interface PortalLiveRoomInfo{
+  owner: string,
+  room_id: string,
+  room_name: string,
+  roles: string[],
+  title: string,
+  description: string,
+  cover: string,
+  town: string
+}
 
 export interface LiveOpenResponse {
   room_id: string,

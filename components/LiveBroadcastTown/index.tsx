@@ -5,7 +5,7 @@ import {
 	CloseOutlined, ExclamationCircleFilled,
 	LoginOutlined, PauseOutlined, PlusOutlined, UploadOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, LiveOpenResponse, PortalRoomInfo, Streaming_Server} from "@/common";
+import {api_url, getApiServer, LiveOpenResponse, PortalLiveRoomInfo, PortalRoomInfo, Streaming_Server} from "@/common";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import {v4 as uuidv4} from "uuid";
@@ -13,17 +13,15 @@ import HotAI from "@/components/HotAI";
 import TextArea from "antd/es/input/TextArea";
 import LiveChatSceneComponent from "@/components/LiveChatTown";
 
-const EditRoomInfo = ({id,visible,onClose,onCreated,onShowProgress}:
+const EditRoomInfo = ({id,visible,onClose,onShowProgress}:
     {
 			id:string, visible:boolean,
-      onClose:(room_id:string, room_name:string, role1_id:string, role2_id:string, role1_name:string, role2_name:string)=>void,
-	    onCreated:(room_id:string, room_name:string)=>void,
+      onClose:(room_id:string, room_name:string, cover:string, role1_id:string, role2_id:string, role1_name:string, role2_name:string)=>void,
 	    onShowProgress:(show: boolean)=>void
 		}
 ) => {
 	const [form] = Form.useForm();
 	const [session, setSession] = useState<string>(uuidv4());
-	const [cover, setCover] = useState<string>("/images/placeholder2.png");
 	const [showHot, setShowHot] = useState<boolean>(false)
 	const [selInx, setSelInx] = useState<number>(1)
 	const [roleOneName, setRoleOneName]= useState<string>('')
@@ -55,11 +53,10 @@ const EditRoomInfo = ({id,visible,onClose,onCreated,onShowProgress}:
 						if (data.code === "200") {
 							let openInfo: LiveOpenResponse = JSON.parse(data.content)
 							console.log(openInfo)
-							setCover(openInfo.cover)
 							Modal.success({
 								content:  (t('started'))
 							})
-							onClose(openInfo.room_id, values.title, roleOneId, roleTwoId, roleOneName, roleTwoName)
+							onClose(openInfo.room_id, values.title, openInfo.cover, roleOneId, roleTwoId, roleOneName, roleTwoName)
 						}else{
 							Modal.warning({
 								content:  (t('start_fail'))
@@ -92,7 +89,7 @@ const EditRoomInfo = ({id,visible,onClose,onCreated,onShowProgress}:
 	return (
 		<div hidden={!visible} className={styles.room_edit_container}>
 			<div className={styles.room_edit_content}>
-			<CloseOutlined onClick={() => onClose('','','','','','')} style={{fontSize: 18, marginBottom:20}}/>
+			<CloseOutlined onClick={() => onClose('','','','','','','')} style={{fontSize: 18, marginBottom:20}}/>
 				<Row>
 					<Col span={20}>
 						<Form form={form} variant="filled" onFinish={handleSubmit}>
@@ -138,7 +135,7 @@ const LiveBroadcastTownComponent = ({activeId, onShowProgress}: {
 	activeId: string,
 	onShowProgress: (s: boolean) => void
 }) => {
-	const [roomList, setRoomList] = useState<PortalRoomInfo[]>([])
+	const [roomList, setRoomList] = useState<PortalLiveRoomInfo[]>([])
 	const [showGameScene, setShowGameScene] = useState<boolean>(false)
 	const [showEditRoom, setShowEditRoom] = useState<boolean>(false)
 	const [reload, setReload] = useState<number>(0)
@@ -187,12 +184,12 @@ const LiveBroadcastTownComponent = ({activeId, onShowProgress}: {
 									</Col>
 									<Col span={2} style={{textAlign: "end"}}>
 										<LoginOutlined onClick={() => {
-											console.log("set cover ",item.cover)
 											setCover(item.cover)
-											console.log("set cover after ",cover)
 											setRoomId(item.room_id)
 											setRoomName(item.title)
 											setOwner(item.owner)
+											setRoleOneId(item.roles[0])
+											setRoleTwoId(item.roles[1])
 											setShowGameScene(true)
 										}}/>
 									</Col>
@@ -210,28 +207,23 @@ const LiveBroadcastTownComponent = ({activeId, onShowProgress}: {
 						<Col span={2}></Col>
 					</Row>
 					<EditRoomInfo onShowProgress={onShowProgress} id={activeId} visible={showEditRoom}
-            onCreated={(room_id, room_name) => {
-              setRoomId(room_id)
-              setRoomName(room_name)
-            }}
-            onClose={(room_id, room_name, role1_id, role2_id, role1_name, role2_name) => {
-              // if (room_id !== '') {
-	            //   setShowEditRoom(false)
-	            //   setShowGameScene(true)
-              // } else {
-	            //   setShowEditRoom(false)
-              // }
+            onClose={(room_id, room_name, cover, role1_id, role2_id, role1_name, role2_name) => {
 	            setShowEditRoom(false)
-	            setRoomId(room_id)
-	            setRoomName(room_name)
-	            setRoleOneId(role1_id)
-	            setRoleTwoId(role2_id)
-	            setRoleOneName(role1_name)
-	            setRoleTwoName(role2_name)
-              setReload(reload + 1)
+	            setReload(reload + 1)
+              if (room_id !== '') {
+	              setRoomId(room_id)
+	              setCover(cover)
+	              setOwner(activeId)
+	              setRoomName(room_name)
+	              setRoleOneId(role1_id)
+	              setRoleTwoId(role2_id)
+	              setRoleOneName(role1_name)
+	              setRoleTwoName(role2_name)
+	              setShowGameScene(true)
+              }
 						}}
 					/>
-					<LiveChatSceneComponent id={activeId} cover={cover} room_name={roomName} roleOne={roleOneId} roleTwo={roleTwoId}
+					<LiveChatSceneComponent owner={owner} id={activeId} cover={cover} room_name={roomName} roleOne={roleOneId} roleTwo={roleTwoId}
             session={roomId} serverUrl={Streaming_Server} onClose={()=>{setShowGameScene(false)}} visible={showGameScene}
             onShowProgress={onShowProgress}
 					/>

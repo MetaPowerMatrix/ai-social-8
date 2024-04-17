@@ -6,7 +6,7 @@ import {
   PatoInfo,
   Persona,
   PortalHotAi,
-  PortalKnowledge, PortalRoomInfo,
+  PortalKnowledge, PortalLiveRoomInfo, PortalRoomInfo,
   SessionMessages
 } from "@/common";
 
@@ -700,7 +700,7 @@ const useCommand = () => {
       let response = await fetch(`${url}`,)
       if (response.ok) {
         let dataJson = await response.json()
-        let rooms: PortalRoomInfo[] = JSON.parse(dataJson.content)
+        let rooms: PortalLiveRoomInfo[] = JSON.parse(dataJson.content)
         return rooms
       }
     } catch (e) {
