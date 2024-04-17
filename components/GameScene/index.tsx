@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Col, Image, Modal, GetProp, Row, UploadFile, UploadProps} from "antd";
+import {Button, Col, Image, Modal, GetProp, Row, UploadFile, UploadProps, Spin} from "antd";
 import styles from "./GameSceneComponent.module.css";
 import {
 	ArrowLeftOutlined, ArrowRightOutlined,
@@ -64,7 +64,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	sceneRef.current = scene
 	const roomIdRef = useRef<string>()
 	roomIdRef.current =roomId
-	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+	const [loadingPercent, setLoadingPercent] = useState(0);
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
@@ -141,6 +141,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 		}else{
 			recorder?.stop()
 			setStopped(true)
+			onShowProgress(true)
 		}
 	}
 	async function playAudioWithWebAudioApi(url: string): Promise<void> {
@@ -210,6 +211,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					if (images.length > 0){
 						setScene(images[0])
 						setGameLevel(gameLevel + 1)
+						setSceneCount(sceneCount+1)
 					}
 				}else{
 					Modal.warning({
@@ -227,6 +229,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			});
 	};
 	const handleImageDescription= () => {
+		onShowProgress(true)
 		command.image_desc_by_url(activeId, roomId, sceneRef.current ?? '')
 			.then(res=>{
 				let description: string = res.split('##')
@@ -235,6 +238,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					setMessage(description[0])
 					setShowChatDialog(true)
 				}
+				onShowProgress(false)
 			})
 	};
 
@@ -245,6 +249,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			okText: t('confirm'),
 			cancelText: t('cancel'),
 			onOk() {
+				onShowProgress(true)
 				command.join_game(activeId, owner, room_id, room_name, level).then((res) => {
 					setSceneCount(res[0])
 					if (res[1] !== '') {
@@ -262,6 +267,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 							content: "游戏关卡设定还没有完成"
 						})
 					}
+					onShowProgress(false)
 				})
 			}
 		})
@@ -305,6 +311,11 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 							src={scene}
 							height={580}
 							alt="scene"
+							onLoadStart={()=>onShowProgress(true)}
+							onLoad={()=>{
+								onShowProgress(false)
+								setLoadingPercent(100);
+							}}
 						/>
 					</Col>
 				</Row>
@@ -355,10 +366,12 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 											})
 											return
 										}
+										onShowProgress(true)
 										command.gen_answer(activeId, sceneRef.current ?? '', roomId, gameLevel).then((res)=>{
 											let msg: string[] = JSON.parse(res)
 											setShowChatDialog(true)
 											setMessage(msg[0])
+											onShowProgress(false)
 										})
 									}}>生成答案</Button>
 								</Col>
