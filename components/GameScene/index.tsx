@@ -254,9 +254,12 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 						}else{
 							setGameLevel(gameLevel - 1)
 						}
-					}else{
 						Modal.success({
 							content: clockWise ? '进入下一关!' : "回到上一关"
+						})
+					}else{
+						Modal.success({
+							content: "游戏关卡设定还没有完成"
 						})
 					}
 				})
