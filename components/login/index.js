@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styles from './ModalLogin.module.css';
-import {Flex, Modal, Select} from "antd";
+import {Button, Col, Flex, Modal, Row, Select} from "antd";
 import commandDataContainer from "../../container/command";
-import {ExclamationCircleFilled} from "@ant-design/icons";
+import {CloseOutlined, ExclamationCircleFilled} from "@ant-design/icons";
 import {useTranslations} from "next-intl";
 
 function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
@@ -61,27 +61,33 @@ function ModalLogin({ isOpen, onClose, tips, options, mobile=false }) {
 	return (
 		<div className={styles.modal}>
 			<div className={mobile ? styles.modal_content_mobile : styles.modal_content}>
-				<span className={styles.close_button} onClick={() => onClose('')}>&times;</span>
-				<h5>{tips('notLoginTips')}</h5>
+				<CloseOutlined onClick={() => onClose('')}/>
+				<h4 style={{marginBottom:70, textAlign:"center"}}>{tips('notLoginTips')}</h4>
 				<div className={styles.form_group}>
-					<label>{tips('loginSelect')}</label>
-					<Flex gap="middle" vertical={false} align="center" justify={"space-evenly"}>
-						<select className={styles.login} id="userid" name="userid" onChange={userIdChange}>
-							{options.map((option) => (
-								<option key={option.value} value={option.value}>
-									{option.label}
-								</option>
-							))}
-						</select>
-						<button className={styles.login} onClick={handleLogin}>{tips('buttonLogin')}</button>
-					</Flex>
+					<Row align={"middle"}>
+						<Col span={16}>
+							<select style={{padding:10, width:"100%"}} id="userid" name="userid" onChange={userIdChange}>
+								{options.map((option) => (
+									<option key={option.value} value={option.value}>
+										{option.label}
+									</option>
+								))}
+							</select>
+						</Col>
+						<Col span={8} style={{textAlign:"end"}}>
+							<Button type={"primary"} onClick={handleLogin}>{tips('buttonLogin')}</Button>
+						</Col>
+					</Row>
 				</div>
-				<div className={styles.form_group}>
-					<label>{tips('loginCreate')}</label>
-					<Flex gap="middle" vertical={false} align="center" justify={"space-evenly"}>
-						<input className={styles.login} id="username" name="username" onChange={usernameInput}/>
-						<button className={styles.login} onClick={handleRegister}>{tips('buttonRegister')}</button>
-					</Flex>
+				<div>
+					<Row align={"middle"}>
+						<Col span={16}>
+							<input placeholder={tips('loginCreate')} style={{padding:10, width:"100%"}}  id="username" name="username" onChange={usernameInput}/>
+						</Col>
+						<Col span={8} style={{textAlign:"end"}}>
+							<Button type={"primary"} onClick={handleRegister}>{tips('buttonRegister')}</Button>
+						</Col>
+					</Row>
 				</div>
 			</div>
 		</div>

@@ -290,7 +290,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					<Col span={24}>
 						<Image
 							src={scene}
-							height={620}
+							height={590}
 							alt="scene"
 						/>
 					</Col>

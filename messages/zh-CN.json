@@ -47,13 +47,13 @@
     "submit": "提交"
   },
   "Login": {
-    "notLoginTips": "当前没有活跃的Pato，登陆或者注册一个Pato，进入原力小镇",
+    "notLoginTips": "在遥远的M78星球，存在着一个原力矩阵宇宙，那里有很多的小镇，生活着许多快乐的AI精灵，他们相信光的力量，维护着宇宙的和平。",
     "nameOption": "选择一个身份登陆",
     "nameCreate": "注册一个身份",
-    "buttonLogin": "登陆",
-    "buttonRegister": "注册",
+    "buttonLogin": "切换用户",
+    "buttonRegister": "创建Pato",
     "loginSelect": "选择一个已有的Pato",
-    "loginCreate": "重新注册一个Pato(起个名字就可以了)",
+    "loginCreate": "起个名字就可以了",
     "SN": "小镇编号",
     "RegisteredTime": "注册时间",
     "MatrixTime": "小镇时间",

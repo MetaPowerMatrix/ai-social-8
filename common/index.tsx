@@ -116,6 +116,7 @@ export const api_url = {
       'login': '/api/login',
       'register': '/api/register',
       'pato': '/api/pato/info',
+      'retrieve': '/api/pato/retrieve',
       'knowledges': '/api/pato/knowledge/all',
       'message':{
         'history': '/api/pato/messages',

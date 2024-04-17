@@ -1,26 +1,16 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from "@/components/LiveChat/LiveChatComponent.module.css";
 import {
-	Button,
 	Col,
-	Divider,
-	FloatButton,
-	Form,
-	GetProp,
-	Input,
 	Row,
-	Timeline,
-	Upload,
-	UploadFile,
-	UploadProps
+	Timeline
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
 	AudioOutlined, CloseOutlined,
-	FormOutlined, LoginOutlined, LogoutOutlined, MenuOutlined, PauseOutlined, PoweroffOutlined,
-	UploadOutlined
+	LoginOutlined, LogoutOutlined, PauseOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, getMQTTBroker, LiveOpenResponse} from "@/common";
+import {getMQTTBroker} from "@/common";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import { v4 as uuidv4 } from 'uuid';
@@ -30,6 +20,10 @@ import {TimeLineItemProps} from "antd/lib/timeline/TimelineItem";
 
 interface LiveChatPros {
 	id: string,
+	room_name: string,
+	roleOne:string,
+	roleTwo:string,
+	session: string,
 	serverUrl: string;
 	onClose: ()=>void;
 	visible: boolean;
@@ -43,29 +37,23 @@ declare global {
 	}
 }
 
-const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onClose, onShowProgress}) => {
-	const [form] = Form.useForm();
+const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id,
+  room_name, session, roleOne, roleTwo, onClose, onShowProgress}) =>
+{
 	const t = useTranslations('LiveChat');
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
-	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [hideSettings, setHideSettings] = useState<boolean>(true);
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [lyrics, setLyrics] = useState<TimeLineItemProps[]>([]);
-	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/placeholder2.png");
-	const [roleTwoPortrait, setRoleTwoPortrait] = useState<string>("/images/placeholder2.png");
-	const [roleOne, setRoleOne] = useState<string>("");
-	const [roleTwo, setRoleTwo] = useState<string>("");
-	const [session, setSession] = useState<string>(uuidv4());
 	const [voiceUrls, setVoiceUrls] = useState<string[]>([]);
 	const [startPlay, setStartPlay] = useState<boolean>(false);
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const [player, setPlayer] = useState<SequentialAudioPlayer | undefined>(undefined);
-	const [open, setOpen] = useState(true);
 	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
 		console.log("init player")
+		initAudioStream()
 		setPlayer(new SequentialAudioPlayer(voiceUrls, window));
 		// Initialize MQTT client and connect
 		const mqttClient = mqtt.connect(getMQTTBroker());
@@ -218,181 +206,61 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id, onC
 			setStopped(true)
 		}
 	}
-	const hide_settings = () => {
-		if (hideSettings){
-			setHideSettings(false)
-		}else{
-			setHideSettings(true)
-		}
+
+	const ChatDialog = ({visible, message, onClose}:{visible:boolean,message:string, onClose: ()=>void}) => {
+		return(
+			<div hidden={!visible} className={styles.dialog_layer}>
+				<CloseOutlined onClick={() => onClose()} style={{color: "white", fontSize: 18, padding: 10}}/>
+				<Row className={styles.live_chat_message}>
+					<Col span={24} style={{height: 100, color: "white", overflow: "scroll"}}>
+						<Timeline
+							style={{color: "white"}}
+							pending="..."
+							reverse={true}
+							items={lyrics}
+						/>
+					</Col>
+				</Row>
+			</div>
+		)
 	}
 
-	// useEffect(() => {
-	// 	// Create a new WebSocket connection to the Rust server
-	// 	const ws = new WebSocket(serverUrl);
-	// 	ws.onmessage = (event) => {
-	// 		// Received an audio frame from the server
-	// 		const audioFrame = event.data;
-	// 		console.log('Received audio frame:', audioFrame);
-	//
-	// 		// Here you would process and play the audio data
-	// 		// Actual implementation depends on the audio data format and application requirements
-	// 	};
-	//
-	// 	ws.onerror = (error) => {
-	// 		console.error('WebSocket Error:', error);
-	// 	};
-	//
-	// 	// Clean up the WebSocket connection when the component unmounts
-	// 	return () => {
-	// 		ws.close();
-	// 	};
-	// }, [serverUrl]);
-
-	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-	const handleSubmit = (values: any) => {
-		console.log(values);
-		onShowProgress(true);
-		const formData = new FormData();
-		formData.append('file', fileList[0] as FileType);
-		formData.append('message', JSON.stringify({
-			id: id,
-			roles:[
-				[values.role_1_id, values.role_1_dec],
-				[values.role_2_id,values.role_2_dec]
-			],
-			topic: values.topic,
-			session: session
-		}));
-		let url = getApiServer(80) + api_url.portal.interaction.live.open
-		fetch(url, {
-			method: 'POST',
-			body: formData,
-		})
-			.then(response => response.json())
-			.then(data => {
-				if (data.code === "200") {
-					let openInfo: LiveOpenResponse = JSON.parse(data.content)
-					setRoleOnePortrait(openInfo.role_1_portarit)
-					initAudioStream().then(() => {});
-					alert(t('started'));
-					setHideSettings(true)
-				}else{
-					alert(t('start_fail'));
-				}
-				onShowProgress(false);
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-				alert(t('start_fail'));
-				onShowProgress(false);
-			});
-	};
-
-	const props: UploadProps = {
-		onRemove: (file) => {
-			const index = fileList.indexOf(file);
-			const newFileList = fileList.slice();
-			newFileList.splice(index, 1);
-			setFileList(newFileList);
-		},
-		beforeUpload: (file) => {
-			setFileList([...fileList, file]);
-
-			return false;
-		},
-		fileList,
-	};
-	const onChange = () => {
-		setOpen(!open);
-	};
-
 	return (
-		<div hidden={!visible}>
-			<div className={styles.live_chat_container}>
-				<div className={styles.live_chat_content}>
-					<FloatButton.Group open={open} trigger="click" style={{right: 25, bottom: 40}} onClick={onChange}
-					                   icon={<MenuOutlined/>}>
-						<FloatButton onClick={() => {
-							close_clean()
-						}} icon={<PoweroffOutlined/>}/>
-						<FloatButton onClick={() => {
-							hide_settings()
-						}} icon={<FormOutlined/>}/>
-						<FloatButton onClick={() => {
-							stop_record()
-						}} icon={stopped ? <AudioOutlined/> : <PauseOutlined/>}/>
-						<FloatButton onClick={() => {
-							end_session()
-						}} icon={<LogoutOutlined/>}/>
-						<FloatButton onClick={() => {
-							reload_session()
-						}} icon={<LoginOutlined/>}/>
-					</FloatButton.Group>
-					<Row style={{height:"100%"}} align={"middle"} justify={"space-between"}>
-						<Col span={24} style={{height: "100%"}}>
-							<iframe title="Daft Punk in End of Line Club" frameBorder="0" allowFullScreen allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking="true"
-							        execution-while-out-of-viewport="true" execution-while-not-rendered="true" web-share="true"
-							        style={{height: "100%", width: "100%"}}
-							        src="https://sketchfab.com/models/a3c357d308004c6abed1abe2e0cf62b0/embed"></iframe>
-							{/*<Image src={roleOnePortrait} fill={true} alt={"role1"}/>*/}
-						</Col>
-					</Row>
-					<Row className={styles.live_chat_message}>
-						<Col span={24} style={{height: 100, color: "white", overflow: "scroll"}}>
-							<Timeline
-								style={{color: "white"}}
-								pending="..."
-								reverse={true}
-								items={lyrics}
-							/>
-						</Col>
-					</Row>
-				</div>
-				<div hidden={hideSettings} className={styles.live_chat_settings}>
-					<Row>
-						<Col span={20}>
-						<Form form={form} variant="filled" onFinish={handleSubmit}>
-								<Form.Item label={t("topic")} name="topic" rules={[{required: true, message: t("must")}]}>
-									<Input/>
-								</Form.Item>
-								<Form.Item label={t("role1")} name="role_1_id" rules={[{required: true, message: t("must")}]}>
-									<Input onChange={(event) => {
-										let id = event.target.value
-										setRoleOne(id)
-									}}/>
-								</Form.Item>
-								<Form.Item label={t("role1_portrait")} name="role_1_dec" rules={[{required: true, message: t("must")}]}>
-									<Input/>
-								</Form.Item>
-								<Form.Item label={t("role2")} name="role_2_id" rules={[{required: true, message: t("must")}]}>
-									<Input onChange={(event) => {
-										let id = event.target.value
-										setRoleTwo(id)
-									}}/>
-								</Form.Item>
-								<Form.Item label={t("role2_portrait")} name="role_2_dec" rules={[{required: true, message:  t("must")}]}>
-									<Input/>
-								</Form.Item>
-								<Form.Item label={t("context")} required>
-									<Upload {...props}>
-										<Button icon={<UploadOutlined/>}>{t('Upload')}</Button>
-									</Upload>
-								</Form.Item>
-								<Form.Item>
-									<Button type="primary" htmlType="submit">
-										{t("confirm")}
-									</Button>
-									<Divider type={"vertical"}/>
-									<Button onClick={()=>setHideSettings(true)}>{t("close")}</Button>
-								</Form.Item>
-							</Form>
-						</Col>
-					</Row>
-				</div>
+		<div hidden={!visible} className={styles.live_chat_container}>
+			<div className={styles.live_chat_content}>
+				<Row align={"middle"}>
+					<Col span={2}>
+						<CloseOutlined onClick={() => onClose()} style={{color: "white", fontSize: 18, padding: 10}}/>
+					</Col>
+					<Col span={22} style={{textAlign: "center"}}>
+						<span style={{color: "white", fontSize: 18}}>{room_name}</span>
+					</Col>
+				</Row>
+				<Row style={{height: "100%"}} align={"middle"} justify={"space-between"}>
+					<Col span={24} style={{height: "100%"}}>
+						<iframe title="Daft Punk in End of Line Club" frameBorder="0" allowFullScreen
+						        allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking="true"
+						        execution-while-out-of-viewport="true" execution-while-not-rendered="true" web-share="true"
+						        style={{height: "100%", width: "100%"}}
+						        src="https://sketchfab.com/models/a3c357d308004c6abed1abe2e0cf62b0/embed"></iframe>
+						{/*<Image src={roleOnePortrait} fill={true} alt={"role1"}/>*/}
+					</Col>
+				</Row>
+				<Row align={"middle"} style={{padding:10}}>
+					<Col span={8} style={{textAlign:"center"}}>
+						{ stopped ? <AudioOutlined onClick={() => {stop_record()}}/> : <PauseOutlined onClick={() => {stop_record()}}/>}
+					</Col>
+					<Col span={8} style={{textAlign:"center"}}>
+						<LoginOutlined onClick={() => { reload_session() }}/>
+					</Col>
+					<Col span={8} onClick={() => { end_session() }} style={{textAlign:"center"}}>
+						<LogoutOutlined/>
+					</Col>
+				</Row>
 			</div>
 		</div>
-
-	);
+)
+	;
 };
 
 export default LiveChatComponent;
