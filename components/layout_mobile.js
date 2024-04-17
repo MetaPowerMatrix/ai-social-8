@@ -56,6 +56,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     onRefresh(item.label)
                 }
             });
+            idsMap.unshift({label:'请选择',value:'tips'})
             setAvailableIds(idsMap);
             command.log_user_activity(localInfo.active_id, "home", "login").then(()=>{})
         }

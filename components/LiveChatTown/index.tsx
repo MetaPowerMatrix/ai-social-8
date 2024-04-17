@@ -258,7 +258,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 					{
 						isOwnerRef.current &&
 							<>
-                  <Col span={8} style={{textAlign:"center"}}>
+									<Col span={8} style={{textAlign:"center"}}>
                       <LoginOutlined style={{color: "white", fontSize: 20}} onClick={() => { reload_session() }}/>
                   </Col>
                   <Col span={8} style={{textAlign:"center"}}>
