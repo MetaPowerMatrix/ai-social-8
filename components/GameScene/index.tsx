@@ -74,9 +74,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	}, [])
 
 	useEffect(()=>{
-		console.log("active id, owner", activeId, owner)
 		setIsOwner(activeId === owner)
-		console.log(isOwner)
 	},[activeId, owner]);
 
 	useEffect(()=>{

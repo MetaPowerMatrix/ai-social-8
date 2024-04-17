@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from "./LiveChatComponent.module.css";
 import {
 	Col, Image, Modal,
@@ -49,9 +49,16 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 	const [voiceUrls, setVoiceUrls] = useState<string[]>([]);
 	const [startPlay, setStartPlay] = useState<boolean>(false);
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
+	const [isOwner, setIsOwner] = useState<boolean>(false)
 	const [player, setPlayer] = useState<SequentialAudioPlayer | undefined>(undefined);
 	const [showChatDialog, setShowChatDialog] = useState<boolean>(true)
 	const command = commandDataContainer.useContainer()
+	const isOwnerRef = useRef<boolean>();
+	isOwnerRef.current = isOwner;
+
+	useEffect(()=>{
+		setIsOwner(id === owner)
+	},[id, owner]);
 
 	useEffect(() => {
 		console.log("init player")
@@ -79,7 +86,7 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 
 			// Handler for incoming messages
 			const onMessage = async (topic: string, message: Buffer) => {
-				console.log("receive ", topic, " ", message.toString())
+				console.log("receive topic ", topic, " ", message.toString())
 				if (topic === topic_text){
 					let newMsg = {children: message.toString()}
 					setLyrics((prev)=>{
@@ -248,12 +255,17 @@ const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, ow
 						{ stopped ? <AudioOutlined style={{color: "white", fontSize: 20}} onClick={() => {stop_record()}}/>
 							: <PauseOutlined style={{color: "white", fontSize: 20}} onClick={() => {stop_record()}}/>}
 					</Col>
-					<Col span={8} style={{textAlign:"center"}}>
-						<LoginOutlined style={{color: "white", fontSize: 20}} onClick={() => { reload_session() }}/>
-					</Col>
-					<Col span={8} style={{textAlign:"center"}}>
-						<LogoutOutlined style={{color: "white", fontSize: 20}} onClick={() => { end_session() }}/>
-					</Col>
+					{
+						isOwnerRef.current &&
+							<>
+                  <Col span={8} style={{textAlign:"center"}}>
+                      <LoginOutlined style={{color: "white", fontSize: 20}} onClick={() => { reload_session() }}/>
+                  </Col>
+                  <Col span={8} style={{textAlign:"center"}}>
+                      <LogoutOutlined style={{color: "white", fontSize: 20}} onClick={() => { end_session() }}/>
+                  </Col>
+							</>
+					}
 				</Row>
 				<ChatDialog visible={showChatDialog} onClose={()=>setShowChatDialog(false)}/>
 			</div>
