@@ -22,6 +22,7 @@ export class SequentialAudioPlayer {
 	}
 	private async loadBuffers(): Promise<void> {
 		if (this.buffers.length > 10){
+			console.log("clear audio buffer")
 			this.clear()
 		}
 		console.log('loop current buffers index:', this.currentBuffers)

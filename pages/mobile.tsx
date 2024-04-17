@@ -265,7 +265,7 @@ export default function MobileHome() {
 			const msg_feed = activeId;
 			// Handler for incoming messages
 			const onMessage = async (topic: string, message: any) => {
-				console.log("receive ", topic, " ", message.toString())
+				// console.log("receive ", topic, " ", message.toString())
 				if (topic === msg_feed){
 					let item = {children: message.toString()}
 					setUserFeed((prevFeed)=>{
