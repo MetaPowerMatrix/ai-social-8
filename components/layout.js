@@ -16,7 +16,6 @@ import HeaderPanel from "@/components/header";
 import MaskedHighlight from "@/components/MaskedHighlight";
 import ISSForm from "@/components/iss";
 import commandDataContainer from "@/container/command";
-import LiveChat from "@/components/LiveChat";
 import {getMQTTBroker, Streaming_Server} from "@/common";
 import AIInstructComponent from "@/components/AIInstruct";
 import QRCodeComponent from "@/components/QRCode";
@@ -191,8 +190,6 @@ export default function Layout({ children, title, description, onChangeId, onRef
                         }}
             />
             <ISSForm mobile={false} userISS={userISS} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
-            <LiveChat id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}
-                      visible={openLive} onShowProgress={showProgressBar}/>
             <AIInstructComponent id={activeId} serverUrl={Streaming_Server} visible={openInstruct} onShowProgress={showProgressBar}
                 onClose={()=>setOpenInstruct(false)}/>
             <QRCodeComponent visible={openCode} id={activeId} onClose={()=>setOpenCode(false)} mobile={false}/>

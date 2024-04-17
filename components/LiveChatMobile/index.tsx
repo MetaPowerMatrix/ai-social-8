@@ -56,7 +56,6 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [lyrics, setLyrics] = useState<TimeLineItemProps[]>([]);
 	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/placeholder2.png");
-	const [roleTwoPortrait, setRoleTwoPortrait] = useState<string>("/images/placeholder2.png");
 	const [session, setSession] = useState<string>(uuidv4());
 	const [voiceUrls, setVoiceUrls] = useState<string[]>([]);
 	const [startPlay, setStartPlay] = useState<boolean>(false);
@@ -277,7 +276,7 @@ const LiveChatMobileComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, i
 			.then(data => {
 				if (data.code === "200") {
 					let openInfo: LiveOpenResponse = JSON.parse(data.content)
-					setRoleOnePortrait(openInfo.role_1_portarit)
+					setRoleOnePortrait(openInfo.cover)
 					initAudioStream().then(() => {});
 					alert(t('started'));
 					setHideSettings(true)

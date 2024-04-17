@@ -2,122 +2,124 @@ import React, {useEffect, useState} from "react";
 import {Col, Modal, Row, List, Button, Input, Form, Upload, Divider, GetProp, UploadProps, UploadFile} from "antd";
 import styles from "./LiveBroadcastTownComponent.module.css";
 import {
-	CloseOutlined,
-	LoginOutlined, PauseOutlined, UploadOutlined
+	CloseOutlined, ExclamationCircleFilled,
+	LoginOutlined, PauseOutlined, PlusOutlined, UploadOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, LiveOpenResponse, PortalRoomInfo} from "@/common";
+import {api_url, getApiServer, LiveOpenResponse, PortalRoomInfo, Streaming_Server} from "@/common";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import {v4 as uuidv4} from "uuid";
+import HotAI from "@/components/HotAI";
+import TextArea from "antd/es/input/TextArea";
+import LiveChatSceneComponent from "@/components/LiveChatTown";
 
-const EditRoomInfo = ({id,visible,activeTown,onClose,onCreated,onShowProgress}:
+const EditRoomInfo = ({id,visible,onClose,onCreated,onShowProgress}:
     {
-			id:string, visible:boolean, activeTown:string,
-      onClose:(room_id: string)=>void,
+			id:string, visible:boolean,
+      onClose:(room_id:string, room_name:string, role1_id:string, role2_id:string, role1_name:string, role2_name:string)=>void,
 	    onCreated:(room_id:string, room_name:string)=>void,
 	    onShowProgress:(show: boolean)=>void
 		}
 ) => {
 	const [form] = Form.useForm();
-	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [session, setSession] = useState<string>(uuidv4());
-	const [roleOne, setRoleOne] = useState<string>("");
-	const [roleTwo, setRoleTwo] = useState<string>("");
-	const [roleOnePortrait, setRoleOnePortrait] = useState<string>("/images/placeholder2.png");
-	const [roleTwoPortrait, setRoleTwoPortrait] = useState<string>("/images/placeholder2.png");
-	const [open, setOpen] = useState(true);
-	const t = useTranslations('travel');
+	const [cover, setCover] = useState<string>("/images/placeholder2.png");
+	const [showHot, setShowHot] = useState<boolean>(false)
+	const [selInx, setSelInx] = useState<number>(1)
+	const [roleOneName, setRoleOneName]= useState<string>('')
+	const [roleOneId, setRoleOneId]= useState<string>('')
+	const [roleTwoName, setRoleTwoName]= useState<string>('')
+	const [roleTwoId, setRoleTwoId]= useState<string>('')
+	const t = useTranslations('LiveChat');
 	const {confirm} = Modal;
-	const command = commandDataContainer.useContainer()
 
-	type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 	const handleSubmit = (values: any) => {
-		console.log(values);
-		onShowProgress(true);
-		const formData = new FormData();
-		formData.append('file', fileList[0] as FileType);
-		formData.append('message', JSON.stringify({
-			id: id,
-			roles:[
-				[values.role_1_id, values.role_1_dec],
-				[values.role_2_id,values.role_2_dec]
-			],
-			topic: values.topic,
-			session: session
-		}));
-		let url = getApiServer(80) + api_url.portal.interaction.live.open
-		fetch(url, {
-			method: 'POST',
-			body: formData,
+		confirm({
+			icon: <ExclamationCircleFilled />,
+			content: '确认创建直播间',
+			okText: t('confirm'),
+			cancelText: t('cancel'),
+			onOk() {
+				onShowProgress(true);
+				let data = {id: id, title: values.title, roles:[roleOneId,roleTwoId], topic: values.topic, session: session}
+				let url = getApiServer(80) + api_url.portal.interaction.live.open
+				fetch(url, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify(data),
+				})
+					.then(response => response.json())
+					.then(data => {
+						if (data.code === "200") {
+							let openInfo: LiveOpenResponse = JSON.parse(data.content)
+							console.log(openInfo)
+							setCover(openInfo.cover)
+							Modal.success({
+								content:  (t('started'))
+							})
+							onClose(openInfo.room_id, values.title, roleOneId, roleTwoId, roleOneName, roleTwoName)
+						}else{
+							Modal.warning({
+								content:  (t('start_fail'))
+							})
+						}
+						onShowProgress(false);
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+						Modal.warning({
+							content:  (t('start_fail'))
+						})
+						onShowProgress(false);
+					});
+			}
 		})
-			.then(response => response.json())
-			.then(data => {
-				if (data.code === "200") {
-					let openInfo: LiveOpenResponse = JSON.parse(data.content)
-					setRoleOnePortrait(openInfo.role_1_portarit)
-					alert(t('started'));
-				}else{
-					alert(t('start_fail'));
-				}
-				onShowProgress(false);
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-				alert(t('start_fail'));
-				onShowProgress(false);
-			});
 	};
 
-	const props: UploadProps = {
-		onRemove: (file) => {
-			const index = fileList.indexOf(file);
-			const newFileList = fileList.slice();
-			newFileList.splice(index, 1);
-			setFileList(newFileList);
-		},
-		beforeUpload: (file) => {
-			setFileList([...fileList, file]);
-
-			return false;
-		},
-		fileList,
-	};
-	const onChange = () => {
-		setOpen(!open);
-	};
-
+	const setRoleInfo = (name: string, id:string)=>{
+		if (selInx == 1){
+			setRoleOneName(name)
+			setRoleOneId(id)
+		}
+		if (selInx == 2){
+			setRoleTwoName(name)
+			setRoleTwoId(id)
+		}
+		setShowHot(false)
+	}
 	return (
 		<div hidden={!visible} className={styles.room_edit_container}>
 			<div className={styles.room_edit_content}>
-			<CloseOutlined onClick={() => onClose('')} style={{fontSize: 18, marginBottom:20}}/>
+			<CloseOutlined onClick={() => onClose('','','','','','')} style={{fontSize: 18, marginBottom:20}}/>
 				<Row>
 					<Col span={20}>
 						<Form form={form} variant="filled" onFinish={handleSubmit}>
-							<Form.Item label={t("topic")} name="topic" rules={[{required: true, message: t("must")}]}>
+							<Form.Item label={t("title")} name="title" rules={[{required: true, message: t('must')}]}>
 								<Input/>
 							</Form.Item>
-							<Form.Item label={t("role1")} name="role_1_id" rules={[{required: true, message: t("must")}]}>
-								<Input onChange={(event) => {
-									let id = event.target.value
-									setRoleOne(id)
-								}}/>
+							<Form.Item label={t("topic")} name="topic" rules={[{required: true, message: t('must')}]}>
+								<TextArea rows={2}/>
 							</Form.Item>
-							<Form.Item label={t("role1_portrait")} name="role_1_dec" rules={[{required: true, message: t("must")}]}>
-								<Input/>
+							<Form.Item label={t("role1")}>
+								<>
+									<Input value={roleOneName} style={{fontSize:15, width:240, display: "inline"}}/>
+									<PlusOutlined style={{fontSize:20, marginLeft: 10}} onClick={()=>{
+										setSelInx(1)
+										setShowHot(true)
+									}}/>
+								</>
 							</Form.Item>
-							<Form.Item label={t("role2")} name="role_2_id" rules={[{required: true, message: t("must")}]}>
-								<Input onChange={(event) => {
-									let id = event.target.value
-									setRoleTwo(id)
-								}}/>
-							</Form.Item>
-							<Form.Item label={t("role2_portrait")} name="role_2_dec" rules={[{required: true, message: t("must")}]}>
-								<Input/>
-							</Form.Item>
-							<Form.Item label={t("context")} required>
-								<Upload {...props}>
-									<Button icon={<UploadOutlined/>}>{t('Upload')}</Button>
-								</Upload>
+							<Form.Item label={t("role2")}>
+								<>
+									<Input value={roleTwoName} style={{fontSize:15, width: 240, display: "inline"}}/>
+									<PlusOutlined style={{fontSize:20, marginLeft: 10}} onClick={
+										()=>{
+											setSelInx(2)
+											setShowHot(true)
+										}}/>
+								</>
 							</Form.Item>
 							<Form.Item>
 								<Button type="primary" htmlType="submit">
@@ -127,6 +129,7 @@ const EditRoomInfo = ({id,visible,activeTown,onClose,onCreated,onShowProgress}:
 						</Form>
 					</Col>
 				</Row>
+				<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={true} onSelectName={setRoleInfo}/>
 			</div>
 		</div>
 	)
@@ -141,20 +144,23 @@ const LiveBroadcastTownComponent = ({activeId, onShowProgress}: {
 	const [reload, setReload] = useState<number>(0)
 	const [owner, setOwner] = useState<string>('')
 	const [roomId, setRoomId] = useState<string>('')
+	const [roleOneName, setRoleOneName]= useState<string>('')
+	const [roleOneId, setRoleOneId]= useState<string>('')
+	const [roleTwoName, setRoleTwoName]= useState<string>('')
+	const [roleTwoId, setRoleTwoId]= useState<string>('')
 	const [roomName, setRoomName] = useState<string>('')
 	const [cover, setCover] = useState<string>('')
 	const t = useTranslations('travel');
-	const activeTown = "game"
 	const command = commandDataContainer.useContainer()
 	const {confirm} = Modal;
 
 	useEffect(() => {
-		command.log_user_activity(activeId, "game_mishi", "browse")
+		command.log_user_activity(activeId, "live_broadcast", "browse")
 		console.log("cover: ", cover)
 	}, [])
 
 	useEffect(() => {
-		command.query_rooms(activeTown).then((res) => {
+		command.query_live_rooms().then((res) => {
 			setRoomList(res)
 		})
 	}, [reload])
@@ -166,7 +172,7 @@ const LiveBroadcastTownComponent = ({activeId, onShowProgress}: {
 					<List
 						itemLayout="horizontal"
 						size="small"
-						style={{height: 540}}
+						style={{height: 540,overflow:"scroll"}}
 						dataSource={roomList}
 						renderItem={(item, index) => (
 							<List.Item
@@ -203,20 +209,31 @@ const LiveBroadcastTownComponent = ({activeId, onShowProgress}: {
 						</Col>
 						<Col span={2}></Col>
 					</Row>
-					<EditRoomInfo onShowProgress={onShowProgress} id={activeId} visible={showEditRoom} activeTown={activeTown}
+					<EditRoomInfo onShowProgress={onShowProgress} id={activeId} visible={showEditRoom}
             onCreated={(room_id, room_name) => {
               setRoomId(room_id)
               setRoomName(room_name)
             }}
-            onClose={(room_id) => {
-              if (room_id !== '') {
-	              setShowEditRoom(false)
-	              setShowGameScene(true)
-              } else {
-	              setShowEditRoom(false)
-              }
+            onClose={(room_id, room_name, role1_id, role2_id, role1_name, role2_name) => {
+              // if (room_id !== '') {
+	            //   setShowEditRoom(false)
+	            //   setShowGameScene(true)
+              // } else {
+	            //   setShowEditRoom(false)
+              // }
+	            setShowEditRoom(false)
+	            setRoomId(room_id)
+	            setRoomName(room_name)
+	            setRoleOneId(role1_id)
+	            setRoleTwoId(role2_id)
+	            setRoleOneName(role1_name)
+	            setRoleTwoName(role2_name)
               setReload(reload + 1)
 						}}
+					/>
+					<LiveChatSceneComponent id={activeId} cover={cover} room_name={roomName} roleOne={roleOneId} roleTwo={roleTwoId}
+            session={roomId} serverUrl={Streaming_Server} onClose={()=>{setShowGameScene(false)}} visible={showGameScene}
+            onShowProgress={onShowProgress}
 					/>
 				</div>
 			</div>

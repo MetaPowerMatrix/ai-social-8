@@ -106,7 +106,8 @@
     "restore": "恢复直播成功",
     "started": "进入直播成功",
     "start_fail": "进入直播失败",
-    "must": "必填项"
+    "must": "必填项",
+    "title": "标题"
   },
   "AIInstruct": {
     "waitingCall": "已经开始联系专家交流，稍后可以查看聊天记录",

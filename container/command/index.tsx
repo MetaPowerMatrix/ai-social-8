@@ -694,6 +694,20 @@ const useCommand = () => {
     }
     return []
   }
+  const query_live_rooms = async () => {
+    let url = getApiServer(80) + api_url.portal.interaction.live.rooms
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        let rooms: PortalRoomInfo[] = JSON.parse(dataJson.content)
+        return rooms
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return []
+  }
   const retrieve_pato_by_bame = async (name: string) => {
     if (name === "") return []
     let url = getApiServer(80) + api_url.portal.retrieve + "/" + name
@@ -746,7 +760,8 @@ const useCommand = () => {
     getProHistoryMessages, genPatoAuthToken, queryPatoAuthToken, edit_session_messages, continue_session_chat,
     goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge,
     getProHots, add_shared_knowledge, getTopicHots, init_topic_chat, get_topic_chat_his, query_rooms, create_game_room,
-    send_answer, gen_answer, ask_clue, join_game, log_user_activity, image_desc_by_url, reveal_answer, retrieve_pato_by_bame
+    send_answer, gen_answer, ask_clue, join_game, log_user_activity, image_desc_by_url, reveal_answer, retrieve_pato_by_bame,
+    query_live_rooms
   }
 }
 

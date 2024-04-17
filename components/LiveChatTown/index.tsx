@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import styles from "@/components/LiveChat/LiveChatComponent.module.css";
+import styles from "./LiveChatComponent.module.css";
 import {
-	Col,
+	Col, Image,
 	Row,
 	Timeline
 } from "antd";
@@ -13,13 +13,13 @@ import {
 import {getMQTTBroker} from "@/common";
 import commandDataContainer from "@/container/command";
 import {WebSocketManager} from "@/lib/WebsocketManager";
-import { v4 as uuidv4 } from 'uuid';
 import {SequentialAudioPlayer} from "@/lib/SequentialAudioPlayer";
 import mqtt from "mqtt";
 import {TimeLineItemProps} from "antd/lib/timeline/TimelineItem";
 
 interface LiveChatPros {
 	id: string,
+	cover: string,
 	room_name: string,
 	roleOne:string,
 	roleTwo:string,
@@ -37,8 +37,8 @@ declare global {
 	}
 }
 
-const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id,
-  room_name, session, roleOne, roleTwo, onClose, onShowProgress}) =>
+const LiveChatSceneComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id,
+  room_name,cover, session, roleOne, roleTwo, onClose, onShowProgress}) =>
 {
 	const t = useTranslations('LiveChat');
 	const [recorder, setRecorder] = useState<MediaRecorder>();
@@ -127,15 +127,6 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id,
 		}
 	},[voiceUrls])
 
-	const close_clean = () => {
-		if (wsSocket !== undefined){
-			wsSocket.close();
-		}
-		if (recorder !== undefined){
-			recorder.stop()
-		}
-		onClose()
-	}
 	const end_session = () => {
 		command.end_live_chat([roleOne, roleTwo]).then((res) => {
 			console.log(res)
@@ -236,31 +227,31 @@ const LiveChatComponent: React.FC<LiveChatPros>  = ({visible, serverUrl, id,
 						<span style={{color: "white", fontSize: 18}}>{room_name}</span>
 					</Col>
 				</Row>
-				<Row style={{height: "100%"}} align={"middle"} justify={"space-between"}>
-					<Col span={24} style={{height: "100%"}}>
-						<iframe title="Daft Punk in End of Line Club" frameBorder="0" allowFullScreen
-						        allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking="true"
-						        execution-while-out-of-viewport="true" execution-while-not-rendered="true" web-share="true"
-						        style={{height: "100%", width: "100%"}}
-						        src="https://sketchfab.com/models/a3c357d308004c6abed1abe2e0cf62b0/embed"></iframe>
-						{/*<Image src={roleOnePortrait} fill={true} alt={"role1"}/>*/}
+				<Row align={"middle"}>
+					<Col span={24}>
+						<Image
+							preview={false}
+							src={cover}
+							height={580}
+							alt="cover"
+						/>
 					</Col>
 				</Row>
 				<Row align={"middle"} style={{padding:10}}>
 					<Col span={8} style={{textAlign:"center"}}>
-						{ stopped ? <AudioOutlined onClick={() => {stop_record()}}/> : <PauseOutlined onClick={() => {stop_record()}}/>}
+						{ stopped ? <AudioOutlined style={{color: "white", fontSize: 20}} onClick={() => {stop_record()}}/>
+							: <PauseOutlined style={{color: "white", fontSize: 20}} onClick={() => {stop_record()}}/>}
 					</Col>
 					<Col span={8} style={{textAlign:"center"}}>
-						<LoginOutlined onClick={() => { reload_session() }}/>
+						<LoginOutlined style={{color: "white", fontSize: 20}} onClick={() => { reload_session() }}/>
 					</Col>
-					<Col span={8} onClick={() => { end_session() }} style={{textAlign:"center"}}>
-						<LogoutOutlined/>
+					<Col span={8} style={{textAlign:"center"}}>
+						<LogoutOutlined style={{color: "white", fontSize: 20}} onClick={() => { end_session() }}/>
 					</Col>
 				</Row>
 			</div>
 		</div>
-)
-	;
+	)
 };
 
-export default LiveChatComponent;
+export default LiveChatSceneComponent;

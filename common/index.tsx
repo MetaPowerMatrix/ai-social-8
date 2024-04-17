@@ -41,9 +41,8 @@ export interface PortalRoomInfo{
 }
 
 export interface LiveOpenResponse {
-  session: string,
-  role_1_portarit: string,
-  role_2_portrait: string,
+  room_id: string,
+  cover: string,
 }
 export interface TimeLineItem {
   children: string
@@ -166,6 +165,7 @@ export const api_url = {
           'continue': '/api/live/continue',
           'end': '/api/live/end',
           'reload': '/api/live/reload',
+          'rooms': '/api/live/rooms'
         },
         "go_town": '/api/pato/go/town'
       },
