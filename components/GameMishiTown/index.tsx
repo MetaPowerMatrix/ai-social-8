@@ -104,7 +104,7 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 					<List
 						itemLayout="horizontal"
 						size="small"
-						style={{height: 540}}
+						style={{height: 540,overflow:"scroll"}}
 						dataSource={roomList}
 						renderItem={(item, index) => (
 							<List.Item
