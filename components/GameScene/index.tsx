@@ -246,17 +246,18 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			cancelText: t('cancel'),
 			onOk() {
 				command.join_game(activeId, owner, room_id, room_name, level).then((res) => {
-					Modal.success({
-						content: clockWise ? '进入下一关!' : "回到上一关"
-					})
+					setSceneCount(res[0])
 					if (res[1] !== '') {
 						setScene(res[1])
-						setSceneCount(res[0])
 						if (clockWise){
 							setGameLevel(gameLevel + 1)
 						}else{
 							setGameLevel(gameLevel - 1)
 						}
+					}else{
+						Modal.success({
+							content: clockWise ? '进入下一关!' : "回到上一关"
+						})
 					}
 				})
 			}
