@@ -249,12 +249,14 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					Modal.success({
 						content: clockWise ? '进入下一关!' : "回到上一关"
 					})
-					setScene(res[1])
-					setSceneCount(res[0])
-					if (clockWise){
-						setGameLevel(gameLevel + 1)
-					}else{
-						setGameLevel(gameLevel - 1)
+					if (res[1] !== '') {
+						setScene(res[1])
+						setSceneCount(res[0])
+						if (clockWise){
+							setGameLevel(gameLevel + 1)
+						}else{
+							setGameLevel(gameLevel - 1)
+						}
 					}
 				})
 			}
@@ -290,7 +292,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					<Col span={24}>
 						<Image
 							src={scene}
-							height={590}
+							height={580}
 							alt="scene"
 						/>
 					</Col>
