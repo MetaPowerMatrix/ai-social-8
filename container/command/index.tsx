@@ -2,7 +2,7 @@ import {createContainer} from "unstated-next"
 import {
   api_url,
   ChatMessage,
-  getApiServer, HotPro,
+  getApiServer, HotPro, KolInfo,
   PatoInfo,
   Persona,
   PortalHotAi,
@@ -708,6 +708,36 @@ const useCommand = () => {
     }
     return []
   }
+  const query_kol_rooms = async () => {
+    let url = getApiServer(80) + api_url.portal.town.kol_list
+    try {
+      let response = await fetch(`${url}`,)
+      if (response.ok) {
+        let dataJson = await response.json()
+        let rooms: KolInfo[] = JSON.parse(dataJson.content)
+        return rooms
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return []
+  }
+  const become_kol = async (id: string) => {
+    let url = getApiServer(80) + api_url.portal.town.becom_kol + "/" + id
+    try {
+      let response = await fetch(`${url}`,)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  const join_kol = async (follower:string, id: string) => {
+    let url = getApiServer(80) + api_url.portal.town.join_kol + "/" + follower + "/" + id
+    try {
+      let response = await fetch(`${url}`,)
+    } catch (e) {
+      console.log(e)
+    }
+  }
   const retrieve_pato_by_bame = async (name: string) => {
     if (name === "") return []
     let url = getApiServer(80) + api_url.portal.retrieve + "/" + name
@@ -761,7 +791,7 @@ const useCommand = () => {
     goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge,
     getProHots, add_shared_knowledge, getTopicHots, init_topic_chat, get_topic_chat_his, query_rooms, create_game_room,
     send_answer, gen_answer, ask_clue, join_game, log_user_activity, image_desc_by_url, reveal_answer, retrieve_pato_by_bame,
-    query_live_rooms
+    query_live_rooms, query_kol_rooms, become_kol, join_kol
   }
 }
 

@@ -1,25 +1,23 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from "@/components/AIInstructMobile/AIInstructMobileComponent.module.css";
 import {
-	Card,
-	Col, DatePicker,
-	DatePickerProps, Divider,
-	List, Row, Modal
+	Col, List, Row, Modal, Button
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
-	AndroidOutlined,
-	CommentOutlined, ExclamationCircleFilled, LeftOutlined, UnorderedListOutlined
+	ExclamationCircleFilled, LeftOutlined
 } from "@ant-design/icons";
-import {ChatMessage, HotPro} from "@/common";
+import {ChatMessage} from "@/common";
 import commandDataContainer from "@/container/command";
 import {getTodayDateString} from "@/lib/utils";
-import dayjs from "dayjs";
 import AskProComponent from "@/components/ask_pro";
 
 interface AIInstructPros {
 	id: string,
+	room_id: string,
+	visible: boolean,
 	onShowProgress: (s: boolean)=>void;
+	onClose: ()=>void;
 }
 
 declare global {
@@ -29,49 +27,98 @@ declare global {
 	}
 }
 
-const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgress}) => {
+interface EditableListItemProps {
+	initialValue: ChatMessage;
+	onSave: (value: ChatMessage) => void;
+	t: any
+}
+
+const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSave, t }) => {
+	const [editing, setEditing] = useState(false);
+	const [value, setValue] = useState(initialValue);
+
+	const handleEdit = () => {
+		setEditing(true);
+	};
+
+	const handleSave = () => {
+		onSave(value);
+		setEditing(false);
+	};
+
+	const handleCancel = () => {
+		setValue(initialValue);
+		setEditing(false);
+	};
+
+	const handleChangeQuestion = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setValue((prevState) => {
+			return {
+				...prevState,
+				question: event.target.value,
+			};
+		});
+	};
+	const handleChangeAnswer = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setValue((prevState) => {
+			return {
+				...prevState,
+				answer: event.target.value,
+			};
+		});
+	};
+
+	if (editing) {
+		return (
+			<List.Item>
+				<div>{initialValue.sender}: <input style={{width:"100%"}} autoFocus={true} value={value.question} onChange={handleChangeQuestion} /></div>
+				<div>{initialValue.receiver}: <input style={{width:"100%"}} autoFocus={true} value={value.answer} onChange={handleChangeAnswer} /></div>
+				<button style={{marginTop:10, marginRight: 10}} onClick={handleSave}>{t('confirm')}</button>
+				<button onClick={handleCancel}>{t('cancel')}</button>
+			</List.Item>
+		);
+	}
+
+	return (
+		<List.Item
+			key={initialValue.subject}
+			onClick={handleEdit}
+		>
+			<Row>
+				<Col span={24}>
+					<h5>{initialValue.sender.split('(')[0]}: {initialValue.question}</h5>
+				</Col>
+			</Row>
+			<Row>
+				<Col span={24} style={{textAlign:"end"}}>
+					<h5>{initialValue.answer} : {initialValue.receiver.split('(')[0]}</h5>
+				</Col>
+			</Row>
+
+			{/*<h5>{initialValue.sender}: {initialValue.question}</h5>*/}
+			{/*<h5>{initialValue.receiver === initialValue.sender ? initialValue.receiver + "#2" : initialValue.receiver}: {initialValue.answer}</h5>*/}
+			{/*<h5>{formatDateTimeString(initialValue.created_at*1000)} <Tag color="green">{initialValue.place}</Tag><Tag color="yellow">{initialValue.subject}</Tag></h5>*/}
+		</List.Item>
+	);
+};
+
+const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id, visible, onShowProgress, onClose}) => {
 	const t = useTranslations('AIInstruct');
-	const [authorisedIds, setAuthorisedIds] = useState<{ label: string, value: string }[]>([]);
 	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [summary, setSummary] = useState<string>("");
-	const [hideMessages, setHideMessages] = useState<boolean>(true);
-	const [hotPros, setHotPros] = useState<HotPro[]>([])
-	const [activeTabPro, setActiveTabPro] = useState<string>('system');
-	const [showProChat, setShowProChat] = useState<boolean>(false)
-	const [proName, setProName] = useState<string>('')
-	const [proId, setProId] = useState<string>('')
-	const tabHeight: number = 520
+	const [isOwner, setIsOwner] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
+	const isOwnerRef = useRef<boolean>();
+	isOwnerRef.current = isOwner;
 	const {confirm} = Modal;
 
-	useEffect(() => {
-		let asInfoStr = localStorage.getItem("assistants")
-		if (asInfoStr !== null) {
-			const asInfo = JSON.parse(asInfoStr)
-			const idsMap = asInfo.ids.map((id: string) => {
-				const id_name = id.split(":")
-				if (id_name.length > 1){
-					return {label: id.split(":")[1], value: id.split(":")[0]};
-				}
-			});
-			setAuthorisedIds(idsMap);
-		}
-	}, []);
-
 	useEffect(()=>{
-		command.getProHots().then((resp)=>{
-			setHotPros(resp)
-		})
-	},[])
+		console.log(id, room_id)
+		getProHistory(id, room_id)
+		setIsOwner(id === room_id)
+	},[id, room_id])
 
-	const callPato = (id: string, callid: string) => {
-		command.callPato(id, callid).then((res) => {
-			Modal.success({
-				content: t("waitingCall"),
-			});
-		})
-	}
 	const getProHistory = (id: string, callid: string) => {
 		command.getProHistoryMessages(id, callid, queryDate).then((response) => {
 				let messages: ChatMessage[] = []
@@ -90,180 +137,71 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, onShowProgres
 				}
 		})
 	}
-
-	const onChange: DatePickerProps['onChange'] = (_, dateString) => {
-		changeQueryDate(dateString as string)
-		// console.log(date, dateString);
-	};
-
-	const changeQueryDate = (datestring: string) => {
-		setQueryDate(datestring);
-	}
-
-	const handleAutoChat = (callid: string) => {
-		if (callid === ""){
-			Modal.warning({
-				content: t("requireId"),
-			});
-		}else{
-			callPato(id, callid)
-		}
-	};
-	const openProChat = (pro_id: string, pro_name: string) => {
-		setProId(pro_id)
-		setProName(pro_name)
-		setShowProChat(true)
-	}
-	const pro_tabs = [
+	const handleEditMessages = () => {
+		command.edit_session_messages(id, room_id, queryDate, chatMessages).then((res) =>
 		{
-			key: 'system',
-			label: t('system'),
-		},
-		{
-			key: 'mine',
-			label: t('mine'),
-		}
-	];
-	const onProTabChange = (key: string) => {
-		setActiveTabPro(key);
+			Modal.success({content: "修改成功,修改结果将影响之后的聊天"})
+		})
+	}
+	const handleSave = (index: number, value: ChatMessage) => {
+		setChatMessages(chatMessages.map((item, i) => i === index ? value : item));
 	};
+
 	return (
-			<div className={styles.voice_instruct_container}>
+			<div hidden={!visible}  className={styles.voice_instruct_container}>
 				<div className={styles.voice_instruct_content}>
-					<div hidden={!hideMessages}>
-						<Card
-							bodyStyle={{padding: "0"}}
-							style={{ width: '100%', marginBottom:15 }}
-							tabList={pro_tabs}
-							activeTabKey={activeTabPro}
-							onTabChange={onProTabChange}
-							tabProps={{ size: 'small'}}
-						>
-							{
-								activeTabPro === 'mine' &&
-                  <div style={{height: tabHeight, overflow: "scroll"}}>
-                      <List
-                          itemLayout="horizontal"
-                          size="small"
-                          split={false}
-                          dataSource={authorisedIds}
-                          renderItem={(item, index) => (
-					                  <List.Item
-						                  key={index}
-						                  className={styles.small_list_item}
-						                  defaultValue={item.value}
-					                  >
-						                  <Row align={"middle"} style={{width: "100%"}}>
-							                  <Col span={16}><h4>{item.label}</h4></Col>
-							                  {/*<Col span={10}><h5>{item.subjects.join(',')}</h5></Col>*/}
-							                  <Col span={6}>
-								                  <AndroidOutlined style={{marginRight:10,fontSize:18}} onClick={()=> {
-																		confirm({
-																			icon: <ExclamationCircleFilled />,
-																			content: t('startTalkWithPro'),
-																			okText: t('confirm'),
-																			cancelText: t('cancel'),
-																			onOk() {
-																				handleAutoChat(item.value)
-																			}
-																		})
-																	}}/>
-								                  <CommentOutlined style={{marginRight:10,fontSize:18}} onClick={() => openProChat(item.value, item.label)}/>
-								                  <UnorderedListOutlined style={{fontSize:18}} onClick={()=>{
-									                  Modal.info({
-										                  content: t('show_pro_messages'),
-										                  onOk() {
-											                  getProHistory(id, item.value)
-											                  setHideMessages(false)
-										                  },
-									                  });
-								                  }}/>
-							                  </Col>
-						                  </Row>
-					                  </List.Item>
-				                  )}
-                      />
-                  </div>
-							}
-							{
-								activeTabPro === 'system' &&
-                  <div style={{height: tabHeight, overflow: "scroll"}}>
-                      <List
-                          itemLayout="horizontal"
-                          size="small"
-                          split={false}
-                          dataSource={hotPros}
-                          renderItem={(item, index) => (
-														<List.Item
-															key={index}
-															className={styles.small_list_item}
-															defaultValue={item.id}
-														>
-															<Row align={"middle"} style={{width: "100%"}}>
-																<Col span={9}><h4>{item.name}</h4></Col>
-																<Col span={9}><h5 style={{overflow:"hidden"}}>{item.subjects.join(',').substring(0,18)}</h5></Col>
-																<Col span={6}>
-																	<AndroidOutlined style={{marginLeft:10,fontSize:18}} onClick={()=>{
-																		confirm({
-																			icon: <ExclamationCircleFilled />,
-																			content: t('startTalkWithPro'),
-																			okText: t('confirm'),
-																			cancelText: t('cancel'),
-																			onOk() {
-																				handleAutoChat(item.id)
-																			}
-																		})
-																	}}/>
-																	<CommentOutlined style={{marginLeft:10,fontSize:18}} onClick={() => openProChat(item.id, item.name)}/>
-																	<UnorderedListOutlined style={{marginLeft:10,fontSize:18}} onClick={()=>{
-																		Modal.info({
-																			content: t('show_pro_messages'),
-																			onOk() {
-																				getProHistory(id, item.id)
-																				setHideMessages(false)
-																			},
-																		});
-																	}}/>
-																</Col>
-															</Row>
-														</List.Item>
-													)}
-                      />
-                  </div>
-							}
-						</Card>
-					</div>
-					<div hidden={hideMessages} style={{overflow: "scroll", height: 700, padding: 15}}>
-						<Row>
-							<LeftOutlined onClick={() => setHideMessages(true)}/>
+						<Row style={{padding:10}}>
+							<LeftOutlined style={{fontSize:18}} onClick={()=>onClose()}/>
 						</Row>
-						<Divider/>
-						<DatePicker defaultValue={dayjs(queryDate)} size={"small"} style={{marginBottom: 10}}
-						            onChange={onChange}/>
-						<h5>{summary}</h5>
-						<List
-							itemLayout="vertical"
-							size="small"
-							dataSource={chatMessages}
-							renderItem={(item) => (
-								<List.Item
-									key={item.session}
-								>
-									<Row>
-										<Col span={24}>
-											<h5>{item.sender.split('(')[0]}: {item.question}</h5>
-										</Col>
-									</Row>
-									<Row>
-										<Col span={24} style={{textAlign: "end"}}>
-											<h5>{item.answer} : {item.receiver.split('(')[0]}</h5>
-										</Col>
-									</Row>
-								</List.Item>
-							)}
-						/>
-					</div>
-					<AskProComponent activeId={id} visible={showProChat} pro_name={proName} pro_id={proId} onClose={()=>setShowProChat(false)} onShowProgress={onShowProgress}/>
+					<List
+						itemLayout="vertical"
+						style={{height:560,overflow:"scroll"}}
+						size="small"
+						split={false}
+						dataSource={chatMessages}
+						renderItem={(item, index) => {
+							if (isOwnerRef.current) {
+								return <EditableListItem t={t} initialValue={item} onSave={(value) => handleSave(index, value)}/>
+							} else {
+								return (
+									<List.Item
+										key={item.subject}
+									>
+										<Row>
+											<Col span={24}>
+												<h5>{item.sender.split('(')[0]}: {item.question}</h5>
+											</Col>
+										</Row>
+										<Row>
+											<Col span={24} style={{textAlign:"end"}}>
+												<h5>{item.answer} : {item.receiver.split('(')[0]}</h5>
+											</Col>
+										</Row>
+									</List.Item>
+								)
+							}
+						}}
+					/>
+					{
+						<div style={{padding:5}}>
+							{isOwnerRef.current ?
+								<Button style={{width:"100%"}} type={"primary"} onClick={() =>
+									confirm({
+										icon: <ExclamationCircleFilled />,
+										content: t('save_tips'),
+										okText: t('confirm'),
+										cancelText: t('cancel'),
+										onOk() {
+											handleEditMessages()
+										}
+									})
+								}>{t('save')}</Button>
+							:
+								<AskProComponent activeId={id}  room_id={room_id} onShowProgress={onShowProgress}
+							                 onReply={() => {}}/>
+							}
+						</div>
+					}
 				</div>
 			</div>
 	);

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useTranslations} from "next-intl";
 import styles from "./AuthorizeComponent.module.css"
 import commandDataContainer from "@/container/command";
@@ -13,6 +13,7 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 	const [id, setId] = React.useState<string>('');
 	const [name, setName] = React.useState<string>('');
 	const [jumpUrl, setJumpUrl] = React.useState<string>('');
+	const [activeId, setActiveId] = useState("");
 
 	const command = commandDataContainer.useContainer()
 
@@ -22,9 +23,6 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 		const searchParams = new URLSearchParams(currentUrl);
 		const paramName = 'owner';
 		const token = searchParams.get(paramName);
-
-		console.log(token);
-
 		command.queryPatoAuthToken(token).then((res) => {
 			console.log(res)
 			if (res.length > 1) {
@@ -32,6 +30,13 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 				setName(res[1])
 			}
 		})
+		const localInfoStr = localStorage.getItem("local_patos")
+		if (localInfoStr === null) {
+			setJumpUrl('https://social.metapowermatrix.ai/mobile?to=accept&back='+ encodeURI(window.location.href))
+		}else {
+			const localInfo = JSON.parse(localInfoStr)
+			setActiveId(localInfo.active_id);
+		}
 	},[])
 
 	useEffect(() => {
@@ -41,18 +46,9 @@ const AuthorizeComponent: React.FC<AuthorizeComponentProps> = ({mobile}) => {
 	},[jumpUrl])
 
 	const handleAccept = (values: any) => {
-		let asInfoStr = localStorage.getItem("assistants")
-		if (asInfoStr === null){
-			const asInfo ={ids: [`${id}:${name}`]}
-			localStorage.setItem("assistants", JSON.stringify(asInfo))
-		}else{
-			const asInfo = JSON.parse(asInfoStr)
-			asInfo.ids.push(`${id}:${name}`)
-			const newAsInfo = {ids: asInfo.ids}
-			localStorage.setItem("assistants", JSON.stringify(newAsInfo))
-		}
+		command.join_kol(id, activeId)
 		alert(t('acceptOK'))
-		setJumpUrl('https://social.metapowermatrix.ai/mobile?to=instruct')
+		setJumpUrl('https://social.metapowermatrix.ai/mobile?to=kol')
 	};
 
 	return (

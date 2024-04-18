@@ -1,10 +1,12 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useTranslations} from "next-intl";
 import styles from "./QRCodeComponent.module.css"
 import QRCode from 'qrcode.react';
-import {Col, Modal, Row} from "antd";
+import {Button, Col, Form, Modal, Row} from "antd";
 import {CloseOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command";
+import {KolInfo} from "@/common";
+import BuyKolComponent from "@/components/BuyKol";
 
 interface QRCodeProps {
 	visible: boolean;
@@ -16,13 +18,24 @@ interface QRCodeProps {
 const QRCodeComponent: React.FC<QRCodeProps> = ({visible, id, onClose, mobile}) => {
 	const t = useTranslations('others');
 	const [token, setToken] = React.useState<string>('');
+	const [reload, setReload] = useState<number>(0)
+	const [isKol, setIsKol] = useState<boolean>(false)
+	const [showBuyKol, setShowBuyKol] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
+		command.query_kol_rooms().then((res) => {
+			res.forEach((info) => {
+				console.log(info)
+				if (info.id === id) {
+					setIsKol(true)
+				}
+			})
+		})
 		command.genPatoAuthToken(id).then((res) => {
 			setToken(res)
 		})
-	},[visible])
+	},[id, reload])
 
 	const copyToClipboard = async (text: string) => {
 		try {
@@ -41,11 +54,14 @@ const QRCodeComponent: React.FC<QRCodeProps> = ({visible, id, onClose, mobile}) 
 						<CloseOutlined style={{color: "black", fontSize: 20}} onClick={() => onClose()}/>
 					</Col>
 				</Row>
-				<Row>
-					<Col span={24} style={{textAlign: "center"}}>
-						<div><h5>{t("tipsQRCode")}</h5></div>
-						<QRCode value={"https://social.metapowermatrix.ai/authorize?owner=" + token}/>
-						<div><a>
+				{
+					isKol ?
+						<>
+							<Row>
+								<Col span={24} style={{textAlign: "center"}}>
+									<div><h5>{t("tipsQRCode")}</h5></div>
+									<QRCode value={"https://social.metapowermatrix.ai/authorize?owner=" + token}/>
+									<div><a>
 							<span onClick={() => {
 								copyToClipboard("https://social.metapowermatrix.ai/authorize?owner=" + token)
 								Modal.success({
@@ -53,11 +69,27 @@ const QRCodeComponent: React.FC<QRCodeProps> = ({visible, id, onClose, mobile}) 
 								})
 							}}>{t('copy')}
 							</span>
-						</a>
+									</a>
+									</div>
+								</Col>
+							</Row>
+						</>
+						:
+						<div style={{textAlign: "center"}}>
+							<h5 style={{display: 'inline-block'}}>{t('shouldKol')}</h5>
+							<a onClick={()=>setShowBuyKol(true)}>
+								{t("buyKol")}
+							</a>
 						</div>
-					</Col>
-				</Row>
+				}
 			</div>
+			<BuyKolComponent id={id} room_id={''}
+			                 onClose={()=> {
+												 setReload(reload+1)
+				                 setShowBuyKol(false)
+			                 }}
+			                 visible={showBuyKol} onShowProgress={()=>{}} buyWhat={'kol'}
+			/>
 		</div>
 	);
 }

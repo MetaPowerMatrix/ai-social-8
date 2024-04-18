@@ -11,7 +11,7 @@ import commandDataContainer from "@/container/command";
 import {v4 as uuidv4} from "uuid";
 import HotAI from "@/components/HotAI";
 import TextArea from "antd/es/input/TextArea";
-import LiveChatSceneComponent from "@/components/LiveChatTown";
+import LiveChatSceneComponent from "@/components/LiveChatScene";
 
 const EditRoomInfo = ({id,visible,onClose,onShowProgress}:
     {

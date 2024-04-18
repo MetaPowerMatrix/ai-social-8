@@ -19,8 +19,8 @@ import commandDataContainer from "@/container/command";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
     const [openCode, setOpenCode] = useState(false);
-    const [isLogin, setIsLogin] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
+    const [isLogin, setIsLogin] = useState(false);
     const [activeId, setActiveId] = useState("");
     const [loading, setLoading] = useState(false);
     const [activeTab, setActivTab] = useState('chat');
@@ -69,8 +69,12 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             const paramName = 'to';
             const to_page = searchParams.get(paramName);
             console.log(to_page);
-            if (to_page === 'instruct'){
-                setActivTab("pro")
+            if (to_page === 'kol'){
+                setActivTab("town")
+            }
+            if (to_page === 'accept' && isLogin){
+                const back = searchParams.get('back')
+                window.location.href = decodeURI(back);
             }
         }
     }, [activeId])

@@ -144,7 +144,8 @@
     "share_ok": "分享成功",
     "share_tips": "分享你觉得有价值的知识，小镇居民添加这个知识你将会获得10点原力值",
     "ask": "发送",
-    "select_book": "选书"
+    "select_book": "选书",
+    "save": "上传修改"
   },
   "discovery": {
     "sharedKnowledge": "小镇图书馆的书籍加入自己的知识库，可以学到很多东西哦",
@@ -196,7 +197,11 @@
     "requireAmount": "充值数量要大于0， 可以是小数",
     "connectMM": "连接metamask",
     "donated": "捐赠成功",
-    "deposited": "充值成功"
+    "deposited": "充值成功",
+    "buyKol_ok": "购买成功",
+    "buyFollow_ok": "购买成功",
+    "shouldKol": "您还不是KOL，无法分享二维码和链接，如要购买KOL密钥，请点击下面的链接，谢谢！",
+    "buyKol": "购买KOL密钥"
   },
   "travel": {
     "startRecordingSceneDescription": "开始录制场景描述",
@@ -209,6 +214,10 @@
     "create_room_tips": "是否生成房间，需要消耗10原力值",
     "create_room": "创建房间",
     "create_answer_tips": "是否生成答案，需要消耗10原力值"
+  },
+  "kol": {
+    "hot": "热门私聊室",
+    "mine": "我的专属"
   },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, cn {中文} en {English}}"

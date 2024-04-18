@@ -30,6 +30,11 @@ export interface PortalKnowledge{
   owner: string,
   summary: string,
 }
+export interface KolInfo{
+  id: string,
+  name: string,
+  followers: string,
+}
 export interface PortalRoomInfo{
   owner: string,
   room_id: string,
@@ -154,7 +159,10 @@ export const api_url = {
         "send_answer": '/api/town/game/send/answer',
         "accept_answer": '/api/town/game/accept/answer',
         "reveal_answer": '/api/town/game/reveal/answer',
-        "generate_answer": '/api/town/game/answer/image'
+        "generate_answer": '/api/town/game/answer/image',
+        "kol_list":"/api/town/kol/list",
+        "becom_kol": "/api/town/become/kol",
+        "join_kol": "/api/town/follow/kol"
       },
       'task': {
         'pray': '/api/pray',

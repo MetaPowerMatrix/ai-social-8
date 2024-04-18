@@ -1,11 +1,11 @@
 .town_container{
     width: 100%;
     height: 660px;
-    overflow: auto;
+    overflow: hidden;
 }
 .town_content{
     background-color: white;
     width: 100%;
     height: 100%;
-    overflow: scroll;
+    overflow: hidden;
 }

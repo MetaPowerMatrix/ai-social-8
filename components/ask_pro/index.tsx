@@ -2,26 +2,30 @@ import React, {useEffect, useState} from "react";
 import {Button, Col, Input, Modal, Row} from "antd";
 import styles from "./AskProComponent.module.css";
 import {
+	AndroidOutlined,
 	AudioFilled,
-	CloseOutlined, ExclamationCircleFilled,
+	ExclamationCircleFilled,
 	PauseOutlined
 } from "@ant-design/icons";
-import TextArea from "antd/es/input/TextArea";
 import {api_url, getApiServer, getMQTTBroker, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import {getOS} from "@/lib/utils";
 import mqtt from "mqtt";
+import commandDataContainer from "@/container/command";
 
-const AskProComponent = ({activeId, visible, pro_name, pro_id, onClose, onShowProgress}:{activeId:string, visible:boolean, pro_name:string, pro_id:string, onClose: ()=>void, onShowProgress: (s: boolean)=>void}) => {
+const AskProComponent = ({activeId, room_id, onReply, onShowProgress}
+   :{activeId:string, room_id:string, onReply: (reply:string)=>void,
+	onShowProgress: (s: boolean)=>void}) =>
+{
 	const [query, setQuery] = useState<string>("");
-	const [queryResult, setQueryResult] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
 	const [recorder, setRecorder] = useState<MediaRecorder>();
 	const [wsSocket, setWsSocket] = useState<WebSocketManager>();
 	const [client, setClient] = useState<mqtt.MqttClient | null>(null);
 	const t = useTranslations('AIInstruct');
 	const {confirm} = Modal;
+	const command = commandDataContainer.useContainer()
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
@@ -48,7 +52,7 @@ const AskProComponent = ({activeId, visible, pro_name, pro_id, onClose, onShowPr
 			const onMessage = (topic: string, message: Buffer) => {
 				if (topic === topic_instruct){
 					console.log("receive answer: ", message.toString())
-					setQueryResult(message.toString())
+					onReply(message.toString())
 				}else{
 					console.log("receive audio: ", message.toString())
 					playAudioWithWebAudioApi(message.toString())
@@ -167,25 +171,44 @@ const AskProComponent = ({activeId, visible, pro_name, pro_id, onClose, onShowPr
 	const inputQuestion = (event: React.ChangeEvent<HTMLInputElement>) =>{
 		setQuery(event.target.value)
 	}
+	const callPato = (id: string, callid: string) => {
+		command.callPato(id, callid).then((res) => {
+			Modal.success({
+				content: t("waitingCall"),
+			});
+		})
+	}
+
+	const handleAutoChat = (callid: string) => {
+		if (callid === ""){
+			Modal.warning({
+				content: t("requireId"),
+			});
+		}else{
+			callPato(activeId, callid)
+		}
+	};
+
 	return (
-		<div hidden={!visible} className={styles.ask_pro_mobile_container}>
-			<div className={styles.ask_pro_mobile_content}>
-				<CloseOutlined onClick={()=>onClose()} style={{fontSize: 18}}/>
-				<div style={{textAlign:"center",marginBottom:5}}>{pro_name}</div>
-				<Row>
-					<Col span={24}>
-						<Input placeholder={t('command')} onChange={inputQuestion} value={query}/>
+			<div>
+				<Row align={"middle"}>
+					<Col span={2}>
+						<AndroidOutlined  style={{color: "black", fontSize: 18}} onClick={() => {
+							confirm({
+								icon: <ExclamationCircleFilled/>,
+								content: t('startTalkWithPro'),
+								okText: t('confirm'),
+								cancelText: t('cancel'),
+								onOk() {
+									handleAutoChat(room_id)
+								}
+							})
+						}}/>
 					</Col>
-				</Row>
-				<Row>
-					<TextArea placeholder={t('reply')} style={{marginTop: 10}} value={queryResult} rows={14}/>
-				</Row>
-				<Row align={"middle"} style={{marginTop:10}}>
-					<Col span={8}></Col>
-					<Col span={4}>
+					<Col span={2}>
 						{
 							stopped ?
-								<AudioFilled style={{color: "black", fontSize: 22}} onClick={() => {
+								<AudioFilled style={{color: "black", fontSize: 18, marginRight:15}} onClick={() => {
 									confirm({
 										icon: <ExclamationCircleFilled/>,
 										content: t('startAsk'),
@@ -197,16 +220,18 @@ const AskProComponent = ({activeId, visible, pro_name, pro_id, onClose, onShowPr
 									})
 								}}/>
 								:
-								<PauseOutlined style={{color: "black", fontSize: 22}} onClick={() => stop_record()}/>
+								<PauseOutlined style={{color: "black", fontSize: 18, marginRight:15}} onClick={() => stop_record()}/>
 						}
 					</Col>
-					<Col span={4}>
-						<Button type={"primary"} style={{marginLeft: 0}}
-						        onClick={() => handleVoiceCommand(query, pro_id)}>{t('ask')}</Button>
+					<Col span={16}>
+						<Input placeholder={t('command')} onChange={inputQuestion} value={query}/>
+					</Col>
+					<Col span={2}>
+						<Button type={"primary"} style={{marginLeft: 5}}
+						        onClick={() => handleVoiceCommand(query, room_id)}>{t('ask')}</Button>
 					</Col>
 				</Row>
 			</div>
-		</div>
 	)
 }
 
