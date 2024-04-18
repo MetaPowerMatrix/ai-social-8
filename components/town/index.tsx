@@ -1,13 +1,12 @@
-import {Button, Col, Divider, List, Modal, Popover, Row, Tabs, Timeline} from "antd";
-import React, {useEffect, useState} from "react";
+import {Col, List, Modal, Popover, Row} from "antd";
+import React, {useState} from "react";
 import styles from './TownComponent.module.css'
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import {
-	ExclamationCircleFilled, ExperimentOutlined, PlusOutlined, SwapOutlined, TeamOutlined,
+	SwapOutlined, TeamOutlined,
 } from "@ant-design/icons";
 import HotAI from "@/components/HotAI";
-import AIInstructMobileComponent from "@/components/AIInstructMobile";
 import Image from "next/image";
 import utilStyles from "@/styles/utils.module.css";
 import GameMishiTownComponent from "@/components/GameMishiTown";
@@ -98,11 +97,11 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
                       open={openPop}
                       onOpenChange={handleOpenChange}
                   >
-                      <SwapOutlined style={{marginLeft:5}}/>
+                      <SwapOutlined style={{marginLeft:10, color: "darkorchid", fontSize: 14}}/>
                   </Popover>
-                  <TeamOutlined style={{marginLeft:5}} onClick={()=>{
-			              setShowHot(true)
-		              }}/>
+                  {/*<TeamOutlined style={{marginLeft:5}} onClick={()=>{*/}
+			            {/*  setShowHot(true)*/}
+		              {/*}}/>*/}
               </Col>
           </Row>
           {activeTown === 'game' &&
@@ -114,7 +113,7 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
           {activeTown === 'kol' &&
               <KolTownComponent activeId={id} onShowProgress={onShowProgress}/>
           }
-          <HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>
+          {/*<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>*/}
         </>
 			}
 			</div>

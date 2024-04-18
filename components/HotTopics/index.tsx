@@ -6,20 +6,17 @@ import {
 import {useTranslations} from "next-intl";
 import {
 	LeftOutlined,
-	PlusOutlined, SearchOutlined
+	PlusOutlined, SearchOutlined, UnorderedListOutlined
 } from "@ant-design/icons";
 import commandDataContainer from "@/container/command";
 
 interface HotAIPros {
 	visible: boolean,
-	activeId: string,
-	town: string,
-	canSelect: boolean,
 	onSelectName: (name: string, id: string)=>void,
-	onClose: ()=>void,
+	onQueryTopic: (topic: string)=>void,
 }
 
-const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, town, visible, canSelect, onSelectName, onClose}) => {
+const HotTopicsComponent: React.FC<HotAIPros>  = ({visible, onSelectName, onQueryTopic}) => {
 	const t = useTranslations('discovery');
 	const [hotTopics, setHotTopics] = useState<string[]>([])
 	const command = commandDataContainer.useContainer()
@@ -33,23 +30,16 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, town, visible, canS
 		}
 	},[visible])
 
-	const addHotTopic= async (topic:string, subject:string) => {
-		command.create_today_event(activeId, topic, town).then((response) => {
-			Modal.success({
-				content: t('waiting')
-			})
-		})
-	};
 	return (
-		<div hidden={!visible} className={styles.hotai_container_mobile}>
-			{
-        <Row style={{padding: 10}}>
-            <LeftOutlined style={{fontSize: 15}} onClick={() => onClose()}/>
-        </Row>
-			}
-			<div className={styles.hotai_content_mobile}>
+		<div hidden={!visible} className={styles.hot_topic_container}>
+			{/*{*/}
+      {/*  <Row style={{padding: 10}}>*/}
+      {/*      <LeftOutlined style={{fontSize: 15}} onClick={() => onClose()}/>*/}
+      {/*  </Row>*/}
+			{/*}*/}
+			<div className={styles.hot_topic_content}>
 					<div style={{overflow: "scroll", padding: 15}}>
-						<h3 style={{textAlign:"center"}}>{t('topics')}</h3>
+						<h4 style={{textAlign:"start"}}>{t('topics')}</h4>
 						<List
 							itemLayout="horizontal"
 							size="small"
@@ -60,20 +50,15 @@ const HotTopicsComponent: React.FC<HotAIPros>  = ({activeId, town, visible, canS
 									defaultValue={item}
 								>
 									<Row align={"middle"} style={{width:"100%"}}>
-										<Col span={10}><h5>{item}</h5></Col>
-										<Col span={8}>
+										<Col span={12}><h5>{item}</h5></Col>
+										<Col span={6}>
 											<h5>讨论次数: {10}</h5>
 										</Col>
-										{
-											canSelect &&
-                        <Col span={2}><PlusOutlined onClick={()=> addHotTopic(item, item)}/></Col>
-										}
-										{
-                        <Col span={2} style={{textAlign: "end"}}><SearchOutlined onClick={()=> {
-													onSelectName(item, item)
-	                        onClose()
-                        }}/></Col>
-										}
+                    <Col span={3} style={{textAlign: "end", marginRight:10}}><PlusOutlined onClick={()=> {
+											onSelectName(item, item)
+                      // onClose()
+                    }}/></Col>
+										<Col span={2} style={{textAlign: "end"}}><UnorderedListOutlined onClick={()=> onQueryTopic(item)}/></Col>
 									</Row>
 								</List.Item>
 							)}

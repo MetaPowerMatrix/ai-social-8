@@ -17,3 +17,14 @@
 .list_item {
     background-color: lightblue;
 }
+.hot_topic_container {
+    width: 100%;
+    height: 490px;
+}
+.hot_topic_content {
+    background-color: white;
+    padding: 10px;
+    height: 100%;
+    overflow-Y: scroll;
+    width: 100%;
+}

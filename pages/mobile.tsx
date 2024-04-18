@@ -12,6 +12,7 @@ import {
 	Tooltip
 } from "antd";
 import {
+	CloseOutlined,
 	CommentOutlined,
 	DeleteOutlined,
 	ExclamationCircleFilled,
@@ -148,7 +149,7 @@ export default function MobileHome() {
 	const [summary, setSummary] = useState<string>("")
 	const [activeTab, setActivTab] = useState('feed');
 	const [userFeed, setUserFeed] = useState([{children:"新的一天开始了"}]);
-	const [showTopics, setShowTopics] = useState<boolean>(false)
+	const [showTopics, setShowTopics] = useState<boolean>(true)
 	const [topic, setTopic] = useState<string>('')
 	const [topicChatHis, setTopicChatHis] = useState<string[]>([])
 	const activeTown = 'study';
@@ -365,14 +366,15 @@ export default function MobileHome() {
 	const onSelectTopic = (name:string, id:string) =>{
 		setTopic(name)
 	}
-	const queryTopicChatHis = () => {
-		if (topic === ''){
+	const queryTopicChatHis = (q_topic:string) => {
+		if (q_topic === ''){
 			Modal.warning({
 				content: t('event_tips')
 			})
 		}else{
-			command.get_topic_chat_his(activeId, topic, activeTown).then((res) => {
+			command.get_topic_chat_his(activeId, q_topic, activeTown).then((res) => {
 				setTopicChatHis(res)
+				setShowTopics(false)
 			})
 		}
 	}
@@ -441,38 +443,40 @@ export default function MobileHome() {
             </div>
 				}
 				{key === 'topic' &&
-            <div style={{overflow:"scroll", height:490}}>
+            <div style={{height:590}}>
                 <TextArea style={{marginBottom: 10}} value={topic} placeholder={t('topicTips')} rows={2} onChange={(e) => topicInput(e)}/>
                 <Row>
-                    <Col span={8}>
-                        <Button onClick={()=>setShowTopics(true)}>{t('event_pick')}</Button>
-                    </Col>
-                    <Col span={8}>
-                        <Button onClick={()=>queryTopicChatHis()}>{t('event_query')}</Button>
-                    </Col>
-                    <Col span={8}>
-                        <Button type={"primary"} onClick={handleTodayEvent}>{t('event')}</Button>
+                    <Col span={24}>
+                        <Button style={{width:"100%"}} type={"primary"} onClick={handleTodayEvent}>{t('event')}</Button>
                     </Col>
                 </Row>
-                <List
-                    itemLayout="vertical"
-                    size="small"
-                    split={false}
-                    dataSource={topicChatHis}
-                    renderItem={(item, index) => {
-											return (
-												<List.Item
-													key={index}
-												>
-													<Row>
-														<Col span={24}>
-															<h5>{item}</h5>
-														</Col>
-													</Row>
-												</List.Item>
-											)
-										}}
-                />
+                <HotTopics onQueryTopic={queryTopicChatHis} visible={showTopics}  onSelectName={onSelectTopic}/>
+		            <div hidden={showTopics} style={{marginTop:15}}>
+                    <Row style={{padding: 10}}>
+		                    <LeftOutlined style={{fontSize: 16, color: "blue"}} onClick={() => setShowTopics(true)}/>
+                    </Row>
+				            <div style={{height: 450, overflow: "scroll"}}>
+                        <List
+                            itemLayout="vertical"
+                            size="small"
+                            split={false}
+                            dataSource={topicChatHis}
+                            renderItem={(item, index) => {
+									            return (
+										            <List.Item
+											            key={index}
+										            >
+											            <Row>
+												            <Col span={24}>
+													            <h5>{item}</h5>
+												            </Col>
+											            </Row>
+										            </List.Item>
+									            )
+								            }}
+                        />
+				            </div>
+		            </div>
             </div>
 				}
 			</>
@@ -512,7 +516,6 @@ export default function MobileHome() {
 					})}
 				/>
 			</div>
-			<HotTopics town={activeTown} activeId={activeId} onClose={()=>setShowTopics(false)} visible={showTopics} canSelect={false} onSelectName={onSelectTopic}/>
 			<div hidden={hideDetail} style={{overflow: "scroll", height: pageHeight, padding: 15}}>
 				<Row>
 					<LeftOutlined onClick={() => setHideDetail(true)}/>
