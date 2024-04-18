@@ -113,6 +113,12 @@ const SummaryComponent = ({activeId, onShowProgress, updateCounter}:{activeId:st
 	}
 	const handleKnowledge= (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
 		event.preventDefault(); // Prevent the default form submission
+		if (fileList.length <= 0 && transcriptFile === '' && knowledge === ''){
+			Modal.warning({
+				content: '请录制语音，上传文档或者输入链接!'
+			})
+			return
+		}
 		const formData = new FormData();
 		if (fileList.length > 0){
 			formData.append('file', fileList[0] as FileType);
