@@ -71,10 +71,6 @@ export interface PatoInfo {
   professionals: string[],
   balance: number
 }
-export interface LocalPatos {
-  ids: string[],
-  active_id: string
-}
 export interface ListItemInfo{
   name: string;
   id: string;
