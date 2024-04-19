@@ -177,6 +177,27 @@ const useCommand = () => {
     }
     return []
   }
+  const get_pato_names = async (ids: string[]) => {
+    let url = getApiServer(80) + api_url.portal.names
+    let response = await fetch(
+      `${url}`,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(ids)
+      }
+    )
+    if (response.ok) {
+      let dataJson = await response.json()
+      if (dataJson.content !== ''){
+        let data: HotPro[] = JSON.parse(dataJson.content)
+        return data
+      }
+    }
+    return []
+  }
   const archive_session = async (id: string, session: string, date: string) => {
     let data = {id: id, session: session, date: date}
     let url = getApiServer(80) + api_url.portal.message.archive
@@ -791,7 +812,7 @@ const useCommand = () => {
     goTown, query_embedding, query_summary, query_knowledges, getTownHots, getSharedKnowledges, share_knowledge,
     getProHots, add_shared_knowledge, getTopicHots, init_topic_chat, get_topic_chat_his, query_rooms, create_game_room,
     send_answer, gen_answer, ask_clue, join_game, log_user_activity, image_desc_by_url, reveal_answer, retrieve_pato_by_bame,
-    query_live_rooms, query_kol_rooms, become_kol, join_kol
+    query_live_rooms, query_kol_rooms, become_kol, join_kol, get_pato_names
   }
 }
 

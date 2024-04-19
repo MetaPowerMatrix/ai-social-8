@@ -33,7 +33,7 @@ export interface PortalKnowledge{
 export interface KolInfo{
   id: string,
   name: string,
-  followers: string,
+  followers: string[],
 }
 export interface PortalRoomInfo{
   owner: string,
@@ -130,6 +130,7 @@ export const api_url = {
       'login': '/api/login',
       'register': '/api/register',
       'pato': '/api/pato/info',
+      'names': '/api/pato/names',
       'retrieve': '/api/pato/retrieve',
       'knowledges': '/api/pato/knowledge/all',
       'message':{

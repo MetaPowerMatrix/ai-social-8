@@ -1,13 +1,13 @@
 import React, {useEffect, useRef, useState} from 'react';
 import styles from "@/components/AIInstructMobile/AIInstructMobileComponent.module.css";
 import {
-	Col, List, Row, Modal, Button
+	Col, List, Row, Modal, Button, Select
 } from "antd";
 import {useTranslations} from "next-intl";
 import {
 	ExclamationCircleFilled, LeftOutlined
 } from "@ant-design/icons";
-import {ChatMessage} from "@/common";
+import {ChatMessage, HotPro} from "@/common";
 import commandDataContainer from "@/container/command";
 import {getTodayDateString} from "@/lib/utils";
 import AskProComponent from "@/components/ask_pro";
@@ -18,6 +18,7 @@ interface AIInstructPros {
 	kol_name: string,
 	my_name: string,
 	visible: boolean,
+	follower_ids: string[],
 	onShowProgress: (s: boolean)=>void;
 	onClose: ()=>void;
 }
@@ -104,23 +105,32 @@ const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSav
 	);
 };
 
-const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_name, my_name, visible, onShowProgress, onClose}) => {
+const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_name, my_name, follower_ids, visible, onShowProgress, onClose}) => {
 	const t = useTranslations('AIInstruct');
 	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [reload, setReload] = useState<number>(0)
 	const [summary, setSummary] = useState<string>("");
+	const [followers, setFollowers] = useState<HotPro[]>([])
 	const [isOwner, setIsOwner] = useState<boolean>(false)
+	const [queryId, setQueryId] = useState<string>(id)
+	const [queryName, setQueryName] = useState<string>(my_name)
 	const command = commandDataContainer.useContainer()
 	const isOwnerRef = useRef<boolean>();
 	isOwnerRef.current = isOwner;
 	const {confirm} = Modal;
 
+	console.log("name ", queryName)
 	useEffect(()=>{
 		console.log(id, room_id)
-		getProHistory(id, room_id)
+		// getProHistory(id, room_id)
 		setIsOwner(id === room_id)
-	},[id, room_id, reload])
+		getFollowers(follower_ids)
+	},[id, room_id, follower_ids])
+
+	useEffect(()=>{
+		getProHistory(queryId, room_id)
+	},[id, queryId, room_id, reload])
 
 	const getProHistory = (id: string, callid: string) => {
 		command.getProHistoryMessages(id, callid, queryDate).then((response) => {
@@ -129,31 +139,66 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_n
 				}
 		})
 	}
+	const getFollowers = (ids: string[]) => {
+		command.get_pato_names(ids).then((response) => {
+			let f : HotPro[] = [{id: "select", name: "选择粉丝查询聊天记录", subjects: []}]
+			f.push(...response)
+			setFollowers(f)
+		})
+	}
 	const handleEditMessages = () => {
-		command.edit_session_messages(id, room_id, chatMessages).then((res) =>
+		command.edit_session_messages(queryId, room_id, chatMessages).then((res) =>
 		{
 			Modal.success({content: "修改成功,修改结果将影响之后的聊天"})
 		})
 	}
 	const handleSave = (index: number, value: ChatMessage) => {
+		value.sender = queryId;
+		value.receiver = room_id;
 		setChatMessages(chatMessages.map((item, i) => i === index ? value : item));
 	};
 
 	return (
 			<div hidden={!visible}  className={styles.voice_instruct_container}>
 				<div className={styles.voice_instruct_content}>
-						<Row style={{padding:10}}>
-							<LeftOutlined style={{fontSize:18}} onClick={()=>onClose()}/>
-						</Row>
+					<Row style={{padding: 10}}>
+						<LeftOutlined style={{fontSize: 18}} onClick={() => onClose()}/>
+					</Row>
+					{isOwner &&
+              <Row style={{padding:10}}>
+                  <select style={{padding: 10, width: "100%"}} id="queryId" name="queryId" onChange={(e)=>{
+										setQueryId(e.target.value)
+										setQueryName(e.target.selectedOptions[0].innerText)
+										console.log(queryName)
+									}}>
+										{followers.map((option) => (
+											<option key={option.id} value={option.id}>
+												{option.name}
+											</option>
+										))}
+                  </select>
+              </Row>
+					}
 					<List
 						itemLayout="vertical"
-						style={{height:560,overflow:"scroll"}}
+						style={{height: 560, overflow: "scroll"}}
 						size="small"
 						split={false}
 						dataSource={chatMessages}
 						renderItem={(item, index) => {
 							if (isOwnerRef.current) {
-								return <EditableListItem t={t} initialValue={item} onSave={(value) => handleSave(index, value)}/>
+								let edit_item: ChatMessage = {
+									sender: queryName,
+									receiver: kol_name,
+									question: item.question,
+									answer: item.answer,
+									subject: item.subject,
+									created_at: item.created_at,
+									session: item.session,
+									place: item.place,
+									sender_role: item.sender_role
+								}
+								return <EditableListItem t={t} initialValue={edit_item} onSave={(value) => handleSave(index, value)}/>
 							} else {
 								return (
 									<List.Item
@@ -161,12 +206,12 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_n
 									>
 										<Row>
 											<Col span={24}>
-												<h5>{my_name}: {item.question}</h5>
+												<h5>{queryName}: {item.question}</h5>
 											</Col>
 										</Row>
 										<Row>
-											<Col span={24} style={{textAlign:"end"}}>
-												<h5>{item.answer} : {kol_name}</h5>
+											<Col span={24} style={{textAlign: "end"}}>
+												<h5>{item.answer} :{kol_name}</h5>
 											</Col>
 										</Row>
 									</List.Item>
@@ -175,11 +220,11 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_n
 						}}
 					/>
 					{
-						<div style={{padding:5}}>
+						<div style={{padding: 5}}>
 							{isOwnerRef.current ?
-								<Button style={{width:"100%"}} type={"primary"} onClick={() =>
+								<Button style={{width: "100%"}} type={"primary"} onClick={() =>
 									confirm({
-										icon: <ExclamationCircleFilled />,
+										icon: <ExclamationCircleFilled/>,
 										content: t('save_tips'),
 										okText: t('confirm'),
 										cancelText: t('cancel'),
@@ -188,11 +233,11 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_n
 										}
 									})
 								}>{t('save')}</Button>
-							:
-								<AskProComponent activeId={id}  room_id={room_id} onShowProgress={onShowProgress}
-							                 onReply={(message) => {
-																 setReload(reload + 1)
-							                 }}/>
+								:
+								<AskProComponent activeId={id} room_id={room_id} onShowProgress={onShowProgress}
+								                 onReply={(message) => {
+									                 setReload(reload + 1)
+								                 }}/>
 							}
 						</div>
 					}

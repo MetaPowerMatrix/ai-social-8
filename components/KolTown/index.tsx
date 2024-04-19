@@ -29,6 +29,7 @@ const KolTownComponent = ({activeId, name, onShowProgress}: {
 	const [isKol, setIsKol] = useState<boolean>(false)
 	const [cover, setCover] = useState<string>('')
 	const [kolName, setKolName] = useState<string>('')
+	const [followerIds, setFollowerIds] = useState<string[]>([])
 	const t = useTranslations('kol');
 	const command = commandDataContainer.useContainer()
 	const {confirm} = Modal;
@@ -76,6 +77,7 @@ const KolTownComponent = ({activeId, name, onShowProgress}: {
 									<LoginOutlined onClick={() => {
 										setRoomId(item.id)
 										setKolName(item.name)
+										setFollowerIds(item.followers)
 										if (mine || activeId === item.id) {
 											setShowKolRoom(true)
 										}else {
@@ -146,7 +148,7 @@ const KolTownComponent = ({activeId, name, onShowProgress}: {
 							};
 						})}
 					/>
-					<AIInstructMobileComponent my_name={name} kol_name={kolName} id={activeId} room_id={roomId} visible={showKolRoom} onShowProgress={onShowProgress}
+					<AIInstructMobileComponent follower_ids={followerIds} my_name={name} kol_name={kolName} id={activeId} room_id={roomId} visible={showKolRoom} onShowProgress={onShowProgress}
                      onClose={()=>setShowKolRoom(false)}/>
 
 					<BuyKolComponent id={activeId} room_id={roomId}
