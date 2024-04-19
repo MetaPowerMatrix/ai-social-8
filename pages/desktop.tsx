@@ -292,7 +292,7 @@ export default function DesktopHome() {
   };
 
   const handleEditMessages = () => {
-    command.edit_session_messages(activeId, sessionTabKey, queryDate, chatMessages).then((res) =>
+    command.edit_session_messages(activeId, sessionTabKey, chatMessages).then((res) =>
     {
       openNotification("修改成功", "修改结果将影响之后的聊天")
     })
