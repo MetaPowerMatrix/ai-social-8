@@ -13,11 +13,12 @@ import commandDataContainer from "@/container/command";
 import TextArea from "antd/es/input/TextArea";
 import GameSceneComponent from "@/components/GameScene";
 
-const EditRoomInfo = ({id,visible,activeTown,onClose,onCreated}:
+const EditRoomInfo = ({id,visible,activeTown,onClose,onCreated,onShowProgress}:
     {
 			id:string, visible:boolean, activeTown:string,
-      onClose:(room_id: string)=>void
-	    onCreated:(room_id:string, room_name:string)=>void
+      onClose:(room_id: string)=>void,
+	    onCreated:(room_id:string, room_name:string, cover:string, owner:string)=>void,
+	    onShowProgress: (s: boolean) => void
 		}
 ) => {
 	const [roomName, setRoomName] = useState<string>('')
@@ -39,9 +40,14 @@ const EditRoomInfo = ({id,visible,activeTown,onClose,onCreated}:
 			okText: t('confirm'),
 			cancelText: t('cancel'),
 			onOk() {
+				onShowProgress(true)
 				command.create_game_room(id, roomName, roomDescription,activeTown).then((res)=>{
-					onClose(res)
-					onCreated(res, roomName)
+					let info: string[] = JSON.parse(res)
+					if (info.length > 1) {
+						onCreated(info[0], roomName, info[1], id)
+						onClose(info[0])
+					}
+					onShowProgress(false)
 				})
 			}
 		})
@@ -141,8 +147,10 @@ const GameMishiTownComponent = ({activeId, onShowProgress}: {
 						</Col>
 						<Col span={2}></Col>
 					</Row>
-					<EditRoomInfo id={activeId} visible={showEditRoom} activeTown={activeTown}
-					              onCreated={(room_id, room_name) => {
+					<EditRoomInfo onShowProgress={onShowProgress} id={activeId} visible={showEditRoom} activeTown={activeTown}
+					              onCreated={(room_id, room_name, cover, owner) => {
+						              setCover(cover)
+						              setOwner(owner)
 						              setRoomId(room_id)
 						              setRoomName(room_name)
 					              }}

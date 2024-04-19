@@ -257,8 +257,8 @@ const useCommand = () => {
       // let data = JSON.parse(dataJson.content)
     }
   }
-  const edit_session_messages = async (id: string, session: string, date: string, messages: ChatMessage[]) => {
-    let data = {id: id, session: session, date: date, messages: messages}
+  const edit_session_messages = async (id: string, kol: string, messages: ChatMessage[]) => {
+    let data = {id: id, kol: kol, messages: messages}
     let url = getApiServer(80) + api_url.portal.message.edit
     let response = await fetch(
       `${url}`,
@@ -592,8 +592,10 @@ const useCommand = () => {
     )
     if (response.ok) {
       let dataJson = await response.json()
-      let scene_info: [] = JSON.parse(dataJson.content)
-      return scene_info;
+      if (dataJson.content !== ''){
+        let scene_info: [] = JSON.parse(dataJson.content)
+        return scene_info;
+      }
     }
     return []
   }
@@ -774,10 +776,8 @@ const useCommand = () => {
       let response = await fetch(`${url}`,)
       if (response.ok) {
         let dataJson = await response.json()
-        let patoMessages: SessionMessages[] = JSON.parse(dataJson.content)
-        patoMessages.forEach((item) => {
-          item.messages.sort((a, b) => a.created_at - b.created_at)
-        })
+        let patoMessages: ChatMessage[] = JSON.parse(dataJson.content)
+          patoMessages.sort((a, b) => a.created_at - b.created_at)
         return patoMessages
       }
     } catch (e) {

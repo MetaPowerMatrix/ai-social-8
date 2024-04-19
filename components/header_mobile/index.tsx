@@ -6,7 +6,6 @@ import React, {useEffect, useState} from "react";
 import commandDataContainer from "@/container/command";
 import {useTranslations} from "next-intl";
 import {PatoInfo, Persona, StatsInfo, TimeLineItem} from "@/common";
-import TaskPanel from "@/components/taskPanel";
 import styles from './HeaderPanelMobile.module.css'
 import ISSForm from "@/components/iss";
 import SubscriptionsComponent from "@/components/Subscriptions";

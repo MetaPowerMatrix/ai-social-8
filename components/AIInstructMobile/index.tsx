@@ -15,6 +15,8 @@ import AskProComponent from "@/components/ask_pro";
 interface AIInstructPros {
 	id: string,
 	room_id: string,
+	kol_name: string,
+	my_name: string,
 	visible: boolean,
 	onShowProgress: (s: boolean)=>void;
 	onClose: ()=>void;
@@ -102,10 +104,11 @@ const EditableListItem: React.FC<EditableListItemProps> = ({ initialValue, onSav
 	);
 };
 
-const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id, visible, onShowProgress, onClose}) => {
+const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_name, my_name, visible, onShowProgress, onClose}) => {
 	const t = useTranslations('AIInstruct');
 	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
+	const [reload, setReload] = useState<number>(0)
 	const [summary, setSummary] = useState<string>("");
 	const [isOwner, setIsOwner] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
@@ -117,28 +120,17 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id, visi
 		console.log(id, room_id)
 		getProHistory(id, room_id)
 		setIsOwner(id === room_id)
-	},[id, room_id])
+	},[id, room_id, reload])
 
 	const getProHistory = (id: string, callid: string) => {
 		command.getProHistoryMessages(id, callid, queryDate).then((response) => {
-				let messages: ChatMessage[] = []
 				if (response !== null) {
-					let session_messages = response
-					let summary = ""
-					session_messages.forEach((item) => {
-						let msg = item.messages.filter((msg: ChatMessage) => {
-							return (msg.question.length > 0 && msg.answer.length > 0)
-						})
-						messages.push(...msg)
-						summary += item.summary
-					})
-					setSummary(summary)
-					setChatMessages(messages)
+					setChatMessages(response)
 				}
 		})
 	}
 	const handleEditMessages = () => {
-		command.edit_session_messages(id, room_id, queryDate, chatMessages).then((res) =>
+		command.edit_session_messages(id, room_id, chatMessages).then((res) =>
 		{
 			Modal.success({content: "修改成功,修改结果将影响之后的聊天"})
 		})
@@ -169,12 +161,12 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id, visi
 									>
 										<Row>
 											<Col span={24}>
-												<h5>{item.sender.split('(')[0]}: {item.question}</h5>
+												<h5>{my_name}: {item.question}</h5>
 											</Col>
 										</Row>
 										<Row>
 											<Col span={24} style={{textAlign:"end"}}>
-												<h5>{item.answer} : {item.receiver.split('(')[0]}</h5>
+												<h5>{item.answer} : {kol_name}</h5>
 											</Col>
 										</Row>
 									</List.Item>
@@ -198,7 +190,9 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id, visi
 								}>{t('save')}</Button>
 							:
 								<AskProComponent activeId={id}  room_id={room_id} onShowProgress={onShowProgress}
-							                 onReply={() => {}}/>
+							                 onReply={(message) => {
+																 setReload(reload + 1)
+							                 }}/>
 							}
 						</div>
 					}

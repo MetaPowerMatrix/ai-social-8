@@ -192,23 +192,10 @@ const AskProComponent = ({activeId, room_id, onReply, onShowProgress}
 	return (
 			<div>
 				<Row align={"middle"}>
-					<Col span={2}>
-						<AndroidOutlined  style={{color: "black", fontSize: 18}} onClick={() => {
-							confirm({
-								icon: <ExclamationCircleFilled/>,
-								content: t('startTalkWithPro'),
-								okText: t('confirm'),
-								cancelText: t('cancel'),
-								onOk() {
-									handleAutoChat(room_id)
-								}
-							})
-						}}/>
-					</Col>
-					<Col span={2}>
+					<Col span={1} style={{marginRight:5}}>
 						{
 							stopped ?
-								<AudioFilled style={{color: "black", fontSize: 18, marginRight:15}} onClick={() => {
+								<AudioFilled style={{color: "black", fontSize: 18}} onClick={() => {
 									confirm({
 										icon: <ExclamationCircleFilled/>,
 										content: t('startAsk'),
@@ -226,9 +213,22 @@ const AskProComponent = ({activeId, room_id, onReply, onShowProgress}
 					<Col span={16}>
 						<Input placeholder={t('command')} onChange={inputQuestion} value={query}/>
 					</Col>
-					<Col span={2}>
+					<Col span={4}>
 						<Button type={"primary"} style={{marginLeft: 5}}
 						        onClick={() => handleVoiceCommand(query, room_id)}>{t('ask')}</Button>
+					</Col>
+					<Col span={2} style={{textAlign:"end"}}>
+						<AndroidOutlined  style={{color: "black", fontSize: 18}} onClick={() => {
+							confirm({
+								icon: <ExclamationCircleFilled/>,
+								content: t('startTalkWithPro'),
+								okText: t('confirm'),
+								cancelText: t('cancel'),
+								onOk() {
+									handleAutoChat(room_id)
+								}
+							})
+						}}/>
 					</Col>
 				</Row>
 			</div>

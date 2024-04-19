@@ -13,8 +13,9 @@ import AIInstructMobileComponent from "@/components/AIInstructMobile";
 import BuyKolComponent from "@/components/BuyKol";
 
 
-const KolTownComponent = ({activeId, onShowProgress}: {
+const KolTownComponent = ({activeId, name, onShowProgress}: {
 	activeId: string,
+	name: string,
 	onShowProgress: (s: boolean) => void
 }) => {
 	const [activeTab, setActivTab] = useState('hot');
@@ -27,6 +28,7 @@ const KolTownComponent = ({activeId, onShowProgress}: {
 	const [buyWhat, setBuyWhat] = useState<string>('kol')
 	const [isKol, setIsKol] = useState<boolean>(false)
 	const [cover, setCover] = useState<string>('')
+	const [kolName, setKolName] = useState<string>('')
 	const t = useTranslations('kol');
 	const command = commandDataContainer.useContainer()
 	const {confirm} = Modal;
@@ -73,6 +75,7 @@ const KolTownComponent = ({activeId, onShowProgress}: {
 								<Col span={2} style={{textAlign: "end"}}>
 									<LoginOutlined onClick={() => {
 										setRoomId(item.id)
+										setKolName(item.name)
 										if (mine || activeId === item.id) {
 											setShowKolRoom(true)
 										}else {
@@ -143,7 +146,7 @@ const KolTownComponent = ({activeId, onShowProgress}: {
 							};
 						})}
 					/>
-					<AIInstructMobileComponent id={activeId} room_id={roomId} visible={showKolRoom} onShowProgress={onShowProgress}
+					<AIInstructMobileComponent my_name={name} kol_name={kolName} id={activeId} room_id={roomId} visible={showKolRoom} onShowProgress={onShowProgress}
                      onClose={()=>setShowKolRoom(false)}/>
 
 					<BuyKolComponent id={activeId} room_id={roomId}

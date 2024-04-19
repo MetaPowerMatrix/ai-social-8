@@ -25,12 +25,15 @@ const QRCodeComponent: React.FC<QRCodeProps> = ({visible, id, onClose, mobile}) 
 
 	useEffect(() => {
 		command.query_kol_rooms().then((res) => {
+			let testKol = false
 			res.forEach((info) => {
 				console.log(info)
 				if (info.id === id) {
 					setIsKol(true)
+					testKol = true
 				}
 			})
+			setIsKol(testKol)
 		})
 		command.genPatoAuthToken(id).then((res) => {
 			setToken(res)

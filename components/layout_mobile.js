@@ -22,6 +22,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const [availableIds, setAvailableIds] = useState([]);
     const [isLogin, setIsLogin] = useState(false);
     const [activeId, setActiveId] = useState("");
+    const [activeName, setActiveName] = useState("");
     const [loading, setLoading] = useState(false);
     const [activeTab, setActivTab] = useState('chat');
     const t = useTranslations('Login');
@@ -47,6 +48,9 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             const idsMap = ids.map((id) => {
                 const id_name = id.split(":")
                 if (id_name.length > 1){
+                    if (id_name[0] === localInfo.active_id){
+                        setActiveName(id_name[1])
+                    }
                     return {label: id.split(":")[1], value: id.split(":")[0]};
                 }
             });
@@ -102,11 +106,8 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     </>
                 }
                 {key === 'feed' &&
-                    <TwonMobile id={activeId} mobile={true} onShowProgress={showProgressBar} />
+                    <TwonMobile name={activeName} id={activeId} mobile={true} onShowProgress={showProgressBar} />
                 }
-                {/*{key === 'discovery' &&*/}
-                {/*    <DiscoveryComponent showLiveChat={()=>setOpenLive(true)}/>*/}
-                {/*}*/}
                 {key === 'mine' &&
                     <HeaderPanelMobile
                         showQRCode={()=>{setOpenCode(true)}}

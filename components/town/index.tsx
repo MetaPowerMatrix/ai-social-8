@@ -24,7 +24,7 @@ const towns =[
 	// {label: '情感小镇,拒绝EMO', value: 'science', description: '游戏小镇,嗨起来'},
 	// {label: 'web3小镇', value: 'web3'},
 ]
-const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, onShowProgress: (s: boolean)=>void}) => {
+const TwonMobile = ({id, name, mobile, onShowProgress}:{id: string,name:string, mobile: boolean, onShowProgress: (s: boolean)=>void}) => {
 	const [activeTown, setActivTown] = useState(towns[0].value);
 	const [activeTownLabel, setActiveTownLabel] = useState<string>(towns[0].label)
 	const [showHot, setShowHot] = useState<boolean>(false)
@@ -111,7 +111,7 @@ const TwonMobile = ({id, mobile, onShowProgress}:{id: string, mobile: boolean, o
               <LiveBroadcastTownComponent activeId={id} onShowProgress={onShowProgress}/>
           }
           {activeTown === 'kol' &&
-              <KolTownComponent activeId={id} onShowProgress={onShowProgress}/>
+              <KolTownComponent name={name} activeId={id} onShowProgress={onShowProgress}/>
           }
           {/*<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>*/}
         </>
