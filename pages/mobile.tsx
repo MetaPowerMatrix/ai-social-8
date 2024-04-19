@@ -322,7 +322,7 @@ export default function MobileHome() {
 	};
 
 	const handleEditMessages = () => {
-		command.edit_session_messages(activeId, currentSession, queryDate, chatMessages).then((res) =>
+		command.edit_session_messages(activeId, currentSession, chatMessages).then((res) =>
 		{
 			openNotification("修改成功", "修改结果将影响之后的聊天")
 		})
