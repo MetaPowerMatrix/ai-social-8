@@ -54,6 +54,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	const [isOwner, setIsOwner] = useState<boolean>(false)
 	const [gameLevel, setGameLevel] = useState<number>(0)
 	const [sceneCount, setSceneCount] = useState<number>(2)
+	const [isSendAnswer, setIsSendAnswer] = useState<boolean>(false)
 	const [showEditAnswer, setShowEditAnswer] = useState<boolean>(false)
 	const t = useTranslations('travel');
 	const {confirm} = Modal;
@@ -64,6 +65,8 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	sceneRef.current = scene
 	const roomIdRef = useRef<string>()
 	roomIdRef.current =roomId
+	const isSendAnswerRef = useRef<boolean>()
+	isSendAnswerRef.current = isSendAnswer
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
@@ -97,7 +100,11 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			if (isOwnerRef.current){
 				handleGenerateScene(event.data.toString())
 			}else{
-				handleVoiceCommand(event.data.toString())
+				if (isSendAnswerRef.current) {
+					handleAnswerCommand(event.data.toString())
+				}else{
+					handleVoiceCommand(event.data.toString())
+				}
 			}
 		}
 	}
@@ -188,6 +195,20 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 				alert(t('assist_fail'));
 				onShowProgress(false);
 			});
+	};
+	const handleAnswerCommand = (answer: string) => {
+		command.send_answer(activeId, owner, roomId, roomName, answer, gameLevel).then((res)=>{
+			let winner: string[] = JSON.parse(res)
+			if (winner.length > 0){
+				Modal.success({
+					content: '答案正确'
+				})
+			}else{
+				Modal.success({
+					content: '答案不正确'
+				})
+			}
+		})
 	};
 	const handleGenerateScene= (description: string) => {
 		const formData = new FormData();
@@ -332,6 +353,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 							if (confirmed){
 								setIsOwner(isOwner)
 								stop_record()
+								setIsSendAnswer(false)
 							}else{
 								confirm({
 									icon: <ExclamationCircleFilled />,
@@ -339,9 +361,10 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 									okText: t('confirm'),
 									cancelText: t('cancel'),
 									onOk() {
+										setConfirmed(true)
 										stop_record()
 										setIsOwner(isOwner)
-										setConfirmed(true)
+										setIsSendAnswer(false)
 									}
 								})
 							}
@@ -403,18 +426,8 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 											})
 											return
 										}
-										command.send_answer(activeId, owner, roomId, roomName, '这个密室可以打破窗户逃脱', gameLevel).then((res)=>{
-											let winner: string[] = JSON.parse(res)
-											if (winner.length > 0){
-												Modal.success({
-													content: '答案正确'
-												})
-											}else{
-												Modal.success({
-													content: '答案不正确'
-												})
-											}
-										})
+										setIsSendAnswer(true)
+										stop_record()
 									}}>发送答案</Button>
 								</Col>
 								<Col span={2} style={{textAlign:"center"}}>
