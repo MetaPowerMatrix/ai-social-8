@@ -207,7 +207,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 					if (images.length > 0){
 						setScene(images[0])
 						setGameLevel(gameLevel + 1)
-						setSceneCount(sceneCount+1)
+						setSceneCount(sceneCount + 1)
 					}
 				}else{
 					Modal.warning({
