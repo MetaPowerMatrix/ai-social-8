@@ -11,6 +11,7 @@ import {ChatMessage, HotPro} from "@/common";
 import commandDataContainer from "@/container/command";
 import {getTodayDateString} from "@/lib/utils";
 import AskProComponent from "@/components/ask_pro";
+import MarkdownViewer from "@/components/MarkdownViewer";
 
 interface AIInstructPros {
 	id: string,
@@ -211,7 +212,12 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_n
 										</Row>
 										<Row>
 											<Col span={24} style={{textAlign: "end"}}>
-												<h5>{item.answer} :{kol_name}</h5>
+												{
+													item.answer.indexOf("##") === 0 ?
+														<MarkdownViewer markdownText={item.answer}/>
+														:
+														<h5>{item.answer} :{kol_name}</h5>
+												}
 											</Col>
 										</Row>
 									</List.Item>
