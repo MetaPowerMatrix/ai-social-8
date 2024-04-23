@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import {ChatMessage, HotPro} from "@/common";
 import commandDataContainer from "@/container/command";
-import {getTodayDateString} from "@/lib/utils";
+import {getTodayDateString, isMarkdown} from "@/lib/utils";
 import AskProComponent from "@/components/ask_pro";
 import MarkdownViewer from "@/components/MarkdownViewer";
 
@@ -213,7 +213,7 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_n
 										<Row>
 											<Col span={24} style={{textAlign: "end"}}>
 												{
-													item.answer.indexOf("##") === 0 ?
+													isMarkdown(item.answer) ?
 														<MarkdownViewer markdownText={item.answer}/>
 														:
 														<h5>{item.answer} :{kol_name}</h5>

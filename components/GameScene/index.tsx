@@ -67,6 +67,8 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 	roomIdRef.current =roomId
 	const isSendAnswerRef = useRef<boolean>()
 	isSendAnswerRef.current = isSendAnswer
+	const coverRef = useRef<string>()
+	coverRef.current = cover
 
 	useEffect(() => {
 		initAudioStream().then(()=>{})
@@ -210,10 +212,14 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 			}
 		})
 	};
-	const handleGenerateScene= (description: string) => {
+	const handleGenerateScene= async (description: string) => {
+		let his = await  handleImageContextHis(description)
+		let arch = await handleImageContextArch(description)
+		let prompt = await handleImagePrompt(description,his,arch)
+
 		const formData = new FormData();
 		console.log("room id: ", roomId)
-		formData.append('message', JSON.stringify({ id: activeId, room_id: roomIdRef.current, description: description}));
+		formData.append('message', JSON.stringify({ id: activeId, room_id: roomIdRef.current, description: prompt}));
 
 		onShowProgress(true);
 		let url = getApiServer(80) + api_url.portal.town.gen_scene
@@ -257,6 +263,33 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 				}
 				onShowProgress(false)
 			})
+	};
+	const handleImageContextHis = async (description: string) => {
+		onShowProgress(true)
+		let his_question = "please tell me the age of the image content describe and culture of this age:"
+		let res = await command.ask_image_context(activeId, description, his_question, coverRef.current ?? '')
+		console.log(res)
+		setMessage(res)
+		setShowChatDialog(true)
+		return res
+	};
+	const handleImageContextArch = async (description: string) => {
+		onShowProgress(true)
+		let arch_question = "please tell me what furniture,equipment,facility should this building has:"
+		let res = await command.ask_image_context(activeId, description, arch_question, coverRef.current ?? '')
+		console.log(res)
+		setMessage(res)
+		setShowChatDialog(true)
+		return res
+	};
+	const handleImagePrompt = async (description: string, his: string, arch: string) => {
+		onShowProgress(true)
+		let res = await command.ask_image_prompt(activeId, description, his, arch)
+		console.log(res)
+		let prompt = res.split(':')[1]
+		setMessage(prompt)
+		setShowChatDialog(true)
+		return prompt
 	};
 
 	const handleJoin = (owner: string, room_id: string, room_name: string, level:number, clockWise: boolean) => {
@@ -385,10 +418,16 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 											return
 										}
 										onShowProgress(true)
-										command.gen_answer(activeId, sceneRef.current ?? '', roomId, gameLevel).then((res)=>{
-											let msg: string[] = JSON.parse(res)
+										var prompt = ''
+										let hints = message.split("Hints")
+										if (hints.length > 1) {
+											prompt = "Hints: " + hints[1]
+										}
+										let input = 'please tell me the specific escaping method according to Hints and picture, it should be a specific clue or object, please generate output using Chinese, the answer is:'
+										command.gen_answer(activeId, sceneRef.current ?? '', roomId, gameLevel, prompt, input).then((res)=>{
+											let msg: string = res
 											setShowChatDialog(true)
-											setMessage(msg[0])
+											setMessage(msg)
 											onShowProgress(false)
 										})
 									}}>生成答案</Button>

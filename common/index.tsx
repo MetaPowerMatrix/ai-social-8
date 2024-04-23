@@ -159,7 +159,9 @@ export const api_url = {
         "generate_answer": '/api/town/game/answer/image',
         "kol_list":"/api/town/kol/list",
         "becom_kol": "/api/town/become/kol",
-        "join_kol": "/api/town/follow/kol"
+        "join_kol": "/api/town/follow/kol",
+        "game_scene_context": '/api/town/game/scene/context',
+        "game_scene_prompt": '/api/town/game/scene/prompt',
       },
       'task': {
         'pray': '/api/pray',

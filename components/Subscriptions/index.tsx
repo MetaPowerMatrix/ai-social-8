@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styles from "@/components/Subscriptions/SubscriptionsComponent.module.css";
-import {Button, Col, Divider, Form, Input, Modal, Popover, Row, Tabs} from "antd";
+import {Button, Col, Divider, Form, Input, Modal, Popover, Radio, Row, Tabs} from "antd";
 import {useTranslations} from "next-intl";
 import {
 	CheckOutlined,
@@ -157,7 +157,15 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 						<Col span={24} style={{textAlign: "center", marginBottom: 10, border: "1px dotted cyan"}}>
 							<h1>Basic</h1>
 							<h2>PAB Staking 200,000/12Months</h2>
-							<Button type={"primary"} onClick={handleSubmitBasic}>{t('upgrade')}</Button>
+							<Row>
+								<Col span={12}>
+									<Button type={"primary"} onClick={handleSubmitBasic}><img alt={"pab"} className={"pab_logo"} src={"/images/pab.jpg"}/>{t('upgrade')}
+									</Button>
+								</Col>
+								<Col span={12}>
+								<img className={"credit_card_logo"}  alt={"credit card"} src={"/images/creditcard.png"} onClick={handleSubmitBasic}/>
+								</Col>
+							</Row>
 							<h4><CheckOutlined/> Force 10,000</h4>
 							<h4><CheckOutlined/> Earn Force Value</h4>
 						</Col>
@@ -166,7 +174,15 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 						<Col span={24} style={{textAlign: "center", marginBottom: 10, border: "1px dotted cyan"}}>
 							<h1>Plus</h1>
 							<h2>PAB Staking 2,000,000/12Months</h2>
-							<Button type={"primary"} onClick={handleSubmitPlus}>{t('upgrade')}</Button>
+							<Row>
+								<Col span={12}>
+									<Button type={"primary"} onClick={handleSubmitPlus}><img alt={"pab"} className={"pab_logo"} src={"/images/pab.jpg"}/>{t('upgrade')}
+									</Button>
+								</Col>
+								<Col span={12}>
+								<img className={"credit_card_logo"}  alt={"credit card"} src={"/images/creditcard.png"} onClick={handleSubmitPlus}/>
+								</Col>
+							</Row>
 							<h4><CheckOutlined/> Force 120,000</h4>
 							<h4><CheckOutlined/> create 1 Town</h4>
 							<h4><CheckOutlined/> Earn Force Value and redeem rewards</h4>
@@ -176,7 +192,15 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 						<Col span={24} style={{textAlign: "center", border: "1px dotted cyan"}}>
 							<h1>Pro</h1>
 							<h2>PAB Staking 200,000,000/12Months</h2>
-							<Button type={"primary"} onClick={handleSubmitPro}>{t('upgrade')}</Button>
+							<Row>
+								<Col span={12}>
+									<Button type={"primary"} onClick={handleSubmitPro}><img alt={"pab"} className={"pab_logo"} src={"/images/pab.jpg"}/>{t('upgrade')}
+									</Button>
+								</Col>
+								<Col span={12}>
+								<img className={"credit_card_logo"} alt={"credit card"} src={"/images/creditcard.png"} onClick={handleSubmitPro}/>
+								</Col>
+							</Row>
 							<h4><CheckOutlined/> Force 1,500,000</h4>
 							<h4><CheckOutlined/> create 3 Towns</h4>
 							<h4><CheckOutlined/> Earn Force Value and redeem rewards</h4>
@@ -245,14 +269,25 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 			<>
 				<h5 style={{display: 'inline-block'}}>{t("tips3")}</h5>
 				<Form layout="horizontal" form={form} variant="filled" onFinish={handleSubmit}>
-					<Form.Item label={t("amount")} name="amount" rules={[{required: true, message: t('must')}]}>
-						<Input/>
+					<Form.Item name="amount" rules={[{required: true, message: t('must')}]}>
+						<Radio.Group defaultValue={100000}>
+							<Radio.Button value={10000}>10,000</Radio.Button>
+							<Radio.Button value={100000}>100,000</Radio.Button>
+							<Radio.Button value={1000000}>1,000,000</Radio.Button>
+							<Radio.Button value={10000000}>1,000,000</Radio.Button>
+						</Radio.Group>
 					</Form.Item>
 					<Form.Item>
-						<Button type="primary" htmlType="submit">
-							{t("deposit")}
-						</Button>
-						<Divider type={"vertical"}/>
+						<Row align={"middle"}>
+							<Col span={12} style={{textAlign:"center"}}>
+								<Button type="primary" htmlType="submit">
+									<img alt={"pab"} className={"pab_logo"} src={"/images/pab.jpg"}/>{t("deposit")}
+								</Button>
+							</Col>
+							<Col span={12} style={{textAlign:"center"}}>
+								<img className={"credit_card_logo"} alt={"credit card"} src={"/images/creditcard.png"} onClick={()=>{}}/>
+							</Col>
+						</Row>
 					</Form.Item>
 				</Form>
 				<Divider type={"horizontal"}/>
@@ -260,26 +295,33 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 					<h5 style={{display: 'inline-block'}}>{t("donationTips")}</h5>
 				</div>
 				<Form layout="horizontal" form={formDonation} variant="filled" onFinish={handleSubmitDonation}>
-					<Form.Item label={t("DonationAmount")} name="DonationAmount" rules={[{required: true, message: t('must')}]}>
+					<Form.Item name="DonationAmount" rules={[{required: true, message: t('must')}]}>
 						<Input/>
 					</Form.Item>
 					<Form.Item>
-						<Button type="primary" htmlType="submit" >
-							{t("donation")}
-						</Button>
+						<Row align={"middle"}>
+							<Col span={12} style={{textAlign:"center"}}>
+								<Button type="primary" htmlType="submit">
+									<img alt={"pab"} className={"pab_logo"} src={"/images/pab.jpg"}/>{t("donation")}
+								</Button>
+							</Col>
+							<Col span={12} style={{textAlign:"center"}}>
+								<img className={"credit_card_logo"} alt={"credit card"} src={"/images/creditcard.png"} onClick={()=>{}}/>
+							</Col>
+						</Row>
 					</Form.Item>
 				</Form>
-				<Divider/>
-				<Row>
-					<Col span={24} style={{textAlign: "center"}}>
-						<Popover
-							content={<Image width={246} height={336} onClick={() => alert(t('scan'))} src={"/images/wepay.png"}
-							                alt={"scan"}/>} title={t('scan')}>
-							<Button type="primary">{t('scan_btn')}</Button>
-						</Popover>
+				{/*<Divider/>*/}
+				{/*<Row>*/}
+				{/*	<Col span={24} style={{textAlign: "center"}}>*/}
+				{/*		<Popover*/}
+				{/*			content={<Image width={246} height={336} onClick={() => alert(t('scan'))} src={"/images/wepay.png"}*/}
+				{/*			                alt={"scan"}/>} title={t('scan')}>*/}
+				{/*			<Button type="primary">{t('scan_btn')}</Button>*/}
+				{/*		</Popover>*/}
 
-					</Col>
-				</Row>
+				{/*	</Col>*/}
+				{/*</Row>*/}
 
 			</>
 		)
@@ -307,8 +349,9 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 						</Col>
 						<Col span={12}>
 						</Col>
-						<Col span={2} style={{textAlign:"end", width:"100%"}}>
-							<img onClick={()=> connect()} hidden={!showMetaMask} src={showMetaMask?"/images/MetaMask.png":"/images/MetaMaskGray.png"} width={24} height={24}/>
+						<Col span={2} style={{textAlign: "end", width: "100%"}}>
+							<img alt={"metamask"} onClick={() => connect()} hidden={!showMetaMask}
+							     src={showMetaMask ? "/images/MetaMask.png" : "/images/MetaMaskGray.png"} width={24} height={24}/>
 						</Col>
 					</Row>
 					<Tabs
@@ -320,7 +363,7 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 						tabPosition="top"
 						activeKey={activeTab}
 						onChange={(key) => setActivTab(key)}
-						items={tabs.map((tab, i) => {
+						items={tabs.map((tab) => {
 							return {
 								label: tab.label,
 								key: tab.value,

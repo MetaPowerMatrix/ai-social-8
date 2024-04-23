@@ -147,27 +147,34 @@ const BuyKolComponent: React.FC<SubscriptionsPros>  = ({visible, id, onClose, on
 					<h5 style={{display: 'inline-block'}}>{tips}</h5>
 					<Form layout="horizontal" form={form} variant="filled" onFinish={handleSubmit}>
 						<Form.Item>
-							<Button type="primary" htmlType="submit">
-								{t("deposit")}
-							</Button>
+							<Row>
+								<Col span={12} style={{textAlign:"center"}}>
+									<Button type="primary" htmlType="submit">
+										<img alt={"pab"} className={"pab_logo"} src={"/images/pab.jpg"}/>{t("deposit")}
+									</Button>
+								</Col>
+								<Col span={12} style={{textAlign:"center"}}>
+									<img className={"credit_card_logo"} alt={"credit card"} src={"/images/creditcard.png"} onClick={()=>{form.submit()}}/>
+								</Col>
+							</Row>
 						</Form.Item>
 					</Form>
 				</div>
 				<Divider type={"horizontal"}/>
 				<Row>
-					<Col span={8} style={{textAlign: "center"}}>
+					<Col span={12} style={{textAlign: "center"}}>
 						<a target={"_blank"}
 						   href={"https://pancakeswap.finance/swap?outputCurrency=0xD6311f9A6bd3a802263F4cd92e2729bC2C31Ed23&inputCurrency=0x55d398326f99059fF775485246999027B3197955"}>PAB购买地址</a>
 					</Col>
-					<Col span={8} style={{textAlign: "center"}}>
-						<Popover
-							content={<Image width={246} height={336} onClick={() => alert(t('scan'))} src={"/images/wepay.png"}
-							                alt={"scan"}/>} title={t('scan')}>
-							<Button type="primary">{t('scan_btn')}</Button>
-						</Popover>
+					{/*<Col span={8} style={{textAlign: "center"}}>*/}
+					{/*	<Popover*/}
+					{/*		content={<Image width={246} height={336} onClick={() => alert(t('scan'))} src={"/images/wepay.png"}*/}
+					{/*		                alt={"scan"}/>} title={t('scan')}>*/}
+					{/*		<Button type="primary">{t('scan_btn')}</Button>*/}
+					{/*	</Popover>*/}
 
-					</Col>
-					<Col span={8} style={{textAlign: "center"}}>
+					{/*</Col>*/}
+					<Col span={12} style={{textAlign: "center"}}>
 						<a target={"_blank"}
 						   href={"https://bscscan.com/address/0xd6311f9a6bd3a802263f4cd92e2729bc2c31ed23"}>PAB合约地址</a>
 					</Col>

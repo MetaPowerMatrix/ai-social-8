@@ -14,9 +14,9 @@ import LiveBroadcastTownComponent from "@/components/LiveBroadcastTown";
 import KolTownComponent from "@/components/KolTown";
 
 const towns =[
+	{label: 'KOL小镇', value: 'kol', description: '每一天都要和有趣的人在一起'},
 	{label: '密室小镇', value: 'game', description: '拨开重重迷雾，你能否战胜AI的迷思'},
 	{label: '直播小镇', value: 'live', description: 'AI直播也逗逼，要不要看看'},
-	{label: 'KOL小镇', value: 'kol', description: '每一天都要和有趣的人在一起'},
 	{label: '幸运小镇', value: 'literature', description: '有一种从天而降的富贵'},
 	// {label: '旅游小镇', value: 'travel', description: '诗和远方，没钱也行'},
 	{label: '音乐小镇', value: 'music', description: '康桑～～Music！！'},
