@@ -86,7 +86,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const tabs =[
         {label: t('messages'), key:"chat", icon: <CommentOutlined/>},
         {label: t('train'), key:"pro", icon: <ExperimentOutlined />},
-        {label: t("town"), key:"feed", icon: <ShopOutlined style={{fontSize:18,color:"goldenrod"}} />},
+        {label: t("town"), key:"town", icon: <ShopOutlined style={{fontSize:18,color:"goldenrod"}} />},
         // {label: t("discovery"), key:"discovery", icon: <BarsOutlined />},
         {label: t("mine"), key:"mine", icon: <UserOutlined />}
     ]
@@ -105,7 +105,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                         <StudyTownCompoent id={activeId} mobile={true} onShowProgress={showProgressBar}/>
                     </>
                 }
-                {key === 'feed' &&
+                {key === 'town' &&
                     <TwonMobile name={activeName} id={activeId} mobile={true} onShowProgress={showProgressBar} />
                 }
                 {key === 'mine' &&
