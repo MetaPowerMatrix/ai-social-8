@@ -171,21 +171,21 @@ const AskProComponent = ({activeId, room_id, onReply, onShowProgress}
 	const inputQuestion = (event: React.ChangeEvent<HTMLInputElement>) =>{
 		setQuery(event.target.value)
 	}
-	const callPato = (id: string, callid: string) => {
-		command.callPato(id, callid).then((res) => {
+	const callPato = (id: string, callid: string, topic: string) => {
+		command.callPato(id, callid, topic).then((res) => {
 			Modal.success({
 				content: t("waitingCall"),
 			});
 		})
 	}
 
-	const handleAutoChat = (callid: string) => {
-		if (callid === ""){
+	const handleAutoChat = (callid: string, first_message: string) => {
+		if (callid === "" || first_message === ""){
 			Modal.warning({
 				content: t("requireId"),
 			});
 		}else{
-			callPato(activeId, callid)
+			callPato(activeId, callid, first_message)
 		}
 	};
 
@@ -225,7 +225,7 @@ const AskProComponent = ({activeId, room_id, onReply, onShowProgress}
 								okText: t('confirm'),
 								cancelText: t('cancel'),
 								onOk() {
-									handleAutoChat(room_id)
+									handleAutoChat(room_id, query)
 								}
 							})
 						}}/>

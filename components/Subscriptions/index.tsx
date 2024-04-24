@@ -270,12 +270,16 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 				<h5 style={{display: 'inline-block'}}>{t("tips3")}</h5>
 				<Form layout="horizontal" form={form} variant="filled" onFinish={handleSubmit}>
 					<Form.Item name="amount" rules={[{required: true, message: t('must')}]}>
-						<Radio.Group defaultValue={100000}>
-							<Radio.Button value={10000}>10,000</Radio.Button>
-							<Radio.Button value={100000}>100,000</Radio.Button>
-							<Radio.Button value={1000000}>1,000,000</Radio.Button>
-							<Radio.Button value={10000000}>1,000,000</Radio.Button>
-						</Radio.Group>
+						<Row>
+							<Col span={24} style={{textAlign:"center"}}>
+								<Radio.Group defaultValue={100000}>
+									<Radio.Button value={10000}>10,000</Radio.Button>
+									<Radio.Button value={100000}>100,000</Radio.Button>
+									{/*<Radio.Button value={1000000}>1,000,000</Radio.Button>*/}
+									{/*<Radio.Button value={10000000}>1,000,000</Radio.Button>*/}
+								</Radio.Group>
+							</Col>
+						</Row>
 					</Form.Item>
 					<Form.Item>
 						<Row align={"middle"}>

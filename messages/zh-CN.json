@@ -112,7 +112,7 @@
   },
   "AIInstruct": {
     "waitingCall": "已经开始联系专家交流，稍后可以查看聊天记录",
-    "requireId": "请选择一个交流的专家",
+    "requireId": "输入话题开始聊天",
     "assist_fail": "任务失败",
     "automatic_comm": "AI代聊",
     "digest": "摘要",

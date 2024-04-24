@@ -36,11 +36,21 @@ const useCommand = () => {
     }
     return id
   }
-  const callPato = async (id: string, callid: string) => {
+  const callPato = async (id: string, callid: string, topic: string) => {
     if (id === "" || callid === "") return null
-    let url = getApiServer(80) + api_url.portal.interaction.call + "/" + id + "/" + callid
+    let data = {id: id, callid: callid, topic: topic}
+    let url = getApiServer(80) + api_url.portal.interaction.call
     try {
-      let response = await fetch(`${url}`,)
+      let response = await fetch(
+        `${url}`,
+        {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+          },
+          body: JSON.stringify(data)
+        }
+      )
       if (response.ok) {
         let dataJson = await response.json()
         console.log(dataJson)
