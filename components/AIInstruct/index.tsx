@@ -165,7 +165,7 @@ const AIInstructComponent: React.FC<AIInstructPros>  = ({visible, serverUrl, id,
 	}
 
 	const callPato = (id: string, callid: string) => {
-		command.callPato(id, callid).then((res) => {
+		command.callPato(id, callid, "").then((res) => {
 			alert(t("waitingCall"))
 		})
 	}
