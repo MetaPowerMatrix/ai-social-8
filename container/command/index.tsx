@@ -432,7 +432,7 @@ const useCommand = () => {
     return null
   }
   const share_knowledge = async (id: string, sig: string, title: string) => {
-    let data = {id: id, sig: sig, title: title, shared: true}
+    let data = {id: id, sig: sig, title: title, shared: true, owner: id}
     let url = getApiServer(80) + api_url.portal.task.knowledge_share
     let response = await fetch(
       `${url}`,
