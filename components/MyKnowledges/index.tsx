@@ -10,11 +10,12 @@ import {
 	PlusOutlined, SearchOutlined, ShareAltOutlined
 } from "@ant-design/icons";
 import commandDataContainer from "@/container/command";
+import {PortalKnowledge} from "@/common";
 
 interface HotAIPros {
 	activeId: string,
-	onSelectName: (name: string, id: string)=>void,
-	knowledges: { label: string, value: string, summary: string }[]
+	onSelectName: (name: string, id: string, owner:string)=>void,
+	knowledges: PortalKnowledge[]
 }
 
 const MyKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, onSelectName, knowledges}) => {
@@ -49,14 +50,14 @@ const MyKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, onSelectName, kn
 							renderItem={(item, index) => (
 								<List.Item
 									key={index}
-									defaultValue={item.value}
+									defaultValue={item.sig}
 								>
 									<Row align={"middle"} style={{width:"100%"}}>
-										<Col span={18}><h5 style={{overflow:"scroll"}}>{item.label}</h5></Col>
+										<Col span={18}><h5 style={{overflow:"scroll"}}>{item.title}</h5></Col>
 										<Col span={6} style={{textAlign:"end"}}>
-											<SearchOutlined onClick={()=>onSelectName(item.label, item.value)}/>
+											<SearchOutlined onClick={()=>onSelectName(item.title, item.sig, item.owner)}/>
 											<Divider type={"vertical"}/>
-											<ShareAltOutlined onClick={() => shareKnowledge(item.value, item.label)} />
+											<ShareAltOutlined onClick={() => shareKnowledge(item.sig, item.title)} />
 											<Divider type={"vertical"}/>
 											<OrderedListOutlined onClick={()=>{
 												Modal.info({

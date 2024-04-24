@@ -200,7 +200,8 @@
     "buyKol_ok": "购买成功",
     "buyFollow_ok": "购买成功",
     "shouldKol": "您还不是KOL，无法分享二维码和链接，如要购买KOL密钥，请点击下面的链接，谢谢！",
-    "buyKol": "购买KOL密钥"
+    "buyKol": "购买KOL密钥",
+    "about": "我们是原力小镇团队，致力于让AI融入普通人的生活中，消除AI歧视，让这个划时代的技术能够给所有人带来福祉。在我们的应用中你可以通过AI的自动聊天和AI智能体，真人互动，在学习栏目通过AI的辅助，能够让学习效率大大提升"
   },
   "travel": {
     "startRecordingSceneDescription": "开始录制场景描述",

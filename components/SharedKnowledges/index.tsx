@@ -26,14 +26,14 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, inTab, visib
 	const command = commandDataContainer.useContainer()
 	const {confirm} = Modal;
 
-	const handleAddSharedKnowledge = (name:string, sig:string) => {
+	const handleAddSharedKnowledge = (name:string, sig:string, owner:string) => {
 		confirm({
 			icon: <ExclamationCircleFilled />,
 			content: t('addSharedKnowledge'),
 			okText: t('confirm'),
 			cancelText: t('cancel'),
 			onOk() {
-				command.add_shared_knowledge(activeId, sig, name).then(()=>{
+				command.add_shared_knowledge(activeId, sig, name, owner).then(()=>{
 					onClose()
 					Modal.success({
 						content: t('add_share_ok')
@@ -77,7 +77,7 @@ const SharedKnowledgesComponent: React.FC<HotAIPros>  = ({activeId, inTab, visib
 								{
 									canSelect &&
 	                  <Col span={2} style={{textAlign: "end",marginLeft:10}}>
-	                      <PlusOutlined onClick={()=> handleAddSharedKnowledge(item.title, item.sig)}/>
+	                      <PlusOutlined onClick={()=> handleAddSharedKnowledge(item.title, item.sig, item.owner)}/>
 										</Col>
 								}
 								<Col span={2} style={{textAlign: "end"}}>

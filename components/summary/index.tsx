@@ -6,7 +6,7 @@ import {
 	PauseOutlined,
 	UploadOutlined
 } from "@ant-design/icons";
-import {api_url, getApiServer, Streaming_Server} from "@/common";
+import {api_url, getApiServer, PortalKnowledge, Streaming_Server} from "@/common";
 import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
@@ -25,10 +25,11 @@ const SummaryComponent = ({activeId, onShowProgress, updateCounter}:{activeId:st
 	const [isUploadRecord, setIsUploadRecord] = useState(true);
 	const [uploaded, setUploaded] = useState<boolean>(false)
 	const [showQueryDialog, setShowQueryDialog] = useState<boolean>(false)
-	const [knowledges, setKnowledges] = useState<{ label: string; value: string; summary:string }[]>([])
+	const [knowledges, setKnowledges] = useState<PortalKnowledge[]>([])
 	const [knowledgeUpdated, setKnowledgeUpdated] = useState<number>(0)
 	const [selectedBook, setSelectedBook]=  useState<string>('')
 	const [selectedBookSig, setSelectedBookSig]=  useState<string>('')
+	const [selectedBookOwner, setSelectedBookOwner]=  useState<string>(activeId)
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('AIInstruct');
 	const {confirm} = Modal;
@@ -44,11 +45,7 @@ const SummaryComponent = ({activeId, onShowProgress, updateCounter}:{activeId:st
 
 	useEffect(() =>{
 		command.query_knowledges(activeId).then((res) => {
-			let kList: { label: string; value: string; summary: string }[] = []
-			res?.forEach((item) => {
-					kList.push({label: item.title, value: item.sig, summary: item.summary})
-			})
-			setKnowledges(kList)
+			setKnowledges(res)
 		})
 	}, [activeId, knowledgeUpdated, updateCounter])
 
@@ -196,9 +193,10 @@ const SummaryComponent = ({activeId, onShowProgress, updateCounter}:{activeId:st
 				<Row style={{marginBottom: 10}}>
 					<Col span={24}>
 						<MyKnowledges activeId={activeId} onSelectName={
-							(name, value)=>{
+							(name, value, owner)=>{
 								setSelectedBook(name)
 								setSelectedBookSig(value)
+								setSelectedBookOwner(owner)
 								setShowQueryDialog(true)
 							}
 						} knowledges={knowledges}/>
@@ -248,7 +246,7 @@ const SummaryComponent = ({activeId, onShowProgress, updateCounter}:{activeId:st
 				{/*<Row>*/}
 				{/*		<TextArea style={{marginTop: 10}} placeholder={t('digest')} value={summarys.join('\n')} rows={20}/>*/}
 				{/*</Row>*/}
-				<QueryEmbeddingComponent onClose={()=>setShowQueryDialog(false)} visible={showQueryDialog} bookname={selectedBook} bookSig={selectedBookSig} activeId={activeId} onShowProgress={onShowProgress}/>
+				<QueryEmbeddingComponent owner={selectedBookOwner} onClose={()=>setShowQueryDialog(false)} visible={showQueryDialog} bookname={selectedBook} bookSig={selectedBookSig} activeId={activeId} onShowProgress={onShowProgress}/>
 			</div>
 		</div>
 	)

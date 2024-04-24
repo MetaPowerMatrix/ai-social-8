@@ -487,7 +487,7 @@ const useCommand = () => {
     }
     return ''
   }
-  const add_shared_knowledge = async (id: string, sig: string, title: string) => {
+  const add_shared_knowledge = async (id: string, sig: string, title: string, owner:string) => {
     let data = {id: id, sig: sig, title: title, shared: false}
     let url = getApiServer(80) + api_url.portal.task.knowledge_add
     let response = await fetch(

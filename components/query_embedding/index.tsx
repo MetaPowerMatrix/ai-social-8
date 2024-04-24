@@ -13,7 +13,7 @@ import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
 import {getOS} from "@/lib/utils";
 
-const QueryEmbeddingComponent = ({activeId, visible, bookname, bookSig, onClose, onShowProgress}:{activeId:string, visible:boolean, bookname:string, bookSig:string, onClose: ()=>void, onShowProgress: (s: boolean)=>void}) => {
+const QueryEmbeddingComponent = ({activeId, owner, visible, bookname, bookSig, onClose, onShowProgress}:{activeId:string, owner:string, visible:boolean, bookname:string, bookSig:string, onClose: ()=>void, onShowProgress: (s: boolean)=>void}) => {
 	const [query, setQuery] = useState<string>("");
 	const [queryResult, setQueryResult] = useState<string>("");
 	const [stopped, setStopped] = useState<boolean>(true);
@@ -82,7 +82,7 @@ const QueryEmbeddingComponent = ({activeId, visible, bookname, bookSig, onClose,
 		}
 	}
 	const handleQueryEmbeddings = (sig: string, q: string) => {
-		command.query_embedding(activeId, sig, q).then((res) => {
+		command.query_embedding(owner, sig, q).then((res) => {
 			console.log(res)
 			if (res !== undefined){
 				setQueryResult(res)
