@@ -40,6 +40,7 @@ const AskProComponent = ({activeId, room_id, onReply, onShowProgress}
 
 		return () => {
 			mqttClient.end(); // Clean up the connection on component unmount
+			recorder?.stream.getTracks().forEach(track => track.stop());
 		};
 	}, []);
 

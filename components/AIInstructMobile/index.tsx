@@ -111,7 +111,6 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_n
 	const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 	const [queryDate, setQueryDate] = useState(getTodayDateString());
 	const [reload, setReload] = useState<number>(0)
-	const [summary, setSummary] = useState<string>("");
 	const [followers, setFollowers] = useState<HotPro[]>([])
 	const [isOwner, setIsOwner] = useState<boolean>(false)
 	const [queryId, setQueryId] = useState<string>(id)
@@ -121,7 +120,6 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_n
 	isOwnerRef.current = isOwner;
 	const {confirm} = Modal;
 
-	console.log("name ", queryName)
 	useEffect(()=>{
 		console.log(id, room_id)
 		// getProHistory(id, room_id)

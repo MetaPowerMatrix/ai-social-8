@@ -18,7 +18,6 @@ import StudyTownCompoent from "@/components/study_town";
 import commandDataContainer from "@/container/command";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
-    const [openCode, setOpenCode] = useState(false);
     const [availableIds, setAvailableIds] = useState([]);
     const [isLogin, setIsLogin] = useState(false);
     const [activeId, setActiveId] = useState("");
@@ -110,7 +109,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                 }
                 {key === 'mine' &&
                     <HeaderPanelMobile
-                        showQRCode={()=>{setOpenCode(true)}}
                         onShowProgress={showProgressBar}
                         activeId={activeId} onChangeId={changeLoginState}
                     />
@@ -129,7 +127,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             </Head>
             {isLogin ?
                 <Tabs
-                    // destroyInactiveTabPane={true}
+                    destroyInactiveTabPane={true}
                     tabBarGutter={40}
                     centered
                     size={"middle"}
@@ -168,7 +166,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
             />
             {/*<LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}*/}
             {/*          visible={openLive} onShowProgress={showProgressBar}/>*/}
-            <QRCodeComponent visible={openCode} id={activeId} onClose={()=>setOpenCode(false)} mobile={true}/>
         </div>
     );
 }

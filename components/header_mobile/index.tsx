@@ -9,12 +9,12 @@ import {PatoInfo, Persona, StatsInfo, TimeLineItem} from "@/common";
 import styles from './HeaderPanelMobile.module.css'
 import ISSForm from "@/components/iss";
 import SubscriptionsComponent from "@/components/Subscriptions";
+import QRCodeComponent from "@/components/QRCode";
 
-const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode}:
+const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress}:
    {activeId:string,
 	   onShowProgress: (s: boolean)=>void,
 	   onChangeId: (s: boolean)=>void,
-	   showQRCode: ()=>void,
 	 }) =>
 {
 	const [userInfo, setUserInfo] = useState<PatoInfo>();
@@ -22,6 +22,7 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode}:
 	const [editISS, setEditISS] = useState(false);
 	const [showSubscription, setShowSubscription] = useState<boolean>(false)
 	const [userISS, setUserISS] = useState<Persona>();
+	const [openCode, setOpenCode] = useState(false);
 	const t = useTranslations('Login');
 
 	const pad = function(src: Number, size: number) {
@@ -66,7 +67,7 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode}:
 				<Col span={16}>
 					<h5 className={utilStyles.headingLg}>
 						{userInfo?.name}
-						<QrcodeOutlined  style={{marginLeft:10}} onClick={showQRCode}/>
+						<QrcodeOutlined  style={{marginLeft:10}} onClick={()=>setOpenCode(true)}/>
 					</h5>
 					<a onClick={() => {
 						copyToClipboard(userInfo?.id ?? '')
@@ -133,6 +134,7 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress, showQRCode}:
 			</div>
 			<ISSForm mobile={true} userISS={userISS!} visible={editISS} id={activeId} onClose={()=>{setEditISS(false)}}/>
 			<SubscriptionsComponent mobile={false} id={activeId} onClose={() => setShowSubscription(false)} visible={showSubscription} onShowProgress={onShowProgress}/>
+			<QRCodeComponent visible={openCode} id={activeId} onClose={()=>setOpenCode(false)} mobile={true}/>
 		</header>
 	)
 }
