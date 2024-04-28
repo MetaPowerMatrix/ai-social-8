@@ -13,7 +13,6 @@ import LiveBroadcastTownComponent from "@/components/LiveBroadcastTown";
 import KolTownComponent from "@/components/KolTown";
 import AniTown from "@/components/AniTown";
 import InteractivePanorama from "@/components/InteractivePanoramic";
-import Panorama from "@/components/Panoramic";
 
 const towns =[
 	{label: 'KOL小镇', value: 'kol', description: '每一天都要和有趣的人在一起'},
@@ -29,7 +28,6 @@ const towns =[
 const TwonMobile = ({id, name, mobile, onShowProgress}:{id: string,name:string, mobile: boolean, onShowProgress: (s: boolean)=>void}) => {
 	const [activeTown, setActivTown] = useState(towns[0].value);
 	const [activeTownLabel, setActiveTownLabel] = useState<string>(towns[0].label)
-	const [showHot, setShowHot] = useState<boolean>(false)
 	const [openPop, setOpenPop] = useState<boolean>(false)
 	const command = commandDataContainer.useContainer()
 	const t = useTranslations('discovery');
