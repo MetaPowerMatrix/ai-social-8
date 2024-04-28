@@ -6,15 +6,14 @@ import commandDataContainer from "@/container/command";
 import {
 	SwapOutlined, TeamOutlined,
 } from "@ant-design/icons";
-import HotAI from "@/components/HotAI";
 import Image from "next/image";
 import utilStyles from "@/styles/utils.module.css";
 import GameMishiTownComponent from "@/components/GameMishiTown";
 import LiveBroadcastTownComponent from "@/components/LiveBroadcastTown";
 import KolTownComponent from "@/components/KolTown";
 import AniTown from "@/components/AniTown";
-import Panorama from "@/components/Panoramic";
 import InteractivePanorama from "@/components/InteractivePanoramic";
+import Panorama from "@/components/Panoramic";
 
 const towns =[
 	{label: 'KOL小镇', value: 'kol', description: '每一天都要和有趣的人在一起'},

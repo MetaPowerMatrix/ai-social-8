@@ -1,65 +1,87 @@
-import React, {PointerEventHandler, useEffect, useRef} from 'react';
-import {Canvas, useThree, extend, ReactThreeFiber, useLoader, ThreeEvent} from '@react-three/fiber';
+import React, {useRef, useState} from 'react';
+import {Canvas, useFrame, extend, useLoader, useThree} from '@react-three/fiber';
 import {
-	Mesh,
-	SphereGeometry,
-	MeshBasicMaterial,
 	BackSide,
 	TextureLoader,
-	EquirectangularReflectionMapping
+	EquirectangularReflectionMapping, Vector3
 } from 'three';
-import useStore from './store';
-import {useGesture} from "@use-gesture/react";
+import {OrbitControls, Html, CameraControls} from '@react-three/drei';
+import {Col, Row} from "antd";
 
-type MeshWithGesture = Mesh & ReactThreeFiber.Object3DNode<Mesh, typeof Mesh> & {
-	onPointerMove?: (event: PointerEvent) => void;
-	onPointerUp?: (event: PointerEvent) => void;
+const CameraMover = () => {
+	const { camera } = useThree(); // Access the Three.js camera from the React Three Fiber context
+	const [isMoving, setIsMoving] = useState(false);
+
+	useFrame(() => {
+		if (isMoving) {
+			// This moves the camera forward along its local z-axis
+			camera.translateZ(-0.1);
+		}
+	});
+
+	const toggleCameraMovement = () => setIsMoving(!isMoving);
+
+	return (
+		<Html>
+			<button onClick={toggleCameraMovement}>
+				{isMoving ? 'Stop Moving' : 'Move Forward'}
+			</button>
+		</Html>
+	);
 };
 
-const PanoramicSphere: React.FC = () => {
-	const mesh = useRef<MeshWithGesture>(null);
-	const { camera } = useThree();
+// const CameraMover = () => {
+// 	const { camera } = useThree();
+// 	const moveForward = useRef(false);
+//
+// 	useFrame(() => {
+// 		if (moveForward.current) {
+// 			// Calculate the forward vector and move the camera
+// 			camera.position.addScaledVector(camera.getWorldDirection(new Vector3()), 0.1);
+// 		}
+// 	});
+//
+// 	return (
+// 		<Html>
+// 			<Row>
+// 				<Col span={24} style={{textAlign:"end"}}>
+// 					<button onClick={() => {
+// 						moveForward.current = !moveForward.current
+// 					}}>
+// 						{moveForward.current ? '停止' : '向前'}
+// 					</button>
+// 				</Col>
+// 			</Row>
+// 		</Html>
+// 	);
+// };
 
-	const setCameraPosition = useStore(state => state.setCameraPosition);
+const PanoramicSphere: React.FC = () => {
+	const mesh = useRef(null);
 	const texture = useLoader(TextureLoader, "/images/mishi-360.png");
 	texture.mapping = EquirectangularReflectionMapping;
 
-	const bind = useGesture({
-		onDrag: ({ offset: [x, y] }) => {
-			const rotationSpeed = 0.01;
-			camera.rotation.y += x * rotationSpeed;
-			camera.rotation.x += y * rotationSpeed;
-		},
-		onPinch: ({ da: [d] }) => {
-			const pinchScaleFactor = 0.01;
-			const newZ = camera.position.z + d * pinchScaleFactor;
-			camera.position.z = newZ;
-			setCameraPosition(camera.position.x, camera.position.y, camera.position.z);
-		}
-	}, {
-		drag: { threshold: 1 },
-		pinch: { distanceBounds: { min: 1, max: 5 }, rubberband: true },
-	});
-
 	return (
-			<mesh
-				ref={mesh}
-				onPointerMove={()=>bind().onPointerMove}
-				onPointerUp={()=>bind().onPointerUp}
-				scale={[-1, 1, 1]}
-				geometry={new SphereGeometry(500, 60, 40)}
-				material={new MeshBasicMaterial({map: texture, side: BackSide})}
-			/>
+		<mesh scale={[-1, 1, 1]} ref={mesh}>
+			<sphereGeometry args={[500, 60, 40]}/>
+			<meshBasicMaterial map={texture} side={BackSide}/>
+		</mesh>
 	);
 };
 
-const Panorama: React.FC = () => {
+const InteractivePanorama: React.FC = () => {
 	return (
-		<Canvas>
-			<ambientLight/>
-			<PanoramicSphere/>
-		</Canvas>
+		<>
+			<Canvas>
+				<ambientLight/>
+				<OrbitControls enableZoom={true} enablePan={true} enableRotate={true} />
+				{/*<CameraControls minPolarAngle={0} maxPolarAngle={Math.PI / 2} minAzimuthAngle={-Math.PI / 2}*/}
+				{/*                maxAzimuthAngle={Math.PI / 2}/>*/}
+				<PanoramicSphere/>
+				{/*<CameraMover/>*/}
+			</Canvas>
+		</>
 	);
 };
 
-export default Panorama;
+export default InteractivePanorama;
