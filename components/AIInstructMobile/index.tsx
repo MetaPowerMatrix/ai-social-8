@@ -161,9 +161,9 @@ const AIInstructMobileComponent: React.FC<AIInstructPros>  = ({id, room_id,kol_n
 			<div hidden={!visible}  className={styles.voice_instruct_container}>
 				<div className={styles.voice_instruct_content}>
 					<Row style={{padding: 10}}>
-						<LeftOutlined style={{fontSize: 18}} onClick={() =>{
-							setReload(reload+1)
-							onClose()
+						<LeftOutlined style={{fontSize: 18}} onClick={() => {
+							setReload(reload + 1);
+							onClose();
 						}}/>
 					</Row>
 					{isOwner &&

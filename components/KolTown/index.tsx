@@ -75,16 +75,16 @@ const KolTownComponent = ({activeId, name, onShowProgress}: {
 								</Col>
 								<Col span={2} style={{textAlign: "end"}}>
 									<LoginOutlined onClick={() => {
-										setRoomId(item.id)
-										setKolName(item.name)
-										setFollowerIds(item.followers)
+										setRoomId(item.id);
+										setKolName(item.name);
+										setFollowerIds(item.followers);
 										if (mine || activeId === item.id) {
-											setShowKolRoom(true)
-										}else {
-											setBuyWhat('follow')
-											setShowBuyKol(true)
+											setShowKolRoom(true);
+										} else {
+											setBuyWhat('follow');
+											setShowBuyKol(true);
 										}
-									}}/>
+									}} />
 								</Col>
 							</Row>
 						</List.Item>

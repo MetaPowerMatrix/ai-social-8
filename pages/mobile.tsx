@@ -401,9 +401,9 @@ export default function MobileHome() {
 															okText: t('confirm'),
 															cancelText: t('cancel'),
 															onOk() {
-																archiveSession(item.session)
+																archiveSession(item.session);
 															}
-														})
+														});
 													}}/>,
 													<RightOutlined key={"detail"} onClick={() => showSessionDetail(item.session)}/>
 												]}
@@ -484,7 +484,7 @@ export default function MobileHome() {
 	}
 
 	const tabs =[
-		{label: t('feed'), key:"feed", icon: <RedditOutlined />},
+		{label: t('feed'), key:"feed", icon: <RedditOutlined/>},
 		{label: t('messages'), key:"messages", icon: <CommentOutlined/>},
 		{label: t('topic'), key:"topic", icon: <CommentOutlined/>},
 	]
@@ -526,7 +526,7 @@ export default function MobileHome() {
                 <Col span={8}>
                     <Button onClick={() =>
 	                    confirm({
-		                    icon: <ExclamationCircleFilled />,
+		                    icon: <ExclamationCircleFilled/>,
 		                    content: t('save_tips'),
 		                    okText: t('confirm'),
 		                    cancelText: t('cancel'),
@@ -539,7 +539,7 @@ export default function MobileHome() {
                 <Col span={8}>
                     <Button onClick={() =>
 	                    confirm({
-		                    icon: <ExclamationCircleFilled />,
+		                    icon: <ExclamationCircleFilled/>,
 		                    content: t('continue_tips'),
 		                    okText: t('confirm'),
 		                    cancelText: t('cancel'),

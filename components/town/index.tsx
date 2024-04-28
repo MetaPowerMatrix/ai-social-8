@@ -12,6 +12,9 @@ import utilStyles from "@/styles/utils.module.css";
 import GameMishiTownComponent from "@/components/GameMishiTown";
 import LiveBroadcastTownComponent from "@/components/LiveBroadcastTown";
 import KolTownComponent from "@/components/KolTown";
+import AniTown from "@/components/AniTown";
+import Panorama from "@/components/Panoramic";
+import InteractivePanorama from "@/components/InteractivePanoramic";
 
 const towns =[
 	{label: 'KOL小镇', value: 'kol', description: '每一天都要和有趣的人在一起'},
@@ -66,7 +69,7 @@ const TwonMobile = ({id, name, mobile, onShowProgress}:{id: string,name:string, 
 								</Col>
 								<Col span={8}>
 									<div style={{marginBottom:5}}>{item.label}</div>
-									<div><TeamOutlined style={{marginRight:10}} />{(Math.random()*100).toFixed(0)}</div>
+									<div><TeamOutlined style={{marginRight: 10}}/>{(Math.random()*100).toFixed(0)}</div>
 								</Col>
 								<Col span={10}>
 									<span>{item.description}</span>
@@ -97,7 +100,7 @@ const TwonMobile = ({id, name, mobile, onShowProgress}:{id: string,name:string, 
                       open={openPop}
                       onOpenChange={handleOpenChange}
                   >
-                      <SwapOutlined style={{marginLeft:10, color: "darkorchid", fontSize: 14}}/>
+                      <SwapOutlined style={{marginLeft: 10, color: "darkorchid", fontSize: 14}}/>
                   </Popover>
                   {/*<TeamOutlined style={{marginLeft:5}} onClick={()=>{*/}
 			            {/*  setShowHot(true)*/}
@@ -112,6 +115,12 @@ const TwonMobile = ({id, name, mobile, onShowProgress}:{id: string,name:string, 
           }
           {activeTown === 'kol' &&
               <KolTownComponent name={name} activeId={id} onShowProgress={onShowProgress}/>
+          }
+					{activeTown === 'music' &&
+              <AniTown/>
+					}
+					{activeTown === 'literature' &&
+              <Panorama/>
           }
           {/*<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>*/}
         </>
