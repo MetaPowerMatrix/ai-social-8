@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import {Canvas, useThree, extend, ReactThreeFiber, useLoader} from '@react-three/fiber';
+import React, {PointerEventHandler, useEffect, useRef} from 'react';
+import {Canvas, useThree, extend, ReactThreeFiber, useLoader, ThreeEvent} from '@react-three/fiber';
 import {
 	Mesh,
 	SphereGeometry,
@@ -8,8 +8,8 @@ import {
 	TextureLoader,
 	EquirectangularReflectionMapping
 } from 'three';
-import { useGesture } from '@use-gesture/react';
 import useStore from './store';
+import {useGesture} from "@use-gesture/react";
 
 type MeshWithGesture = Mesh & ReactThreeFiber.Object3DNode<Mesh, typeof Mesh> & {
 	onPointerMove?: (event: PointerEvent) => void;
@@ -38,26 +38,26 @@ const PanoramicSphere: React.FC = () => {
 		}
 	}, {
 		drag: { threshold: 1 },
-		pinch: { scaleBounds: { min: 1, max: 5 }, rubberband: true }
+		pinch: { distanceBounds: { min: 1, max: 5 }, rubberband: true },
 	});
 
 	return (
-		<mesh
-			ref={mesh}
-			scale={[-1, 1, 1]}
-			onPointerMove={bind().onPointerMove}
-			onPointerUp={bind().onPointerUp}
-			geometry={new SphereGeometry(500, 60, 40)}
-			material={new MeshBasicMaterial({ map: texture, side: BackSide})}
-		/>
+			<mesh
+				ref={mesh}
+				onPointerMove={()=>bind().onPointerMove}
+				onPointerUp={()=>bind().onPointerUp}
+				scale={[-1, 1, 1]}
+				geometry={new SphereGeometry(500, 60, 40)}
+				material={new MeshBasicMaterial({map: texture, side: BackSide})}
+			/>
 	);
 };
 
 const Panorama: React.FC = () => {
 	return (
 		<Canvas>
-			<ambientLight />
-			<PanoramicSphere />
+			<ambientLight/>
+			<PanoramicSphere/>
 		</Canvas>
 	);
 };

@@ -120,7 +120,7 @@ const TwonMobile = ({id, name, mobile, onShowProgress}:{id: string,name:string, 
               <AniTown/>
 					}
 					{activeTown === 'literature' &&
-              <Panorama/>
+              <InteractivePanorama/>
           }
           {/*<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>*/}
         </>

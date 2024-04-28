@@ -52,7 +52,7 @@ const AniTown = () => {
 					ref={el => avatarsRef.current[id - 1] = el}
 					onClick={(event) => handleAvatarClick(event, id)}
 					style={{ width: 50, height: 50, position: 'absolute', top: Math.random() * 300, left: Math.random() * 300, cursor: 'pointer' }}
-				/>
+				 alt={"avatar"}/>
 			))}
 			<SubSceneLayer images={images} isVisible={isModalVisible} onClose={handleCloseModal} onSelectImage={handleSelectImage} />
 		</div>
