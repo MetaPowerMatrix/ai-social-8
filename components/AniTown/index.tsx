@@ -46,8 +46,8 @@ const AniTown = () => {
 
 	return (
 		<div ref={sceneRef} style={{ position: 'absolute', width: '100%', height: '100vh', overflow: 'scroll', backgroundImage: 'url(/images/background.jpeg)' }}>
-			{[1, 2, 3].map((id) => (
-				<Popover content={"blahblahblah"} title={"luca"}>
+			{[1, 2, 3].map((id, index) => (
+				<Popover key={index} content={"blahblahblah"} title={"luca"}>
 					<img
 						key={id}
 						src={avatars[id - 1]}
