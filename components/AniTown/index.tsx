@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import SubSceneLayer from "@/components/SubSceneLayer";
+import {Popover} from "antd";
 
 const AniTown = () => {
 	const sceneRef = useRef(null);
@@ -44,17 +45,27 @@ const AniTown = () => {
 	};
 
 	return (
-		<div ref={sceneRef} onClick={handleBackgroundClick} style={{ position: 'absolute', width: '100%', height: '100vh', overflow: 'scroll', backgroundImage: 'url(/images/background.jpeg)' }}>
+		<div ref={sceneRef} style={{ position: 'absolute', width: '100%', height: '100vh', overflow: 'scroll', backgroundImage: 'url(/images/background.jpeg)' }}>
 			{[1, 2, 3].map((id) => (
-				<img
-					key={id}
-					src={avatars[id - 1]}
-					// ref={el => avatarsRef.current[id - 1] = el}
-					onClick={(event) => handleAvatarClick(event, id)}
-					style={{ width: 50, height: 50, position: 'absolute', top: Math.random() * 300, left: Math.random() * 300, cursor: 'pointer' }}
-				 alt={"avatar"}/>
+				<Popover content={"blahblahblah"} title={"luca"}>
+					<img
+						key={id}
+						src={avatars[id - 1]}
+						ref={el => avatarsRef.current[id - 1] = el}
+						// onClick={(event) => handleAvatarClick(event, id)}
+						style={{
+							width: 50,
+							height: 50,
+							position: 'absolute',
+							top: Math.random() * 300,
+							left: Math.random() * 300,
+							cursor: 'pointer'
+						}}
+						alt={"avatar"}/>
+				</Popover>
 			))}
-			<SubSceneLayer images={images} isVisible={isModalVisible} onClose={handleCloseModal} onSelectImage={handleSelectImage} />
+			<SubSceneLayer images={images} isVisible={isModalVisible} onClose={handleCloseModal}
+			               onSelectImage={handleSelectImage}/>
 		</div>
 	);
 };
