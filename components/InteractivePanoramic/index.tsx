@@ -33,12 +33,12 @@ const CameraMover = () => {
 
 const PanoramicSphere: React.FC = () => {
 	const mesh = useRef(null);
-	const texture = useLoader(TextureLoader, "/images/mishi-360.png");
+	const texture = useLoader(TextureLoader, "/images/room4-360.webp");
 	texture.mapping = EquirectangularReflectionMapping;
 
 	return (
 		<mesh scale={[-1, 1, 1]} ref={mesh} dispose={null}>
-			<sphereGeometry args={[200, 60, 40]}/>
+			<sphereGeometry args={[500, 60, 40]}/>
 			<meshBasicMaterial map={texture} side={BackSide}/>
 		</mesh>
 	);
