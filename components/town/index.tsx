@@ -12,7 +12,6 @@ import GameMishiTownComponent from "@/components/GameMishiTown";
 import LiveBroadcastTownComponent from "@/components/LiveBroadcastTown";
 import KolTownComponent from "@/components/KolTown";
 import InteractivePanorama from "@/components/InteractivePanoramic";
-import InfiniteStreet from "@/components/InfiniteStreet";
 
 const towns =[
 	{label: 'KOL小镇', value: 'kol', description: '每一天都要和有趣的人在一起'},
@@ -121,7 +120,6 @@ const TwonMobile = ({id, name, mobile, onShowProgress}:{id: string,name:string, 
 								}
 	              {activeTown === 'music' &&
                     <div style={{height:"100vh"}}>
-                        <InfiniteStreet/>
                     </div>
 	              }
 								{/*<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>*/}
