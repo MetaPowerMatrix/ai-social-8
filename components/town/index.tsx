@@ -18,11 +18,7 @@ const towns =[
 	{label: '密室小镇', value: 'game', description: '拨开重重迷雾，你能否战胜AI的迷思'},
 	{label: '直播小镇', value: 'live', description: 'AI直播也逗逼，要不要看看'},
 	{label: '幸运小镇', value: 'literature', description: '有一种从天而降的富贵'},
-	// {label: '旅游小镇', value: 'travel', description: '诗和远方，没钱也行'},
 	{label: '音乐小镇', value: 'music', description: '康桑～～Music！！'},
-	// {label: '财富小镇,想赚钱就来', value: 'invest', description: '游戏小镇,嗨起来'},
-	// {label: '情感小镇,拒绝EMO', value: 'science', description: '游戏小镇,嗨起来'},
-	// {label: 'web3小镇', value: 'web3'},
 ]
 const TwonMobile = ({id, name, mobile, onShowProgress}:{id: string,name:string, mobile: boolean, onShowProgress: (s: boolean)=>void}) => {
 	const [activeTown, setActivTown] = useState(towns[0].value);
