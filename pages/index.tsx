@@ -7,14 +7,14 @@ export default function Home() {
 	);
 }
 
-export async function getStaticProps({locale}: {
-	locale: string
-}) {
-	return {
-		props: {
-			messages: {
-				...require(`../messages/${locale}.json`),
-			}
-		},
-	};
-}
+// export async function getStaticProps({locale}: {
+// 	locale: string
+// }) {
+// 	return {
+// 		props: {
+// 			messages: {
+// 				...require(`../messages/${locale}.json`),
+// 			}
+// 		},
+// 	};
+// }

@@ -5,17 +5,17 @@ import {NextIntlClientProvider} from 'next-intl';
 import {useRouter} from 'next/router';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const router = useRouter();
+  // const router = useRouter();
 
   return (
-    <NextIntlClientProvider
-      locale={router.locale}
-      timeZone="Asia/Hong_Kong"
-      messages={pageProps.messages}
-    >
+    // <NextIntlClientProvider
+    //   locale={router.locale}
+    //   timeZone="Asia/Hong_Kong"
+    //   messages={pageProps.messages}
+    // >
       <CommandDataContainer.Provider>
         <Component {...pageProps} />
       </CommandDataContainer.Provider>
-    </NextIntlClientProvider>
+    // </NextIntlClientProvider>
   );
 }
