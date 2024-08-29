@@ -1,0 +1,11 @@
+{
+    "canisters": {
+      "metapowermatrix": {
+        "frontend": {
+          "entrypoint": "dist/index.html"
+        },
+        "source": ["dist"],
+        "type": "assets"
+      }
+    }
+}

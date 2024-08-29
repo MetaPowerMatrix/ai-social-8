@@ -460,7 +460,7 @@ const useCommand = () => {
     }
   }
   const image_desc_by_url = async (id: string, roomId: string, image_url: string) => {
-    let data = {id: id, room_id: roomId, scene: image_url}
+    let data = { id: id, room_id: roomId, scene: image_url }
     let url = getApiServer(80) + api_url.portal.town.image_parse
     let response = await fetch(
       `${url}`,
@@ -479,7 +479,7 @@ const useCommand = () => {
     return ''
   }
   const image_desc_by_url_prompt = async (id: string, roomId: string, image_url: string, prompt: string) => {
-    let data = {id: id, room_id: roomId, scene: image_url}
+    let data = { id: id, room_id: roomId, scene: image_url }
     let url = getApiServer(80) + api_url.portal.town.image_parse
     let response = await fetch(
       `${url}`,
@@ -568,8 +568,7 @@ const useCommand = () => {
       let response = await fetch(`${url}`,)
       if (response.ok) {
         let dataJson = await response.json()
-        let token = dataJson.content
-        return token
+        return  dataJson.content
       }
     } catch (e) {
       console.log(e)
@@ -583,8 +582,7 @@ const useCommand = () => {
       let response = await fetch(`${url}`,)
       if (response.ok) {
         let dataJson = await response.json()
-        let summary = dataJson.content
-        return summary
+        return dataJson.content
       }
     } catch (e) {
       console.log(e)
@@ -765,8 +763,7 @@ const useCommand = () => {
     )
     if (response.ok) {
       let dataJson = await response.json()
-      let answer = dataJson.content
-      return answer
+      return  dataJson.content
     }
     return ""
   }
@@ -836,8 +833,7 @@ const useCommand = () => {
       let response = await fetch(`${url}`,)
       if (response.ok) {
         let dataJson = await response.json()
-        let patos: HotPro[] = JSON.parse(dataJson.content)
-        return patos
+        return JSON.parse(dataJson.content)
       }
     } catch (e) {
       console.log(e)

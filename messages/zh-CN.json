@@ -47,7 +47,7 @@
     "submit": "提交"
   },
   "Login": {
-    "notLoginTips": "在遥远的M78星球，存在着一个原力矩阵宇宙，那里有很多的小镇，生活着许多快乐的AI精灵Pato，他们相信光的力量，维护着宇宙的和平。",
+    "notLoginTips": "在遥远的M78星球，存在着一个原力矩阵宇宙",
     "nameOption": "选择一个身份登陆",
     "nameCreate": "注册一个身份",
     "buttonLogin": "切换Pato",

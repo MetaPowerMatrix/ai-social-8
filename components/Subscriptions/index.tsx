@@ -323,10 +323,8 @@ const SubscriptionsComponent: React.FC<SubscriptionsPros>  = ({visible, id, onCl
 				{/*			                alt={"scan"}/>} title={t('scan')}>*/}
 				{/*			<Button type="primary">{t('scan_btn')}</Button>*/}
 				{/*		</Popover>*/}
-
 				{/*	</Col>*/}
 				{/*</Row>*/}
-
 			</>
 		)
 	}

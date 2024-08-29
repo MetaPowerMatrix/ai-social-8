@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'export',
+  output: 'export',
   distDir: 'dist',
   reactStrictMode: true,
-  transpilePackages: ['@ant-design/icons-svg', '@ant-design/icons', 'antd', 'rc-util', 'rc-pagination', 'rc-picker'],
+  transpilePackages: ['gsap', 'gsap/MotionPathPlugin', '@ant-design/icons-svg', '@ant-design/icons', 'antd', 'rc-util', 'rc-pagination', 'rc-picker'],
   images: {
     unoptimized: true,
     // loader: 'custom',

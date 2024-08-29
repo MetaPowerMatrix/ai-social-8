@@ -13,6 +13,7 @@ import {WebSocketManager} from "@/lib/WebsocketManager";
 import {useTranslations} from "next-intl";
 import {getOS} from "@/lib/utils";
 import commandDataContainer from "@/container/command";
+import InteractivePanorama from "@/components/InteractivePanoramic";
 
 // const EditAnswerInfo = ({owner,room_id,level, visible,onClose}: {visible:boolean, owner:string, room_id:string, level: number, onClose:()=>void}) => {
 // 	const [answer, setAnswer] = useState<string>('')
@@ -356,6 +357,7 @@ const GameSceneComponent = ({visible,activeId,roomId, roomName, onShowProgress, 
 				</Row>
 				<Row>
 					<Col span={24}>
+						{/*<InteractivePanorama/>*/}
 						<Image
 							preview={false}
 							src={scene}

@@ -54,7 +54,6 @@ export interface PortalLiveRoomInfo{
   cover: string,
   town: string
 }
-
 export interface LiveOpenResponse {
   room_id: string,
   cover: string,

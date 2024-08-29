@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import Image from 'next/image';
 import styles from './layout_mobile.module.css';
 import {Tabs} from "antd";
 import {
@@ -12,9 +11,7 @@ import ModalLogin from "@/components/login";
 import {useTranslations} from 'next-intl';
 import ProgressBarComponent from "@/components/ProgressBar";
 import HeaderPanelMobile from "./header_mobile";
-import QRCodeComponent from "@/components/QRCode";
 import TwonMobile from "@/components/town";
-import StudyTownCompoent from "@/components/study_town";
 import commandDataContainer from "@/container/command";
 
 export default function LayoutMobile({ children, title, description, onChangeId, onRefresh }) {
@@ -84,7 +81,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
 
     const tabs =[
         {label: t('messages'), key:"chat", icon: <CommentOutlined/>},
-        {label: t('train'), key:"pro", icon: <ExperimentOutlined />},
         {label: t("town"), key:"town", icon: <ShopOutlined style={{fontSize:18,color:"goldenrod"}} />},
         // {label: t("discovery"), key:"discovery", icon: <BarsOutlined />},
         {label: t("mine"), key:"mine", icon: <UserOutlined />}
@@ -97,12 +93,6 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     <div>
                         {children}
                     </div>
-                }
-                {key === 'pro' &&
-                    <>
-                        <h4 style={{width: "100%", textAlign:"center"}}>{t('study')}</h4>
-                        <StudyTownCompoent id={activeId} mobile={true} onShowProgress={showProgressBar}/>
-                    </>
                 }
                 {key === 'town' &&
                     <TwonMobile name={activeName} id={activeId} mobile={true} onShowProgress={showProgressBar} />
@@ -146,23 +136,23 @@ export default function LayoutMobile({ children, title, description, onChangeId,
                     })}
                 />
                 :
-                <Image priority src="/images/town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
+                null
             }
             <ProgressBarComponent visible={loading} steps={15} />
             <ModalLogin mobile={true} isOpen={!isLogin} tips={t} options={availableIds}
-                        onClose={(id) => {
-                            setIsLogin(true)
-                            if (id !== '') {
-                                setActiveId(id)
-                                const localInfoStr = localStorage.getItem("local_patos")
-                                if (localInfoStr !== null) {
-                                    let localInfo = JSON.parse(localInfoStr)
-                                    localInfo.active_id = id
-                                    localStorage.setItem("local_patos", JSON.stringify(localInfo))
-                                    setActiveId(localInfo.active_id);
-                                }
-                            }
-                        }}
+                onClose={(id) => {
+                    setIsLogin(true)
+                    if (id !== '') {
+                        setActiveId(id)
+                        const localInfoStr = localStorage.getItem("local_patos")
+                        if (localInfoStr !== null) {
+                            let localInfo = JSON.parse(localInfoStr)
+                            localInfo.active_id = id
+                            localStorage.setItem("local_patos", JSON.stringify(localInfo))
+                            setActiveId(localInfo.active_id);
+                        }
+                    }
+                }}
             />
             {/*<LiveChatMobile id={activeId} serverUrl={Streaming_Server} onClose={()=>setOpenLive(false)}*/}
             {/*          visible={openLive} onShowProgress={showProgressBar}/>*/}

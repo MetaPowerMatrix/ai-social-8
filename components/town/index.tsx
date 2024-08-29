@@ -1,5 +1,5 @@
 import {Col, List, Modal, Popover, Row} from "antd";
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import styles from './TownComponent.module.css'
 import {useTranslations} from "next-intl";
 import commandDataContainer from "@/container/command";
@@ -11,8 +11,8 @@ import utilStyles from "@/styles/utils.module.css";
 import GameMishiTownComponent from "@/components/GameMishiTown";
 import LiveBroadcastTownComponent from "@/components/LiveBroadcastTown";
 import KolTownComponent from "@/components/KolTown";
-import AniTown from "@/components/AniTown";
 import InteractivePanorama from "@/components/InteractivePanoramic";
+import InfiniteStreet from "@/components/InfiniteStreet";
 
 const towns =[
 	{label: 'KOL小镇', value: 'kol', description: '每一天都要和有趣的人在一起'},
@@ -78,50 +78,56 @@ const TwonMobile = ({id, name, mobile, onShowProgress}:{id: string,name:string, 
 			/>
 		)
 	}
+	const [ready, set] = useState(false)
+
 	return (
-		<div className={styles.town_container}>
-			<div className={styles.town_content}>
-			{ mobile &&
-				<>
-          <Row align={"middle"}>
-              <Col span={24} style={{textAlign:"center"}}>
-		              <h4 style={{display:"inline-block"}}>{activeTownLabel}</h4>
-                  <Popover
-                      placement={"bottom"}
-                      content={
-					              <div style={{width: 370, overflowY:"scroll", height:500}}>
-						              <TownList/>
-					              </div>
-				              }
-                      trigger="click"
-                      open={openPop}
-                      onOpenChange={handleOpenChange}
-                  >
-                      <SwapOutlined style={{marginLeft: 10, color: "darkorchid", fontSize: 14}}/>
-                  </Popover>
-                  {/*<TeamOutlined style={{marginLeft:5}} onClick={()=>{*/}
-			            {/*  setShowHot(true)*/}
-		              {/*}}/>*/}
-              </Col>
-          </Row>
-          {activeTown === 'game' &&
-              <GameMishiTownComponent activeId={id} onShowProgress={onShowProgress}/>
-          }
-          {activeTown === 'live' &&
-              <LiveBroadcastTownComponent activeId={id} onShowProgress={onShowProgress}/>
-          }
-          {activeTown === 'kol' &&
-              <KolTownComponent name={name} activeId={id} onShowProgress={onShowProgress}/>
-          }
-					{activeTown === 'music' &&
-              <AniTown/>
+		<div>
+			<div className={styles.town_container}>
+				<div className={styles.town_content}>
+					{mobile &&
+              <>
+                  <Row align={"middle"}>
+                      <Col span={24} style={{textAlign: "center"}}>
+                          <h4 style={{display: "inline-block"}}>{activeTownLabel}</h4>
+                          <Popover
+                              placement={"bottom"}
+                              content={
+																<div style={{width: 370, overflowY: "scroll", height: 500}}>
+																	<TownList/>
+																</div>
+															}
+                              trigger="click"
+                              open={openPop}
+                              onOpenChange={handleOpenChange}
+                          >
+                              <SwapOutlined style={{marginLeft: 10, color: "darkorchid", fontSize: 14}}/>
+                          </Popover>
+												{/*<TeamOutlined style={{marginLeft:5}} onClick={()=>{*/}
+												{/*  setShowHot(true)*/}
+												{/*}}/>*/}
+                      </Col>
+                  </Row>
+								{activeTown === 'game' &&
+                    <GameMishiTownComponent activeId={id} onShowProgress={onShowProgress}/>
+								}
+								{activeTown === 'live' &&
+                    <LiveBroadcastTownComponent activeId={id} onShowProgress={onShowProgress}/>
+								}
+								{activeTown === 'kol' &&
+                    <KolTownComponent name={name} activeId={id} onShowProgress={onShowProgress}/>
+								}
+								{activeTown === 'literature' &&
+									<InteractivePanorama/>
+								}
+	              {activeTown === 'music' &&
+                    <div style={{height:"100vh"}}>
+                        <InfiniteStreet/>
+                    </div>
+	              }
+								{/*<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>*/}
+              </>
 					}
-					{activeTown === 'literature' &&
-              <InteractivePanorama/>
-          }
-          {/*<HotAI onClose={()=>setShowHot(false)} visible={showHot} canSelect={false} onSelectName={()=>{}}/>*/}
-        </>
-			}
+				</div>
 			</div>
 		</div>
 	)

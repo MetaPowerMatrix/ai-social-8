@@ -55,8 +55,7 @@ const HeaderPanelMobile = ({activeId, onChangeId, onShowProgress}:
 		<header className={styles.header_panel_mobile_container}>
 			<Row justify="space-between" className={styles.header_user}>
 				<Col span={8} style={{textAlign:"center", marginBottom: 20}}>
-						<Image
-							priority
+						<img
 							src="/images/notlogin.png"
 							className={utilStyles.borderCircle}
 							height={72}

@@ -6,6 +6,7 @@ export default function Home() {
 		<MobileHome/>
 	);
 }
+
 export async function getStaticProps({locale}: {
 	locale: string
 }) {

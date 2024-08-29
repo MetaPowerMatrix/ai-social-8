@@ -36,6 +36,11 @@ img {
   display: block;
 }
 
+h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
 .credit_card_logo{
   width: 120px;
   height: 30px;

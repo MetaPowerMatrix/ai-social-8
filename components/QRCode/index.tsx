@@ -65,13 +65,13 @@ const QRCodeComponent: React.FC<QRCodeProps> = ({visible, id, onClose, mobile}) 
 									<div><h5>{t("tipsQRCode")}</h5></div>
 									<QRCode value={"https://social.metapowermatrix.ai/authorize?owner=" + token}/>
 									<div><a>
-							<span onClick={() => {
-								copyToClipboard("https://social.metapowermatrix.ai/authorize?owner=" + token)
-								Modal.success({
-									content: (t('copied'))
-								})
-							}}>{t('copy')}
-							</span>
+										<span onClick={() => {
+											copyToClipboard("https://social.metapowermatrix.ai/authorize?owner=" + token)
+											Modal.success({
+												content: (t('copied'))
+											})
+										}}>{t('copy')}
+										</span>
 									</a>
 									</div>
 								</Col>

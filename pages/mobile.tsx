@@ -29,6 +29,7 @@ import LayoutMobile from "@/components/layout_mobile";
 import mqtt from "mqtt";
 import TextArea from "antd/es/input/TextArea";
 import HotTopics from "@/components/HotTopics";
+import MobileFramework from "@/components/MobileFramework";
 
 const MessageHeader = ({onChangeDate, onClickReload, queryDate}:{
 	onChangeDate: (datestring: string)=>void,
@@ -496,26 +497,7 @@ export default function MobileHome() {
 			<Head>
 				<title>{t('title')}</title>
 			</Head>
-			<div hidden={!hideDetail} style={{height: pageHeight, padding: 10}}>
-				<Tabs
-					centered
-					size={"middle"}
-					tabBarGutter={40}
-					type={"line"}
-					animated={true}
-					tabPosition="top"
-					activeKey={activeTab}
-					onChange={(key) => setActivTab(key)}
-					items={tabs.map((tab, i) => {
-						return {
-							label: tab.label,
-							key: tab.key,
-							children: tabContent(tab.key),
-							icon: tab.icon
-						};
-					})}
-				/>
-			</div>
+			<MobileFramework name={activeName}/>
 			<div hidden={hideDetail} style={{overflow: "scroll", height: pageHeight, padding: 15}}>
 				<Row>
 					<LeftOutlined onClick={() => setHideDetail(true)}/>
@@ -583,7 +565,6 @@ export default function MobileHome() {
 			</div>
 		</LayoutMobile>
 	)
-		;
 }
 
 export async function getStaticProps({locale}: {

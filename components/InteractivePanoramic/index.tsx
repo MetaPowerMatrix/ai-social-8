@@ -33,7 +33,7 @@ const CameraMover = () => {
 
 const PanoramicSphere: React.FC = () => {
 	const mesh = useRef(null);
-	const texture = useLoader(TextureLoader, "/images/room4-360.webp");
+	const texture = useLoader(TextureLoader, "/images/room11-360.png");
 	texture.mapping = EquirectangularReflectionMapping;
 
 	return (
@@ -48,6 +48,7 @@ const InteractivePanorama: React.FC = () => {
 	return (
 		<>
 			<Canvas>
+				<camera position={new Vector3(-50, 100, 50)}/>
 				<ambientLight/>
 				<OrbitControls enableZoom={true} enablePan={true}/>
 				{/*<CameraControls minPolarAngle={0} maxPolarAngle={Math.PI / 2} minAzimuthAngle={-Math.PI / 2}*/}

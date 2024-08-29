@@ -1,7 +1,5 @@
 import {Button, Col, Input, List, Modal, Row} from "antd";
 import React, {useState} from "react";
-import styles from "@/components/AIInstructMobile/AIInstructMobileComponent.module.css";
-import {AndroidOutlined, CommentOutlined, ExclamationCircleFilled, UnorderedListOutlined} from "@ant-design/icons";
 import commandDataContainer from "@/container/command";
 import {HotPro} from "@/common";
 

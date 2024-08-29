@@ -164,7 +164,7 @@ export default function Layout({ children, title, description, onChangeId, onRef
                     </Row>
                 </>
                 :
-                <Image priority src="/images/town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
+                <Image src="/images/town.jpg" fill style={{objectFit: 'cover',}} alt={"map"}/>
             }
             <MaskedHighlight zones={zones} visible={guide} />
             <ProgressBarComponent visible={loading} steps={30} />
