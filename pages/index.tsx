@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import MobileHome from "@/channel/mobile";
 
 export default function Home() {
 	return (
-		<MobileHome/>
+		<Suspense fallback={<>Loading...</>}>
+			<MobileHome/>
+		</Suspense>
 	);
 }
 
