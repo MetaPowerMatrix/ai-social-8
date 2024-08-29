@@ -9,11 +9,11 @@ const nextConfig = {
     // loader: 'custom',
     // loaderFile: './image-loader.ts',
   },
-  i18n: {
-    locales: ['en-US', 'zh-CN'],
-    defaultLocale: 'zh-CN',
-    localeDetection: false
-  },
+  // i18n: {
+  //   locales: ['en-US', 'zh-CN'],
+  //   defaultLocale: 'zh-CN',
+  //   localeDetection: false
+  // },
 };
 
 export default nextConfig;
