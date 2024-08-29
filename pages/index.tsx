@@ -1,5 +1,5 @@
 import React from 'react';
-import MobileHome from "@/pages/mobile";
+import MobileHome from "@/channel/mobile";
 
 export default function Home() {
 	return (
