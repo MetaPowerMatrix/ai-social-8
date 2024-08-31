@@ -2,9 +2,9 @@
     "canisters": {
       "metapowermatrix": {
         "frontend": {
-          "entrypoint": "dist/index.html"
+          "entrypoint": "out/index.html"
         },
-        "source": ["dist"],
+        "source": ["out"],
         "type": "assets"
       }
     }
