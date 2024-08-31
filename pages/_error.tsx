@@ -6,7 +6,11 @@ function Page({ statusCode }: any) {
 
 export const getStaticProps = ({ res, err }: { res: any; err: any }) => {
 	const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
-	return { statusCode };
+	return {
+		props: {
+			statusCode
+		}
+	};
 };
 
 export default Page;
