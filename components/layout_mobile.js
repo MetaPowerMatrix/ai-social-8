@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
+import {useTranslations} from 'next-intl';
 import ProgressBarComponent from "@/components/ProgressBar";
 import HeaderPanelMobile from "./header_mobile";
 import TwonMobile from "@/components/town";
@@ -20,6 +21,7 @@ export default function LayoutMobile({ children, title, description, onChangeId,
     const [activeName, setActiveName] = useState("");
     const [loading, setLoading] = useState(false);
     const [activeTab, setActivTab] = useState('chat');
+    const t = useTranslations('Login');
     const command = commandDataContainer.useContainer()
 
     const showProgressBar = (show) => {
