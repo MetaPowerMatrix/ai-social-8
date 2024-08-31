@@ -22,7 +22,6 @@ import {
 } from "@ant-design/icons";
 import commandDataContainer from "@/container/command"
 import {ChatMessage, getMQTTBroker, SessionList} from "@/common";
-import {useTranslations} from 'next-intl';
 import {formatDateTimeString, getTodayDateString} from "@/lib/utils";
 import dayjs from "dayjs";
 import LayoutMobile from "@/components/layout_mobile";
@@ -36,7 +35,6 @@ const MessageHeader = ({onChangeDate, onClickReload, queryDate}:{
 	onClickReload: ()=>void,
 	queryDate: string,
 }) => {
-	const t = useTranslations('Index');
 	const onChange: DatePickerProps['onChange'] = (_, dateString) => {
 		onChangeDate(dateString as string)
 		// console.log(date, dateString);
@@ -45,7 +43,7 @@ const MessageHeader = ({onChangeDate, onClickReload, queryDate}:{
 	return (
 		<>
 			<Row justify="space-between">
-				<Col span={8}><span>{t('taskMessage')}</span>
+				<Col span={8}><span>{('taskMessage')}</span>
 					<Divider type={"vertical"}/>
 					<RedoOutlined onClick={onClickReload}/>
 					<Divider type={"vertical"}/>
@@ -155,7 +153,6 @@ export default function MobileHome() {
 	const [topicChatHis, setTopicChatHis] = useState<string[]>([])
 	const activeTown = 'study';
 	const {confirm} = Modal;
-	const t = useTranslations('Index');
 
 	const openNotification = (title: string, message: string) => {
 		api.open({
@@ -176,7 +173,7 @@ export default function MobileHome() {
 	const archiveSession = (session_id: string) =>{
 		command.archive_session(activeId, session_id, queryDate).then((res) => {
 			if (res){
-				alert(t("delete"))
+				alert("delete")
 			}
 		})
 	}
@@ -341,19 +338,19 @@ export default function MobileHome() {
 		event.preventDefault();
 		if (topic === ""){
 			Modal.warning({
-				content: t('event_tips')
+				content: 'event_tips'
 			})
 			return
 		}
 		confirm({
 			icon: <ExclamationCircleFilled />,
-			content: t('talking_tips'),
-			okText: t('confirm'),
-			cancelText: t('cancel'),
+			content: 'talking_tips',
+			okText: 'confirm',
+			cancelText: 'cancel',
 			onOk() {
 				command.create_today_event(activeId, topic, activeTown).then((response) => {
 					Modal.success({
-						content: t('talking')
+						content: 'talking'
 					})
 				})
 			}
@@ -370,7 +367,7 @@ export default function MobileHome() {
 	const queryTopicChatHis = (q_topic:string) => {
 		if (q_topic === ''){
 			Modal.warning({
-				content: t('event_tips')
+				content: 'event_tips'
 			})
 		}else{
 			command.get_topic_chat_his(activeId, q_topic, activeTown).then((res) => {
@@ -398,9 +395,9 @@ export default function MobileHome() {
 													<DeleteOutlined key={"delete"} onClick={() => {
 														confirm({
 															icon: <ExclamationCircleFilled/>,
-															content: t('delete_confirm'),
-															okText: t('confirm'),
-															cancelText: t('cancel'),
+															content: 'delete_confirm',
+															okText: 'confirm',
+															cancelText: 'cancel',
 															onOk() {
 																archiveSession(item.session);
 															}
@@ -445,10 +442,10 @@ export default function MobileHome() {
 				}
 				{key === 'topic' &&
             <div style={{height:590}}>
-                <TextArea style={{marginBottom: 10}} value={topic} placeholder={t('topicTips')} rows={2} onChange={(e) => topicInput(e)}/>
+                <TextArea style={{marginBottom: 10}} value={topic} placeholder={'topicTips'} rows={2} onChange={(e) => topicInput(e)}/>
                 <Row>
                     <Col span={24}>
-                        <Button style={{width:"100%"}} type={"primary"} onClick={handleTodayEvent}>{t('event')}</Button>
+                        <Button style={{width:"100%"}} type={"primary"} onClick={handleTodayEvent}>{'event'}</Button>
                     </Col>
                 </Row>
                 <HotTopics onQueryTopic={queryTopicChatHis} visible={showTopics}  onSelectName={onSelectTopic}/>
@@ -484,18 +481,13 @@ export default function MobileHome() {
 		)
 	}
 
-	const tabs =[
-		{label: t('feed'), key:"feed", icon: <RedditOutlined/>},
-		{label: t('messages'), key:"messages", icon: <CommentOutlined/>},
-		{label: t('topic'), key:"topic", icon: <CommentOutlined/>},
-	]
 	return (
 		<LayoutMobile onRefresh={(name: string) => setActiveName(name)} onChangeId={(newId: string) => setActiveId(newId)}
-		              title={t('title')}
-		              description={t('description')}>
+		              title={('title')}
+		              description={('description')}>
 			{contextHolder}
 			<Head>
-				<title>{t('title')}</title>
+				<title>{('title')}</title>
 			</Head>
 			<MobileFramework name={activeName}/>
 			<div hidden={hideDetail} style={{overflow: "scroll", height: pageHeight, padding: 15}}>
@@ -509,27 +501,27 @@ export default function MobileHome() {
                     <Button onClick={() =>
 	                    confirm({
 		                    icon: <ExclamationCircleFilled/>,
-		                    content: t('save_tips'),
-		                    okText: t('confirm'),
-		                    cancelText: t('cancel'),
+		                    content: 'save_tips',
+		                    okText: 'confirm',
+		                    cancelText: 'cancel',
 		                    onOk() {
 			                    handleEditMessages()
 		                    }
 	                    })
-										}>{t('save')}</Button>
+										}>{('save')}</Button>
                 </Col>
                 <Col span={8}>
                     <Button onClick={() =>
 	                    confirm({
 		                    icon: <ExclamationCircleFilled/>,
-		                    content: t('continue_tips'),
-		                    okText: t('confirm'),
-		                    cancelText: t('cancel'),
+		                    content: 'continue_tips',
+		                    okText: 'confirm',
+		                    cancelText: 'cancel',
 		                    onOk() {
 			                    handleContinueChat(true)
 		                    }
 	                    })
-										}>{t('continue')}</Button>
+										}>{('continue')}</Button>
                 </Col>
             </Row>
 				}
@@ -541,7 +533,7 @@ export default function MobileHome() {
 					dataSource={chatMessages}
 					renderItem={(item, index) => {
 						if (isMySeesion) {
-							return <EditableListItem t={t} initialValue={item} onSave={(value) => handleSave(index, value)}/>
+							return <EditableListItem t={{}} initialValue={item} onSave={(value) => handleSave(index, value)}/>
 						} else {
 							return (
 								<List.Item

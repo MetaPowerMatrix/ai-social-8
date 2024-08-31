@@ -9,7 +9,6 @@ import {
 } from "@ant-design/icons";
 import React, {useEffect, useState} from 'react';
 import ModalLogin from "@/components/login";
-import {useTranslations} from 'next-intl';
 import TaskPanel from "@/components/taskPanel";
 import ProgressBarComponent from "@/components/ProgressBar";
 import HeaderPanel from "@/components/header";
@@ -37,7 +36,6 @@ export default function Layout({ children, title, description, onChangeId, onRef
     const command = commandDataContainer.useContainer()
     const [userISS, setUserISS] = useState();
     const [client, setClient] = useState(null);
-    const t = useTranslations('Login');
 
     const zones = [
         { id: 'zone1', top: 260, left: 110, height:220, width:320,
