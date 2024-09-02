@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import styles from './MobileFramework.module.css';
 import {AudioOutlined} from "@ant-design/icons";
+import {Col, Row} from "antd";
+import {center} from "maath/buffer";
 
 const MobileFramework = ({name}) => {
     const headerRef = useRef(null);
@@ -28,19 +30,27 @@ const MobileFramework = ({name}) => {
                 </header>
 
                 <div className={styles.input_section}>
-                    <input
+                    <textarea
+                        rows={4}
                         ref={promptInputRef}
-                        type="text"
                         placeholder="输入问题..."
                         className={styles.prompt_input}
                     />
-                    <AudioOutlined style={{color: "black", fontSize: 20}} onClick={{}}/>
                     <div className={styles.style_options}>
-                        <button className={styles.add_image_btn}>图片</button>
-                        <select className={styles.style_select}>
-                            <option value="default">旅行</option>
-                            <option value="cartoon">特产</option>
-                        </select>
+                        <Row align="middle">
+                            <Col span={6}>
+                                <button className={styles.add_image_btn}>上传图片</button>
+                            </Col>
+                            <Col span={14}>
+                                <select className={styles.style_select}>
+                                    <option value="default">旅行</option>
+                                    <option value="cartoon">特产</option>
+                                </select>
+                            </Col>
+                            <Col span={4} style={{textAlign: "right"}}>
+                                <AudioOutlined style={{color: "black", fontSize: 20}} onClick={{}}/>
+                            </Col>
+                        </Row>
                     </div>
                 </div>
             </div>
