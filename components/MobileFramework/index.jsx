@@ -10,7 +10,7 @@ const MobileFramework = ({name}) => {
     const promptInputRef = useRef(null);
 
     useEffect(() => {
-        gsap.from(headerRef.current, { y: -50, opacity: 0, duration: 1 });
+        gsap.from(headerRef.current, { y: 0, opacity: 0, duration: 1 });
         gsap.from(promptInputRef.current, { y: 50, opacity: 0, duration: 1 });
         // gsap.from(".recent-item", {
         //     opacity: 0,
