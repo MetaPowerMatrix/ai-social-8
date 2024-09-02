@@ -3,7 +3,6 @@ import gsap from 'gsap';
 import styles from './MobileFramework.module.css';
 import {AudioOutlined} from "@ant-design/icons";
 import {Col, Row} from "antd";
-import {center} from "maath/buffer";
 
 const MobileFramework = ({name}) => {
     const headerRef = useRef(null);
@@ -54,7 +53,7 @@ const MobileFramework = ({name}) => {
                     </div>
                 </div>
             </div>
-            <div style={{height: 395}}/>
+            <div style={{height: 497}}/>
         </>
     );
 };
