@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {Col, Modal, Row, List, Button, Input} from "antd";
 import styles from "./GameMishiTownComponent.module.css";
 import {
-	AudioFilled,
 	CloseOutlined,
 	ExclamationCircleFilled,
 	LoginOutlined, PauseOutlined
